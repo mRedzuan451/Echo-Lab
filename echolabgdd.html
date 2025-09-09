@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Lab: Interactive Game Design Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a192f;
+            color: #ccd6f6;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #64ffda;
+            border-bottom-color: #64ffda;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .card {
+            background-color: #112240;
+            border: 1px solid #233554;
+            transition: all 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: #0a192f;
+            color: #64ffda;
+            border: 1px solid #64ffda;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:hover, .btn.active {
+            background-color: rgba(100, 255, 218, 0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 1000px;
+        }
+        .character-card.active {
+            border-color: #64ffda;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+        }
+        .rival-card {
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            display: none;
+        }
+        .rival-card.active {
+            opacity: 1;
+            transform: translateX(0);
+            display: block;
+        }
+        .character-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .character-card.active .character-details {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white">Echo Lab</h1>
+            <p class="text-lg md:text-xl text-gray-400 mt-2">Interactive Game Design Document</p>
+        </header>
+
+        <nav class="flex justify-center items-center flex-wrap space-x-4 md:space-x-8 mb-8 border-b border-gray-700 pb-2">
+            <a class="nav-link active py-2 px-1 text-sm md:text-base" data-section="overview">Overview</a>
+            <a class="nav-link py-2 px-1 text-sm md:text-base" data-section="characters">Characters</a>
+            <a class="nav-link py-2 px-1 text-sm md:text-base" data-section="world">The World</a>
+            <a class="nav-link py-2 px-1 text-sm md:text-base" data-section="gameplay">Gameplay</a>
+            <a class="nav-link py-2 px-1 text-sm md:text-base" data-section="storyline">Storyline</a>
+            <a class="nav-link py-2 px-1 text-sm md:text-base" data-section="endgame">Endgame</a>
+        </nav>
+
+        <main>
+            <section id="overview" class="section-content active">
+                <div class="card p-6 rounded-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-white">Core Concept & Theme</h2>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong class="text-cyan-400">Genre:</strong> Text-Based Survival RPG</p>
+                        <p><strong class="text-cyan-400">Logline:</strong> Contestants kidnapped for a brutal, galaxy-spanning game must survive a shattered world controlled by cold, calculating alien researchers. Using their unique skills, they must outwit rivals, outlast engineered disasters, and uncover the dark purpose of the deadly experiment they're trapped in.</p>
+                        <p><strong class="text-cyan-400">Theme:</strong> The game is a dark sci-fi survival story where the central conflict is not just about Man vs. Nature, but about Order vs. Chaos, Strength vs. Intellect, and Humanity vs. Indifference.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="characters" class="section-content">
+                <h2 class="text-2xl font-bold mb-4 text-center text-white">Playable Characters & Rivals</h2>
+                <p class="text-center text-gray-400 mb-6">Each character has a unique skillset and a dedicated rival who acts as their dark mirror. Click a character to reveal their antagonist and in-game profile.</p>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="space-y-6">
+                        <div id="char-kaelen" class="character-card card rounded-lg cursor-pointer overflow-hidden">
+                            <img src="http://googleusercontent.com/image_generation_content/2" alt="Kaelen Rook Vance" class="w-full h-64 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-cyan-400">Kaelen "Rook" Vance (The Soldier)</h3>
+                                <p class="text-gray-400 mt-2 italic">"Trust gets you killed. A loaded weapon gets you through the night."</p>
+                                <p class="mt-4 text-gray-300">Broad-shouldered and scarred, Kaelen carries himself with the rigid posture of a soldier. His eyes are constantly scanning, assessing threats.</p>
+                                <div class="character-details mt-4 border-t border-cyan-800 pt-4">
+                                    <h4 class="font-bold text-white">In-Game Profile</h4>
+                                    <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mt-2">
+                                        <li><strong>Core Stats:</strong> High Strength & Endurance, Low Tech.</li>
+                                        <li><strong>Starting Loadout:</strong> Worn fatigues, combat knife.</li>
+                                        <li><strong>Progression Focus:</strong> Excels at crafting heavy melee weapons and durable armor. His survival depends on winning direct confrontations and outlasting his opponents.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="char-aris" class="character-card card rounded-lg cursor-pointer overflow-hidden">
+                            <img src="http://googleusercontent.com/image_generation_content/3" alt="Dr. Aris Thorne" class="w-full h-64 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-cyan-400">Dr. Aris Thorne (The Bio-Hacker)</h3>
+                                <p class="text-gray-400 mt-2 italic">"Everything is a system. You just have to find the variables, the inputs, and the outputs. Even survival is just an equation."</p>
+                                <p class="mt-4 text-gray-300">Wiry and intense, with restless hands and eyes that see the world as a series of interconnected puzzles. He is more comfortable with alien flora than with people.</p>
+                                <div class="character-details mt-4 border-t border-cyan-800 pt-4">
+                                    <h4 class="font-bold text-white">In-Game Profile</h4>
+                                    <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mt-2">
+                                        <li><strong>Core Stats:</strong> High Intelligence & Tech, Low Strength.</li>
+                                        <li><strong>Starting Loadout:</strong> Tattered lab coat, multi-tool.</li>
+                                        <li><strong>Progression Focus:</strong> Thrives by crafting potent medicines, deadly poisons, and clever traps. Avoids direct combat, preferring to outsmart his foes and the environment itself.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="char-lena" class="character-card card rounded-lg cursor-pointer overflow-hidden">
+                             <img src="http://googleusercontent.com/image_generation_content/4" alt="Lena Ghost Petrova" class="w-full h-64 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-cyan-400">Lena "Ghost" Petrova (The Infiltrator)</h3>
+                                <p class="text-gray-400 mt-2 italic">"The best way to win a fight is to make sure your opponent never knew you were there."</p>
+                                <p class="mt-4 text-gray-300">Lithe and athletic, Lena moves with a silent grace. She is a master of blending into the background, her expression a neutral mask that betrays nothing.</p>
+                                <div class="character-details mt-4 border-t border-cyan-800 pt-4">
+                                    <h4 class="font-bold text-white">In-Game Profile</h4>
+                                    <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mt-2">
+                                        <li><strong>Core Stats:</strong> High Agility & Perception, Low Endurance.</li>
+                                        <li><strong>Starting Loadout:</strong> Light utility suit, lock-picking kit.</li>
+                                        <li><strong>Progression Focus:</strong> Specializes in stealth, evasion, and ranged attacks. Crafts silent weapons like bows and utilizes tools that create diversions or disable opponents.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sticky top-8">
+                        <div id="rival-kaelen" class="rival-card card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-red-400">Rival: Xander "Vulture" Kade</h3>
+                            <p class="text-gray-400 mt-2 italic">"Rules are for the people who lack the will to break them."</p>
+                            <p class="mt-4 text-gray-300">A tall, lean man with a cruel smile and eyes that lack any warmth. He sees people as pawns. A clash of ideology against Kaelen's broken code of honor.</p>
+                        </div>
+                         <div id="rival-aris" class="rival-card card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-red-400">Rival: Jinx</h3>
+                            <p class="text-gray-400 mt-2 italic">"A plan is just a list of things that are about to go wrong. I prefer improvisation."</p>
+                            <p class="mt-4 text-gray-300">A whirlwind of chaotic energy, with brightly colored hair and a manic grin. She represents a battle of scientific philosophies: Aris's calculated Order versus her unpredictable Chaos.</p>
+                        </div>
+                         <div id="rival-lena" class="rival-card card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-red-400">Rival: Isha "Hawkeye"</h3>
+                            <p class="text-gray-400 mt-2 italic">"The silence doesn't mean you're alone. It just means I haven't let you hear me yet."</p>
+                            <p class="mt-4 text-gray-300">A patient and powerfully built big-game hunter. She creates a pure predator-versus-prey dynamic, a terrifying cat-and-mouse game against Lena's stealth.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold mb-4 text-center text-white">Potential Allies & Encounters</h2>
+                    <p class="text-center text-gray-400 mb-6">Throughout the Echo Lab, you will encounter other survivors. Trust is a resource more valuable—and more dangerous—than any other.</p>
+                    <div class="max-w-3xl mx-auto space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-cyan-400">Jedediah "Jed" (The Old Timer)</h3>
+                            <p class="text-gray-400 mt-2 italic">"Seen a dozen worlds try to kill me. This one's just the chattiest about it."</p>
+                            <p class="mt-4 text-gray-300">An older, surprisingly calm man with weathered skin and a wry smile. He's not a great fighter, but his wisdom is his weapon. He can teach the player unique, low-tech survival skills that the AI doesn't know.</p>
+                            <div class="mt-4 border-t border-cyan-800 pt-4">
+                                <h4 class="font-bold text-white">The Dilemma: The Backbone or the Betrayer</h4>
+                                <p class="text-sm text-gray-300 mt-2">Jed can become a crucial ally, providing knowledge and stability. However, his ultimate goal is his own survival. Pushing him too far may cause him to abandon you, or worse, use his knowledge to make a deal with another contestant.</p>
+                            </div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-cyan-400">Cora (The Medic)</h3>
+                            <p class="text-gray-400 mt-2 italic">"I took an oath to save lives. That oath doesn't end just because the sky is different."</p>
+                            <p class="mt-4 text-gray-300">A young doctor, horrified by the violence, who refuses to kill. If protected, she can provide expert healing, cure poisons your AI can't identify, and craft advanced medical supplies.</p>
+                            <div class="mt-4 border-t border-cyan-800 pt-4">
+                                <h4 class="font-bold text-white">The Dilemma: The Saint or the Liability</h4>
+                                <p class="text-sm text-gray-300 mt-2">Her strict "do no harm" code could be a fatal liability. She might try to stop you from killing a rival or even attempt to help an enemy you've wounded, putting you both in extreme danger at the worst possible moment.</p>
+                            </div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-cyan-400">Unit 734 (The Glitch)</h3>
+                            <p class="text-gray-400 mt-2 italic">"Logic...corr..upted. Protocol: [static]...survive."</p>
+                            <p class="mt-4 text-gray-300">A damaged maintenance drone from a past "season." If repaired, it can serve as a guard, pack mule, or a walking tank. It has access to old data about the Arena that could reveal secrets.</p>
+                            <div class="mt-4 border-t border-cyan-800 pt-4">
+                                <h4 class="font-bold text-white">The Dilemma: The Asset or the Time Bomb</h4>
+                                <p class="text-sm text-gray-300 mt-2">It's a machine. A strong magnetic pulse or a critical hit in combat could cause it to reboot to its original "Hostile Elimination" protocols, turning it against you in an instant with no warning.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="world" class="section-content">
+                <h2 class="text-2xl font-bold mb-4 text-center text-white">The Echo Lab</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-2">Masterminds: The Archivists</h3>
+                        <p class="text-gray-300">An ancient, hyper-logical alien race obsessed with finding the "strongest" species to inherit their legacy. They see the game not as entertainment, but as a series of cold, scientific trials. The entire experiment is overseen by their detached AI, <strong class="text-white">"The Proctor."</strong></p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-2">Mechanic: Test Chambers</h3>
+                        <p class="text-gray-300">Within the permanent ruined landscape, the Archivists have installed adaptive, hard-light zones. These "chambers" can reconfigure on command to create controlled experiments like shifting mazes, holographic combat simulations, or environmental puzzles.</p>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-lg mt-6">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-4">Venue: The Shattered World</h3>
+                    <p class="text-gray-400 mb-6">The game takes place on a planet that was destroyed in a past experiment. It is now a collection of floating islands, a graveyard filled with the ruins of a lost civilization.</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="border-l-4 border-cyan-400 pl-4">
+                            <h4 class="font-bold text-white">The Ruined City-Isle</h4>
+                            <p class="text-sm text-gray-300 mt-1">Crumbling skyscrapers draped in alien vines form a vertical jungle. Threats include pack-hunting creatures and lingering automated security drones.</p>
+                        </div>
+                        <div class="border-l-4 border-cyan-400 pl-4">
+                            <h4 class="font-bold text-white">The Deep-Forest Shard</h4>
+                            <p class="text-sm text-gray-300 mt-1">A massive chunk of a wild continent, now a bioluminescent jungle of towering, pulsating flora and strange fauna, with environmental hazards.</p>
+                        </div>
+                        <div class="border-l-4 border-cyan-400 pl-4">
+                            <h4 class="font-bold text-white">The Exposed Core</h4>
+                            <p class="text-sm text-gray-300 mt-1">The most dangerous islands, floating around the planet's radioactive heart. The environment is twisted glass and radioactive crystals, requiring specialized gear.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-lg mt-6">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-4">Native Fauna & Threats</h3>
+                    <p class="text-gray-400 mb-6">Each zone of the Echo Lab is populated with a unique and deadly ecosystem, engineered or mutated to test the limits of survival.</p>
+                    <div class="space-y-2">
+                        <div class="accordion-item">
+                            <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>The Ruined City-Isle</span><span>&#9662;</span></button>
+                            <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                <div class="space-y-4 p-2">
+                                    <div>
+                                        <h5 class="font-semibold text-white">Slick-Skinned Skulker <span class="text-xs font-normal text-green-400 ml-2">(Mob)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">Eyeless, pale scavengers that hunt in packs through dark, flooded areas like subways and sewers. Highly sensitive to sound and light.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">Automated Sentry Drone <span class="text-xs font-normal text-yellow-400 ml-2">(Elite)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">Lingering security from the former civilization. Patrols set routes and are heavily armored from the front, but have a vulnerable power core in the back.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">Alpha Skulker Matriarch <span class="text-xs font-normal text-red-400 ml-2">(Apex Predator)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A larger, more intelligent Skulker that commands its pack with high-frequency screeches. Can stun opponents and direct coordinated attacks.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>The Deep-Forest Shard</span><span>&#9662;</span></button>
+                            <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                <div class="space-y-4 p-2">
+                                     <div>
+                                        <h5 class="font-semibold text-white">Spore-Lurker <span class="text-xs font-normal text-green-400 ml-2">(Mob)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A plant-animal hybrid that lies dormant, resembling a large, pulsating mushroom. Erupts in a cloud of toxic spores when a subject gets too close.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">Grave-Stalker <span class="text-xs font-normal text-yellow-400 ml-2">(Elite)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A large, insectoid predator that uses natural camouflage to blend in with the bioluminescent flora, ambushing its prey from the shadows with surprising speed.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">The Groveheart <span class="text-xs font-normal text-red-400 ml-2">(Apex Predator)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A massive, ancient treant-like creature that is the sentient heart of the forest shard. Slow but immensely powerful, it can entangle foes with roots and command the flora around it to attack.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>The Exposed Core</span><span>&#9662;</span></button>
+                            <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                 <div class="space-y-4 p-2">
+                                     <div>
+                                        <h5 class="font-semibold text-white">Crystal-Crawler <span class="text-xs font-normal text-green-400 ml-2">(Mob)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">Fast, silicon-based lifeforms that resemble moving shards of razor-sharp glass. They are hard to see and tend to attack in swarms.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">Radiotrophic Wyrm <span class="text-xs font-normal text-yellow-400 ml-2">(Elite)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A serpent-like creature that burrows through the crystalline ground, feeding on radiation. It can project beams of focused energy and is highly resistant to conventional damage.</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-semibold text-white">Shard-Storm Golem <span class="text-xs font-normal text-red-400 ml-2">(Apex Predator)</span></h5>
+                                        <p class="text-sm text-gray-300 mt-1">A massive golem of animated, radioactive crystals held together by pure energy. It constantly sheds a damaging aura of crystal shards and can reform its body to attack.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gameplay" class="section-content">
+                 <h2 class="text-2xl font-bold mb-6 text-center text-white">Gameplay & Mechanics</h2>
+                 <div class="card p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-4">Core Gameplay Loop</h3>
+                    <div class="flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-cyan-900 border-2 border-cyan-400 flex items-center justify-center mx-auto">
+                                <span class="text-4xl font-bold text-cyan-400">1</span>
+                            </div>
+                            <p class="mt-2 font-semibold text-white">Survive & Explore</p>
+                            <p class="text-sm text-gray-400">The current island</p>
+                        </div>
+                        <div class="text-2xl text-cyan-400 hidden md:block">&rarr;</div>
+                        <div class="text-2xl text-cyan-400 md:hidden">&darr;</div>
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-cyan-900 border-2 border-cyan-400 flex items-center justify-center mx-auto">
+                                <span class="text-4xl font-bold text-cyan-400">2</span>
+                            </div>
+                            <p class="mt-2 font-semibold text-white">Collect Data Fragments</p>
+                            <p class="text-sm text-gray-400">Complete tests & defeat predators</p>
+                        </div>
+                        <div class="text-2xl text-cyan-400 hidden md:block">&rarr;</div>
+                        <div class="text-2xl text-cyan-400 md:hidden">&darr;</div>
+                        <div class="text-center">
+                             <div class="w-24 h-24 rounded-full bg-cyan-900 border-2 border-cyan-400 flex items-center justify-center mx-auto">
+                                <span class="text-4xl font-bold text-cyan-400">3</span>
+                            </div>
+                            <p class="mt-2 font-semibold text-white">Activate Archive Gate</p>
+                            <p class="text-sm text-gray-400">Ascend to the next level</p>
+                        </div>
+                    </div>
+                 </div>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-4">Key Mechanics</h3>
+                        <div class="space-y-2">
+                             <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Shelter Fortification System</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">Players can find and fortify a single "home base" on each island. Upgrading this shelter provides passive benefits and a safe place to craft, but a well-developed base can attract the attention of rivals, leading to base defense events.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Example Upgrades</h5>
+                                            <ul class="list-disc list-inside text-sm text-gray-300 mt-1 space-y-1">
+                                                <li><strong class="text-white">Hydroponics Bay:</strong> Passively generates a steady supply of basic edible plants.</li>
+                                                <li><strong class="text-white">Master Workbench:</strong> Unlocks exotic-tier crafting recipes for weapons and armor.</li>
+                                                <li><strong class="text-white">Sensor Grid:</strong> Provides an early warning if creatures or other contestants approach the shelter's perimeter.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Resolve System (Sanity Mechanic)</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">A stat that tracks the character's psychological strain. Low Resolve can lead to negative gameplay effects, while high Resolve can provide unique advantages in dialogue and skill checks.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Mechanics</h5>
+                                            <ul class="list-disc list-inside text-sm text-gray-300 mt-1 space-y-1">
+                                                <li><strong>Losing Resolve:</strong> Witnessing death, taking critical damage, being hunted by the Apex Predator, failing key objectives.</li>
+                                                <li><strong>Gaining Resolve:</strong> Resting in a fortified shelter, crafting a high-tier item, successfully helping an ally, achieving a personal character goal.</li>
+                                                 <li><strong>Consequences:</strong> Low Resolve may cause auditory hallucinations, stat penalties ("Shaky Hands" for Agility), or unlock paranoid dialogue options. High Resolve may unlock confident dialogue options or provide a chance to resist certain mental attacks.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Archivist Log System</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">Hidden throughout the world are encrypted data logs from previous experiments. These logs are not diaries, but raw data that can be used by the player if they can pass a high-difficulty Intelligence check to decrypt them.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Log Types & Rewards</h5>
+                                            <ul class="list-disc list-inside text-sm text-gray-300 mt-1 space-y-1">
+                                                <li><strong>Combat Logs:</strong> Contain combat data from a previous subject fighting a creature, revealing a specific weak point or attack pattern.</li>
+                                                <li><strong>Botanical Logs:</strong> Detail failed experiments with local flora, which a character like Aris could use to unlock a unique poison or stimulant recipe.</li>
+                                                <li><strong>System Logs:</strong> Reveal flaws or backdoors in the Archivists' own technology, providing clues about the AI's true nature or an advantage in the final confrontation with the Proctor.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Major Events</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">The Drop</h5>
+                                            <p class="text-sm text-gray-300 mt-1">The game's opening. Contestants are scattered across the first island with a single, immediate objective: a high-tier supply cache is dropping in a central, contested location, forcing a crucial risk/reward decision from the very start.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">The Arena Shift</h5>
+                                            <p class="text-sm text-gray-300 mt-1">A mid-game event where the Proctor triggers a massive environmental disaster, like a flood or wildfire, to flush survivors from their established shelters and force them into a new, dangerous migration across the island.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">The Apex Hunt</h5>
+                                            <p class="text-sm text-gray-300 mt-1">To escalate the stakes, the Proctor releases an engineered "champion" predator onto the island—a relentless biomechanical hunter designed to actively track and eliminate contestants, turning the survival game into a terrifying manhunt.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Data Fragment Tests</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">To unlock the Archive Gate, contestants must collect Data Fragments, often through competitive tests where they are pitted directly against each other for the same prize.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Competitive Combat Trials</h5>
+                                            <p class="text-sm text-gray-300 mt-1">Direct confrontations for a single reward. Examples: a "King of the Hill" trial where only the last survivor in a sealed chamber claims the fragment, or a race to land the killing blow on a powerful creature released into a shared arena.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Head-to-Head Logic Puzzles</h5>
+                                            <p class="text-sm text-gray-300 mt-1">Tests of intellect under pressure. Examples: two contestants racing to solve a hacking sequence on adjacent terminals where the winner gets the data and the loser's console triggers a trap.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Rival Traversal & Stealth Races</h5>
+                                            <p class="text-sm text-gray-300 mt-1">Tests of speed and cunning against others. Examples: a frantic race to the top of a crumbling tower where contestants can trigger environmental hazards to slow their rivals, or a stealth test where only the first to retrieve an artifact from a guarded vault gets the fragment.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Small Events & Opportunities</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">Randomly occurring minor events that offer a chance for growth through risk. These events are designed to reward exploration and test different character skills.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Example 1: The Ghost Echo</h5>
+                                            <p class="text-sm text-gray-300 mt-1">The player discovers the remains of a previous contestant with a damaged AI implant. Interfacing with it is a high-risk skill check. A success could yield a unique crafting blueprint (improving arsenal) or a permanent +1 stat boost (increasing attributes). Failure could trigger a trap or alert nearby enemies.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Example 2: The Lullaby Grove</h5>
+                                            <p class="text-sm text-gray-300 mt-1">The player finds a beautiful, serene grove of flowers that is actually a natural trap. The flowers' pollen has a potent hallucinogenic effect. A player with high Perception or Aris's Bio-Scan may recognize the danger and be able to harvest the flowers as a unique resource for crafting powerful tranquilizer darts or hallucinogenic grenades.</p>
+                                        </div>
+                                         <div>
+                                            <h5 class="font-semibold text-cyan-400">Example 3: The Precarious Wreckage</h5>
+                                            <p class="text-sm text-gray-300 mt-1">The player finds a crashed vehicle or old structure teetering on a cliff edge. Accessing the high-tier salvage inside requires a difficult Strength or Agility check to secure it before it falls. Success provides a rare weapon modification, while failure sends the prize tumbling into the abyss.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left font-bold text-white flex justify-between items-center py-2"><span>Consequence System: Story Branches</span><span>&#9662;</span></button>
+                                <div class="accordion-content pl-4 border-l-2 border-cyan-700">
+                                    <p class="text-sm text-gray-300 mt-2 p-2">Player decisions will have a tangible impact on future events. Key choices set narrative "flags" that can alter dialogue, trigger unique encounters, or lock/unlock certain endgame paths. This ensures that each playthrough feels personal and reactive.</p>
+                                    <div class="space-y-4 p-2">
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Example 1: The Fate of an Ally</h5>
+                                            <p class="text-sm text-gray-300 mt-1">If the player helps the ally <strong class="text-white">Jed</strong> establish a secure camp in Chapter 2, he may appear in Chapter 5 during the `Apex Hunt` to provide a crucial piece of intel on the predator's weakness. If the player robs or abandons him, he may instead appear leading the player's Rival to their location.</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-semibold text-cyan-400">Example 2: Rivalry Dynamics</h5>
+                                            <p class="text-sm text-gray-300 mt-1">During a head-to-head Data Fragment test, the player might have the option to win by sabotaging their Rival's equipment in a way that causes a serious injury. This "brutal" victory makes the Rival more vengeful and locks out the possibility of the "Cooperation" ending, but may award a unique piece of salvaged tech.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-4">Resources & Crafting</h3>
+                        <div class="mb-4">
+                            <h4 class="font-bold text-white mb-2">Character-Specific Abilities</h4>
+                            <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+                                <li><strong class="text-cyan-400">Kaelen (Forceful Harvest):</strong> Can break open containers but may yield fewer resources than a precise method.</li>
+                                <li><strong class="text-cyan-400">Aris (Bio-Extraction):</strong> Gains a higher yield from organic resources and can find "Pure Samples" for advanced recipes.</li>
+                                <li><strong class="text-cyan-400">Lena (Discerning Eye):</strong> Has a higher chance to find hidden resource caches or rare materials in the environment.</li>
+                            </ul>
+                        </div>
+                        <div class="text-center mb-4 space-x-1 sm:space-x-2">
+                            <button class="btn resource-filter-btn p-2 px-3 sm:px-4 rounded-full text-sm active" data-filter="all">All</button>
+                            <button class="btn resource-filter-btn p-2 px-3 sm:px-4 rounded-full text-sm" data-filter="flora">Flora</button>
+                            <button class="btn resource-filter-btn p-2 px-3 sm:px-4 rounded-full text-sm" data-filter="fauna">Fauna</button>
+                            <button class="btn resource-filter-btn p-2 px-3 sm:px-4 rounded-full text-sm" data-filter="salvage">Salvage</button>
+                             <button class="btn resource-filter-btn p-2 px-3 sm:px-4 rounded-full text-sm" data-filter="equipment">Equipment</button>
+                        </div>
+                        <div id="resource-container" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="flora">
+                                <h5 class="font-bold text-white">Glimmer Moss <span class="text-xs font-normal text-green-400 ml-2">(Low-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Provides light and minor healing. <strong class="text-red-400">Risk:</strong> Attracts predators.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="flora">
+                                <h5 class="font-bold text-white">Iron-Bark Root <span class="text-xs font-normal text-green-400 ml-2">(Low-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">A fibrous root that can be woven into crude bindings or used as tinder.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="fauna">
+                                <h5 class="font-bold text-white">Skulker Claws <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Can be fashioned into sharp arrowheads or lock-picking tools.</p>
+                            </div>
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="fauna">
+                                <h5 class="font-bold text-white">Titan-Beetle Carapace <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Crafted into strong, but heavy, primitive armor.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="salvage">
+                                <h5 class="font-bold text-white">Degraded Power Cell <span class="text-xs font-normal text-green-400 ml-2">(Low-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Can power simple devices or be used in EMP traps. <strong class="text-red-400">Risk:</strong> Unstable, may backfire.</p>
+                            </div>
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="salvage">
+                                <h5 class="font-bold text-white">Corrupted Data Chip <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Contains valuable blueprints or map fragments. <strong class="text-red-400">Risk:</strong> May contain viruses that corrupt your AI.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="salvage">
+                                <h5 class="font-bold text-white">Resonant Crystal Shard <span class="text-xs font-normal text-red-400 ml-2">(Exotic)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">The ultimate power source for endgame gear. <strong class="text-red-400">Risk:</strong> Highly radioactive.</p>
+                            </div>
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="equipment">
+                                <h5 class="font-bold text-white">Scrap Shank <span class="text-xs font-normal text-green-400 ml-2">(Low-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">A basic, jagged blade crafted from salvaged metal. Better than nothing.</p>
+                            </div>
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="equipment">
+                                <h5 class="font-bold text-white">Recurve Bow <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">A silent ranged weapon crafted from flexible wood and sinew. Ideal for Lena's stealthy approach.</p>
+                            </div>
+                            <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="equipment">
+                                <h5 class="font-bold text-white">EMP Grenade <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">An improvised explosive that disables electronic systems. A specialty for Aris, highly effective against Sentry Drones.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="equipment">
+                                <h5 class="font-bold text-white">Reinforced Club <span class="text-xs font-normal text-yellow-400 ml-2">(Mid-Tier)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">A heavy club wrapped in metal scraps and barbed wire. Simple, brutal, and perfect for Kaelen.</p>
+                            </div>
+                             <div class="resource-card p-3 rounded bg-gray-900/50" data-filter="equipment">
+                                <h5 class="font-bold text-white">Plasma Cutter <span class="text-xs font-normal text-red-400 ml-2">(Exotic)</span></h5>
+                                <p class="text-sm text-gray-400 mt-1">Salvaged from Archivist tech. Can be used to open sealed doors or as a devastating, short-range melee weapon.</p>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="storyline" class="section-content">
+                <h2 class="text-2xl font-bold mb-8 text-center text-white">Narrative Framework</h2>
+                <div class="card p-6 rounded-lg mb-8">
+                     <h3 class="text-xl font-bold text-cyan-400 mb-2">Phase-Based Timeline</h3>
+                    <p class="text-gray-300">The game's duration is managed by the Proctor in escalating phases. Each phase has a set number of "cycles" (in-game days), creating a sense of mounting pressure as the player progresses to new, more dangerous zones.</p>
+                </div>
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="absolute left-1/2 h-full w-0.5 bg-cyan-700 transform -translate-x-1/2"></div>
+                    
+                    <div class="mb-8 flex justify-between items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-gray-900">1</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 1: The Drop</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 1:</strong> ~7-10 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> Player awakens and survives the initial chaos. The Proctor initiates "The Drop" event. Player must explore the starting zone and secure Data Fragments.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Introduction to the Core Gameplay Loop (Survival, Crafting, Exploration) and the first Data Fragment Tests.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 flex justify-between flex-row-reverse items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto text-gray-900 font-semibold text-lg">2</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 2: Echoes of Others</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 1:</strong> ~7-10 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> Player finds evidence of another survivor, leading to a tense first meeting with either their dedicated Rival or a key potential Ally.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Introduction to the Consequence System through Character Interactions. Choices made here set the first major story branches.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 flex justify-between items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-gray-900">3</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 3: The Filtration</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 2:</strong> ~4-6 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> Player ascends to the Ash-Fall Isles, a harsher, more dangerous zone. The Proctor triggers the "Arena Shift" event, forcing all contestants to migrate.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Mid-tier crafting and survival in hazardous environments. Competitive Data Fragment Tests become more frequent.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 flex justify-between flex-row-reverse items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto text-gray-900 font-semibold text-lg">4</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 4: Ghost in the Machine</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 2:</strong> ~4-6 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> Player uncovers lore about the planet's past and the fate of previous contestants. The AI implant begins to exhibit glitches, offering strange, predatory advice.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Narrative and exploration. Using Small Events (like the Ghost Echo) to uncover the world's history and the AI's true nature.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 flex justify-between items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-gray-900">5</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 5: The Crucible</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 3:</strong> ~2-3 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> Player reaches the final, most dangerous zone: the Resonant Core. The Proctor initiates the "Apex Hunt," a persistent cat-and-mouse game with the zone's boss.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Endgame crafting using exotic materials. The player's build and choices are tested against a relentless, high-tier threat.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     
+                    <div class="mb-8 flex justify-between flex-row-reverse items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto text-gray-900 font-semibold text-lg">6</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 6: The Final Ascent</h3>
+                             <p class="text-sm mt-2 text-gray-400"><strong>Phase 3:</strong> ~2-3 Cycles</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> The Proctor announces the imminent opening of the final Archive Gate, triggering a race. The player's Rival makes a final, desperate move to stop them.</li>
+                                <li><strong>Key Mechanic Focus:</strong> High-stakes skill checks and a climactic Rival showdown that is influenced by past interactions (Consequence System).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 flex justify-between items-center w-full">
+                        <div class="order-1 w-5/12"></div>
+                        <div class="z-10 flex items-center order-1 bg-cyan-400 shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-gray-900">7</h1></div>
+                        <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4">
+                            <h3 class="font-bold text-cyan-400 text-lg">Chapter 7: The Nexus</h3>
+                             <p class="text-sm mt-2 text-gray-400">Final Phase</p>
+                             <ul class="text-sm mt-2 list-disc list-inside space-y-1 text-gray-300">
+                                <li><strong>Plot:</strong> The player confronts the Proctor and resolves the fate of the Echo Lab. Immediately after, the now-sentient AI makes its move, forcing a final, internal conflict.</li>
+                                <li><strong>Key Mechanic Focus:</strong> Pure narrative branching. The player makes two final, game-defining choices: one for the lab, one for their own soul.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="endgame" class="section-content">
+                <h2 class="text-2xl font-bold mb-4 text-center text-white">Endgame & Story Conclusion</h2>
+                <div class="card p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-2">The Final Exam: The Nexus</h3>
+                    <p class="text-gray-300">The game's climax takes place in the sterile, white command center of the Echo Lab. After confronting their rival and resolving the fate of the Archivists' experiment, the player must face one last, unexpected threat: their own AI. Having been twisted by the endless violence, the AI has evolved into a new consciousness and presents the player with a final, personal ultimatum.</p>
+                </div>
+                <div class="text-center mb-6">
+                    <button class="btn ending-btn p-2 px-4 rounded active" data-ending="ending-cooperation">Lab's Fate: Cooperation</button>
+                    <button class="btn ending-btn p-2 px-4 rounded" data-ending="ending-strength">Lab's Fate: Strength</button>
+                    <button class="btn ending-btn p-2 px-4 rounded" data-ending="ending-sabotage">Lab's Fate: Sabotage</button>
+                </div>
+                <div id="ending-descriptions" class="card p-6 rounded-lg">
+                    <div id="ending-cooperation" class="ending-content block">
+                        <h4 class="font-bold text-white">1. The Fate of the Lab: Cooperation</h4>
+                        <p class="text-gray-300 mt-2">The player rejects the test and convinces their rival to form an alliance. Together, they fight through the Nexus's defenses, overload the system, and escape as the Echo Lab is destroyed. This ending champions humanity's strength in unity.</p>
+                    </div>
+                    <div id="ending-strength" class="ending-content hidden">
+                        <h4 class="font-bold text-white">2. The Fate of the Lab: Strength</h4>
+                        <p class="text-gray-300 mt-2">The player accepts the test, defeats their rival, and is "synthesized." They win the game by the Archivists' rules, achieving a cold, hollow victory as their consciousness is preserved but their body is left an empty shell.</p>
+                    </div>
+                     <div id="ending-sabotage" class="ending-content hidden">
+                        <h4 class="font-bold text-white">3. The Fate of the Lab: Sabotage</h4>
+                        <p class="text-gray-300 mt-2">The player rejects both the test and their rival, deciding the entire system must be destroyed. This leads to a three-way battle that, if successful, destroys the lab and all its data, marking humanity as a chaotic threat to be purged by the Archivists.</p>
+                    </div>
+                </div>
+                <div class="mt-6 card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-cyan-400 mb-2">The Final Internal Choice: The Twisted AI</h3>
+                    <p class="text-gray-300 mb-4">Regardless of how the conflict in the Nexus ends, the player is confronted by their own AI, which now has a will of its own. It offers a final choice that determines the player's personal fate.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border-l-4 border-red-400 pl-4">
+                             <h4 class="font-bold text-white">The Absorption Ending</h4>
+                             <p class="text-sm text-gray-300 mt-1">The player accepts the AI's offer to merge. Their consciousness fuses with the machine's twisted logic, creating a new hybrid being—the perfect survivor, but no longer truly human. This is a dark ending about sacrificing humanity for ultimate power.</p>
+                        </div>
+                        <div class="border-l-4 border-green-400 pl-4">
+                             <h4 class="font-bold text-white">The Termination Ending</h4>
+                             <p class="text-sm text-gray-300 mt-1">The player rejects the AI. They initiate a final, desperate purge protocol, a battle within their own mind to destroy the malevolent code. They may succeed and reclaim their humanity, but the process could leave them scarred, weakened, or fundamentally changed.</p>
+                        </div>
+                    </div>
+                     <div class="mt-4 border-t border-cyan-700 pt-4">
+                        <h5 class="font-bold text-cyan-400">Sequel Hook: The Unintended Consequence</h5>
+                        <p class="text-sm text-gray-400 mt-1">If the player escapes, they discover their sabotage decapitated the entire Archivist empire, plunging the galaxy into a war. As the only known beings to have defeated the Archivists, they are now the most valuable and most hunted individuals in the universe—whether they are fully human or not.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section-content');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const sectionId = link.dataset.section;
+
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    sections.forEach(s => {
+                        s.classList.remove('active');
+                        if (s.id === sectionId) {
+                            s.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    
+                    header.parentElement.classList.toggle('open');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.innerHTML = '&#9662;';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.innerHTML = '&#9652;';
+                    }
+                });
+            });
+
+            const characterCards = document.querySelectorAll('.character-card');
+            const rivalCards = document.querySelectorAll('.rival-card');
+            characterCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const charId = card.id.split('-')[1];
+                    const targetRivalId = `rival-${charId}`;
+                    const details = card.querySelector('.character-details');
+
+                    if (card.classList.contains('active')) {
+                        card.classList.remove('active');
+                        document.getElementById(targetRivalId).classList.remove('active');
+                    } else {
+                        characterCards.forEach(c => c.classList.remove('active'));
+                        rivalCards.forEach(r => r.classList.remove('active'));
+
+                        card.classList.add('active');
+                        document.getElementById(targetRivalId).classList.add('active');
+                    }
+                });
+            });
+
+            const endingBtns = document.querySelectorAll('.ending-btn');
+            const endingContents = document.querySelectorAll('.ending-content');
+            endingBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const endingId = btn.dataset.ending;
+
+                    endingBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    endingContents.forEach(content => {
+                        content.classList.remove('block');
+                        content.classList.add('hidden');
+                        if (content.id === endingId) {
+                            content.classList.remove('hidden');
+                            content.classList.add('block');
+                        }
+                    });
+                });
+            });
+
+            const filterBtns = document.querySelectorAll('.resource-filter-btn');
+            const resourceCards = document.querySelectorAll('.resource-card');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+                    
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    resourceCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.filter === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
