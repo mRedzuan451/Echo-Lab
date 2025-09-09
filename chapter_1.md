@@ -267,12 +267,30 @@
 
 ### **SCENE 11: THE LAIR**
 
-* **LOCATION:** A heavily defended nest.
-* **CHARACTERS:** The Player, Alpha Skulker Matriarch.
-* **SUMMARY:** The player finds the third Data Fragment in the nest of the zone's Apex Predator.
-* **PLAYER CHOICE:** Direct assault, environmental sabotage, or stealth infiltration.
-* **OUTCOME:** Player acquires the **third and final Data Fragment**. Leads to Scene 9.
+* **LOCATION:** A large, cavernous subway nexus. Several tunnels converge here, and a derelict subway train rests in the center. The shimmering, inactive Archive Gate stands on the main platform, guarded by the Alpha Skulker Matriarch and two smaller Skulkers.
+* **CHARACTERS:** The Player, The AI, Alpha Skulker Matriarch, 2x Skulkers.
+* **SUMMARY:** With all three fragments, the AI triangulates the Gate's location. The player finds it, but it's heavily guarded by the zone's Apex Predator. The Matriarch is larger and bears faint scars that glow with a green energy, distinguishing it from the others. This is the final boss fight of the chapter. The AI warns, *"Apex Predator detected. Threat level: Critical. Direct confrontation is not advised."*
+* **PLAYER CHOICE (Character-Dependent):**
 
+    * **If Kaelen:**
+        * **1. [DIRECT ASSAULT - Strength Check]:** "Time to earn my keep."
+            * **SUCCESS:** With a battle cry, Kaelen charges. The fight is brutal and exhausting, but his superior strength and endurance allow him to overpower the creatures. He takes down the smaller Skulkers first before engaging in a vicious duel with the Matriarch, finally bringing it down. He is wounded but victorious.
+            * **FAILURE:** The Matriarch's screech stuns Kaelen at a critical moment. The pack overwhelms him, and he is severely wounded, forced to retreat and hide in the derelict train car. He must wait for the creatures to disperse before he can try a different approach, now with a heavy injury debuff.
+
+    * **If Aris:**
+        * **1. [ENVIRONMENTAL SABOTAGE - Intelligence Check]:** "The power grid here is ancient, but it still has some kick."
+            * **SUCCESS:** Aris spots a damaged high-voltage transformer above the platform. Using his multi-tool and a salvaged Power Cell, he overloads the system. A massive electrical surge arcs down, either killing the Skulkers outright or stunning them long enough for Aris to grab the final fragment and activate the Gate.
+            * **FAILURE:** The overload is unstable. It causes a minor explosion that attracts more Skulkers to the area, making the situation even more dangerous and forcing Aris to flee or attempt a much harder fight.
+
+    * **If Lena:**
+        * **1. [STEALTH INFILTRATION - Agility Check]:** "They can't kill what they can't see."
+            * **SUCCESS:** Lena notices a network of pipes and ventilation shafts running along the ceiling. Using her agility, she navigates this treacherous path, moving silently above the creatures. She can either drop down, grab the fragment, and climb back out before they react, or find a spot to cause a diversion (like dropping a piece of metal far down a tunnel) to draw the pack away from the Gate.
+            * **FAILURE:** A pipe creaks under her weight, alerting the Matriarch. The creatures immediately begin trying to climb and jump towards her position, forcing her into a desperate fight in a precarious location or a hasty retreat.
+
+* **OUTCOME:**
+    * On **SUCCESS**, the player defeats or bypasses the Matriarch and is clear to approach the Archive Gate.
+    * On **FAILURE**, the player is forced to retreat and must reconsider their options, now likely injured or with more enemies to deal with.
+* **Leads to Scene 12.**
 ---
 
 ### **SCENE 12: THE GATE**
