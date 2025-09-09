@@ -265,4 +265,4 @@
 * **CHARACTERS:** The Player, The AI.
 * **SUMMARY:** With all fragments, the AI reveals the location of the Archive Gate. The player activates it.
 * **PLAYER CHOICE:** Step through the Gate.
-* **OUTCOME:** Chapter 1 concludes as the player is transported to the next zone.
+* **OUTCOME:** The player is transported to the next zone, the Ash-Fall Isles. Chapter 1 concludes successfully.
