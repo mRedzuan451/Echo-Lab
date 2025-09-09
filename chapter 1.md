@@ -125,7 +125,39 @@
 
 ---
 
-### **SCENE 7: THE BARGAIN**
+### **SCENE 7: THE FRAGMENT**
+
+* **LOCATION:** Same as the completed test (Rooftops or Subway).
+* **CHARACTERS:** The Player, The AI.
+* **SUMMARY:** The player retrieves the Data Fragment. It's a small, crystalline object that hums with a faint energy. The AI's voice chimes in their head as they inspect it.
+* **PLAYER CHOICE (Dialogue choices based on character):**
+
+    * **If Kaelen:**
+        * The AI states: *"First Data Fragment acquired. Two remaining."*
+        * **1. "Cut the chatter. Where's the next one?"**
+            * *AI: "Triangulating... Energy signatures are inconsistent. Further data is required to pinpoint the next fragment's exact location."*
+        * **2. "What is this thing, really?"**
+            * *AI: "A data key. It contains positioning algorithms. Useless individually, but invaluable when combined."*
+
+    * **If Aris:**
+        * The AI states: *"First Data Fragment acquired. Analysis suggests it is a complex bio-organic data storage medium."*
+        * **1. "Fascinating. Is the crystalline structure naturally occurring?"**
+            * *AI: "Negative. It is a manufactured lattice, grown around a quantum processing core. The technology is far beyond your civilization's understanding."*
+        * **2. "So these 'fragments' are the keys to progression?"**
+            * *AI: "A logical deduction. Mastery of the environment is the metric for success. Acquiring all fragments is the primary indicator of mastery for this phase."*
+
+    * **If Lena:**
+        * The AI states: *"First Data Fragment acquired. Be advised, its energy signature may be detectable by other subjects."*
+        * **1. "Can I mask the signature?"**
+            * *AI: "Possible, with the correct dampening materials. However, such materials are not currently in your possession."*
+        * **2. "What aren't you telling me about these things?"**
+            * *AI: "My function is to provide necessary data for the experiment. The purpose of the experiment itself is data available only to the Proctor."*
+
+* **OUTCOME:** The player now understands their primary goal is to find two more fragments. The AI directs them towards a general energy signature for the next fragment. **Leads to Scene 8.**
+
+---
+
+### **SCENE 8: THE BARGAIN**
 
 * **LOCATION:** A dilapidated hab-block, lit by a single emergency light. Rain streaks down a grimy window.
 * **CHARACTERS:** The Player, Jedediah "Jed".
@@ -178,7 +210,7 @@
 
 ---
 
-### **SCENE 8: THE LAIR**
+### **SCENE 9: THE LAIR**
 
 * **LOCATION:** A heavily defended nest.
 * **CHARACTERS:** The Player, Alpha Skulker Matriarch.
@@ -188,7 +220,7 @@
 
 ---
 
-### **SCENE 9: THE GATE**
+### **SCENE 10: THE GATE**
 
 * **LOCATION:** A hidden, ancient-looking part of the ruins.
 * **CHARACTERS:** The Player, The AI.
