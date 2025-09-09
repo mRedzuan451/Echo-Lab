@@ -98,11 +98,54 @@
 
 ### **SCENE 7: THE BARGAIN**
 
-* **LOCATION:** A dilapidated hab-block or a makeshift camp.
-* **CHARACTERS:** The Player, a Supporting Character.
-* **SUMMARY:** The player finds a non-hostile contestant (Jed) who has the second Data Fragment but needs help.
-* **PLAYER CHOICE:** Help, threaten, or attack Jed.
-* **OUTCOME:** Player acquires the **second Data Fragment** and sets a "Consequence Flag" for future interactions. Leads to Scene 8.
+* **LOCATION:** A dilapidated hab-block, lit by a single emergency light. Rain streaks down a grimy window.
+* **CHARACTERS:** The Player, Jedediah "Jed".
+* **SUMMARY:** The AI directs the player toward a faint energy signature. Inside a small, ruined apartment, they find Jed. He's an older, weathered man, slumped against a wall with a makeshift splint on his leg. He has a Data Fragment clutched in his hand, but his canteen is empty and lying on its side. He looks up at the player, not with fear, but with weary resignation.
+
+* **Jed's Opening Dialogue:** "Well, look what the cat dragged in. Don't worry, I'm not looking for a fight. Leg's busted. All I need is a canteen of clean water. This place is picked clean. You bring me some water, and this shiny little doodad is all yours. I can't get to the Gate like this anyway."
+
+* **PLAYER CHOICE (Character-Dependent):**
+
+    * **If Kaelen:**
+        * **1. [HELP - Endurance Check]:** "Stay put. I'll find you some water."
+            * **Outcome:** Kaelen finds a nearby water source but must fend off a few Skulkers attracted to the area. He returns, battered but successful. Jed gives him the fragment and a nod of respect.
+            * **Consequence Flag:** `Jed_Helped` set. Jed is now a potential ally.
+
+        * **2. [INTIMIDATE - Strength Check]:** "The fragment. Now. Or we see how that other leg holds up."
+            * **Outcome:** Kaelen's threat is palpable. Jed, seeing no other option, tosses him the fragment with a look of pure contempt. "You're just like the others," he mutters.
+            * **Consequence Flag:** `Jed_Hostile` set. Jed will remember this and may actively work against the player later.
+
+        * **3. [ATTACK]:** (Say nothing and attack him.)
+            * **Outcome:** Jed is in no condition to fight back. Kaelen takes the fragment from his body. The AI's voice is cold and flat in his mind: *"Subject neutralized. A logical, if predictable, outcome."*
+            * **Consequence Flag:** `Jed_Dead` set.
+
+    * **If Aris:**
+        * **1. [HELP - Intelligence Check]:** "Your splint is inadequate. I can craft a proper medical brace, and I have water purification tablets. Let's make a deal."
+            * **Outcome:** Aris uses his technical skill to craft a high-quality brace for Jed's leg. In return, Jed gratefully hands over the fragment and a piece of useful lore about the local flora.
+            * **Consequence Flag:** `Jed_Helped` set. Jed is now a potential ally with high respect for Aris's skills.
+
+        * **2. [DECEIVE - Intelligence Check]:** "I have a powerful healing salve. Let me apply it. But I'll need to hold the fragment while I work, as a show of good faith."
+            * **Outcome:** Aris applies a useless poultice of crushed leaves. While Jed is distracted by the placebo, Aris pockets the fragment and slips away. Jed's curses follow him down the corridor.
+            * **Consequence Flag:** `Jed_Hostile` set. Jed will remember being outsmarted and will be wary of the player's tricks in the future.
+
+        * **3. [ATTACK]:** (Use a crafted poison or trap.)
+            * **Outcome:** Aris uses his knowledge to neutralize Jed without a direct fight. He retrieves the fragment. The AI notes, *"Subject neutralized. An efficient application of available resources."*
+            * **Consequence Flag:** `Jed_Dead` set.
+
+    * **If Lena:**
+        * **1. [HELP - Perception Check]:** "I'll get your water. But I'm scouting the area first."
+            * **Outcome:** Lena's sharp eyes spot a hidden rainwater collector on a nearby balcony that others would have missed. She retrieves the water safely and quickly. Jed is impressed by her efficiency and gives her the fragment, plus a tip about a hidden route.
+            * **Consequence Flag:** `Jed_Helped` set. Jed is now a potential ally who sees Lena as a reliable survivor.
+
+        * **2. [STEAL - Agility Check]:** "Look out!" (Create a diversion and attempt to snatch the fragment).
+            * **Outcome:** Lena points to the window, yelling a warning. As Jed's head whips around, she uses her speed to snatch the fragment from his hand and dart out of the room before he can react.
+            * **Consequence Flag:** `Jed_Hostile` set. Jed will remember Lena's speed and ruthlessness.
+
+        * **3. [ATTACK]:** (Use a stealth attack.)
+            * **Outcome:** Lena slips into the shadows and neutralizes Jed before he knows what's happening. She takes the fragment. The AI comments, *"Subject neutralized. Minimal energy expenditure. Optimal."*
+            * **Consequence Flag:** `Jed_Dead` set.
+
+* **OUTCOME:** The player acquires the **second Data Fragment** and sets a critical story flag that will shape the narrative of Chapter 2 and beyond. Leads to Scene 7.
 
 ---
 
