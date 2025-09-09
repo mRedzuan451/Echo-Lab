@@ -88,11 +88,40 @@
 
 ### **SCENE 6: THE FIRST TEST**
 
-* **LOCATION:** Deeper within the chosen path (rooftops or subway).
+* **SUMMARY:** After dealing with (or avoiding) the supply drop, the player proceeds down their chosen path. They soon encounter their first mandatory "Test Chamber," a controlled environment where the AI informs them a Data Fragment can be earned. The nature of the test is determined by the path chosen.
+
+---
+
+### **PATH A - SCENE 6A: THE ROOFTOPS TEST (TRAVERSAL)**
+
+* **LOCATION:** The base of a massive, dilapidated communications tower clinging to the side of a skyscraper.
 * **CHARACTERS:** The Player, The AI.
-* **SUMMARY:** The player discovers their first "Test Chamber" and must complete it to earn a Data Fragment.
-* **PLAYER CHOICE:** The test is path-dependent (Traversal or Combat/Stealth).
-* **OUTCOME:** Player acquires the **first Data Fragment**. Leads to Scene 7.
+* **SUMMARY:** The player follows the treacherous rooftop path to the base of a huge comms tower. The AI's voice chimes in: *"Archivist Test Chamber detected. Objective: Retrieve Data Fragment from the tower's broadcast antenna. Warning: Structural integrity is compromised. A time limit is advised."* The player must make a difficult and dangerous climb.
+* **PLAYER CHOICE:**
+    1.  **[Begin the Climb - Agility Check]:** The player starts their ascent, navigating broken ladders, exposed rebar, and gusting winds.
+* **OUTCOME:**
+    * **SUCCESS (High Agility):** The character moves with grace and speed, easily navigating the hazards. Lena would excel here, feeling right at home. They retrieve the **first Data Fragment** from the antenna array at the top with time to spare.
+    * **PARTIAL SUCCESS (Moderate Agility/Strength):** The character struggles but makes it. Kaelen might use his raw strength to power through a difficult section, while Aris might struggle significantly. They retrieve the fragment but are exhausted, possibly suffering a temporary "Fatigued" debuff to their physical stats.
+    * **FAILURE (Low Agility):** A handhold crumbles or a gust of wind throws them off balance. They fall a short distance, taking damage, and fail to reach the top. The AI's voice notes, *"Subject has failed the test. Data Fragment unretrievable."* The player must now find an alternative, more difficult path to acquire their first fragment.
+    * Regardless of the outcome, the player proceeds to **Scene 7**.
+
+---
+
+### **PATH B - SCENE 6B: THE SUBWAY TEST (COMBAT/STEALTH)**
+
+* **LOCATION:** A flooded subway station platform, lit by the green glow of moss.
+* **CHARACTERS:** The Player, The AI, a Slick-Skinned Skulker.
+* **SUMMARY:** The player wades through the dark tunnels to a station platform. In the center is a functioning Archivist terminal, humming with power. The AI's voice chimes in: *"Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."* A single, powerful Slick-Skinned Skulker is guarding the terminal, its head twitching at every sound.
+* **PLAYER CHOICE:**
+    1.  **[Engage the Skulker - Strength Check]:** "Time to take out the trash."
+    2.  **[Sneak to the Terminal - Agility Check]:** "I can get past it without a sound."
+    3.  **[Analyze the Environment - Intelligence Check]:** "There has to be a smarter way."
+* **OUTCOME:**
+    * **SUCCESS (Strength):** The character, likely Kaelen, engages the creature in a brutal fight and defeats it, clearing the way to the terminal.
+    * **SUCCESS (Agility):** The character, likely Lena, uses the shadows and the sound of dripping water to slip past the creature unnoticed and access the terminal.
+    * **SUCCESS (Intelligence):** The character, likely Aris, notices a sparking power conduit hanging over a puddle near the Skulker. A well-aimed piece of scrap metal can cause it to fall, electrocuting and neutralizing the creature from a safe distance.
+    * **FAILURE:** A failed check results in a vicious fight. The player takes damage and is forced to retreat, failing the test. The AI notes, *"Subject has failed the test. Data Fragment unretrievable."* The player must now find an alternative, more difficult path.
+    * On success, the player downloads the **first Data Fragment**. Regardless of the outcome, they proceed to **Scene 7**.
 
 ---
 
