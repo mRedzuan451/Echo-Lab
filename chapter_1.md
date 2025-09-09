@@ -137,15 +137,15 @@
 * **CHARACTERS:** The Player, The AI, a Slick-Skinned Skulker.
 * **SUMMARY:** The player wades through the dark tunnels to a station platform. In the center is a functioning Archivist terminal, humming with power. The AI's voice chimes in: *"Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."* A single, powerful Slick-Skinned Skulker is guarding the terminal, its head twitching at every sound.
 * **PLAYER CHOICE:**
-    1.  **[Engage the Skulker - Strength Check]:** "Time to take out the trash."
-    2.  **[Sneak to the Terminal - Agility Check]:** "I can get past it without a sound."
-    3.  **[Analyze the Environment - Intelligence Check]:** "There has to be a smarter way."
+    * **1. {If player has Kinetic Field Emitter} [Use the Emitter's concussive blast.]**
+        * **Outcome:** The player raises the Emitter, charges it for a moment, and unleashes a silent, powerful wave of kinetic energy. The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated, but not necessarily dead. The path to the terminal is clear. This is a "free" success, rewarding the player for their victory in Scene 4A.
+    * **2. [Engage the Skulker - Strength Check]:** "Time to take out the trash."
+    * **3. [Sneak to the Terminal - Agility Check]:** "I can get past it without a sound."
+    * **4. [Analyze the Environment - Intelligence Check]:** "There has to be a smarter way."
 * **OUTCOME:**
-    * **SUCCESS (Strength):** The character, likely Kaelen, engages the creature in a brutal fight and defeats it, clearing the way to the terminal.
-    * **SUCCESS (Agility):** The character, likely Lena, uses the shadows and the sound of dripping water to slip past the creature unnoticed and access the terminal.
-    * **SUCCESS (Intelligence):** The character, likely Aris, notices a sparking power conduit hanging over a puddle near the Skulker. A well-aimed piece of scrap metal can cause it to fall, electrocuting and neutralizing the creature from a safe distance.
+    * **SUCCESS (Emitter, Strength, Agility, or Intelligence):** The character neutralizes or bypasses the creature and downloads the **first Data Fragment** from the terminal.
     * **FAILURE:** A failed check results in a vicious fight. The player takes damage and is forced to retreat, failing the test. The AI notes, *"Subject has failed the test. Data Fragment unretrievable."* The player must now find an alternative, more difficult path.
-    * On success, the player downloads the **first Data Fragment**. Regardless of the outcome, they proceed to **Scene 8**.
+    * Regardless of the outcome, the player proceeds to **Scene 7**.
 
 ---
 
