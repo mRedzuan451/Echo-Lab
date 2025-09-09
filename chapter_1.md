@@ -181,7 +181,23 @@
 
 ---
 
-### **SCENE 8: THE BARGAIN**
+### **SCENE 8: THE RACE TO THE ECHO**
+
+* **LOCATION:** A ruined, multi-level communications hub with a central broadcast antenna.
+* **CHARACTERS:** The Player, a generic Contestant.
+* **SUMMARY:** The player arrives to see another contestant already there. The Proctor's voice announces: *"Test initiated. First subject to acquire the fragment from the antenna demonstrates superior capability."* It's a frantic race to the top.
+* **PLAYER CHOICE (Choose a route):**
+    1.  **[THE DIRECT PATH - Strength Check]:** Force a jammed blast door and climb a damaged ladder.
+    2.  **[THE TECHNICAL PATH - Intelligence Check]:** Hack a terminal to reactivate a service lift.
+    3.  **[THE AGILE PATH - Agility Check]:** Scale the outside of the structure using pipes and ledges.
+* **OUTCOME:**
+    * **SUCCESS:** The player gets the **second Data Fragment**.
+    * **FAILURE:** The other contestant gets the fragment, forcing the player to find an alternative, more difficult path for their second fragment.
+* **Leads to Scene 9.**
+
+---
+
+### **SCENE 9: THE BARGAIN**
 
 * **LOCATION:** A dilapidated hab-block, lit by a single emergency light. Rain streaks down a grimy window.
 * **CHARACTERS:** The Player, Jedediah "Jed".
@@ -234,7 +250,7 @@
 
 ---
 
-### **SCENE 9: THE PURGE PROTOCOL**
+### **SCENE 10: THE PURGE PROTOCOL**
 
 * **LOCATION:** Anywhere in the Verdant Ruin.
 * **CHARACTERS:** The Player, The Proctor.
@@ -249,7 +265,7 @@
 
 ---
 
-### **SCENE 10: THE LAIR**
+### **SCENE 11: THE LAIR**
 
 * **LOCATION:** A heavily defended nest.
 * **CHARACTERS:** The Player, Alpha Skulker Matriarch.
@@ -259,7 +275,7 @@
 
 ---
 
-### **SCENE 11: THE GATE**
+### **SCENE 12: THE GATE**
 
 * **LOCATION:** A hidden, ancient-looking part of the ruins.
 * **CHARACTERS:** The Player, The AI.
