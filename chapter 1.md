@@ -39,95 +39,81 @@
 
 ---
 
-### **SCENE 4: THE CROSSROADS & THE ANNOUNCEMENT**
+### **SCENE 4: THE FIRST OBSTACLE**
 
-* **LOCATION:** A ruined city plaza outside the maintenance bay.
-* **CHARACTERS:** The Player, The Proctor (voice).
-* **SUMMARY:** The player enters a larger, more open area with two clear paths (rooftops vs. subway). A high-Perception character may notice tracks, hinting at another survivor. Before the player can choose, the Proctor's booming voice announces the first **Major Event: The Drop**. A supply cache will land at a specific, contested location in the plaza within a time limit.
-* **PLAYER CHOICE:**
-    1.  **Go for the Supply Drop:** Head towards the contested location, risking an encounter with other contestants.
-    2.  **Ignore the Drop:** Choose a path (rooftops or subway) to avoid the conflict and find a safer way forward.
-* **OUTCOME:** This choice determines the player's next immediate objective and introduces the pressure of Major Events and other contestants. Leads to either Scene 5 (if they ignore the drop) or a new combat/stealth scene (if they go for the drop).
-
----
-
-### **SCENE 4A: THE CACHE**
-
-* **LOCATION:** Central Plaza, beside a smoking crater.
-* **CHARACTERS:** The Player, their Rival (Xander, Isha, or Jinx).
-* **SUMMARY:** The player approaches the supply cache—a heavy, smoking Archivist crate half-buried in the ground. Their Rival is already there, working to pry it open. They notice the player's approach and turn to face them, hostility clear in their eyes. The air is thick with tension.
-
+* **LOCATION:** A collapsed transit tunnel connecting the Maintenance Bay to the Plaza.
+* **CHARACTERS:** The Player.
+* **SUMMARY:** To reach the plaza, the player must navigate a short but unstable tunnel. The floor is a mess of twisted metal and rubble, and the ceiling groans under the strain. This is a mandatory skill check to proceed.
 * **PLAYER CHOICE (Character-Dependent):**
-
-    * **If Kaelen:**
-        * **[CONFRONT - Strength Check]:** "Step aside. That cache is mine."
-            * **SUCCESS:** Kaelen's intimidating presence makes the Rival pause. They decide a direct fight isn't worth it... yet. They back off, letting Kaelen claim the main prize.
-            * **FAILURE:** The Rival scoffs at the threat. A brutal, short fight ensues. Both are wounded, but the Rival escapes with the main prize.
-
-    * **If Aris:**
-        * **[DECEIVE - Intelligence Check]:** "Careful. I've seen these before. The locking mechanism is pressure-sensitive and rigged to explode. Let me disarm it."
-            * **SUCCESS:** Aris's confident, technical jargon fools the Rival. He "disarms" the lock, but in reality, he triggers a minor EMP blast that stuns the Rival for a moment while popping open a side compartment, allowing him to grab the main prize and flee.
-            * **FAILURE:** The Rival is smarter than they look. They see through the bluff and trigger the trap themselves while at a safe distance, catching Aris in the blast.
-
-    * **If Lena:**
-        * **[INFILTRATE - Agility Check]:** (From hiding) Create a diversion to draw the Rival away.
-            * **SUCCESS:** Lena throws a piece of scrap metal, causing a loud CLANG on the far side of the plaza. The Rival cautiously moves to investigate. Lena silently slips in, cracks the crate's emergency release, grabs the main prize, and vanishes back into the shadows.
-            * **FAILURE:** Lena makes too much noise. The Rival spots her, and a tense chase ensues through the ruins.
-
-    * **Universal Choice:**
-        * **[WITHDRAW]:** Decide the confrontation is not worth the risk.
-            * **OUTCOME:** The player slips away unnoticed. They gain no supplies but also take no damage. The Rival is now a known, but not yet personal, threat.
-
+    * **If Kaelen:** [BRUTE FORCE - Strength Check] Shove a large piece of debris to create a stable, direct path.
+    * **If Aris:** [ANALYZE - Intelligence Check] Scan the structure for the most stable route and reinforce a weak point with scrap metal.
+    * **If Lena:** [NAVIGATE - Agility Check] Nimbly climb and weave through the most dangerous, but quickest, path.
 * **OUTCOME:**
-    * On a **SUCCESSFUL** outcome, the player acquires the chapter's key tool: the **Kinetic Field Emitter**. This versatile device can create a small, temporary energy shield or emit a concussive blast to push back enemies or clear debris. The Rival is now aware of and actively hostile towards the player.
-    * On a **FAILED** outcome or if the player **WITHDRAWS**, the player gets only minor supplies (if any) and the Rival secures the Kinetic Field Emitter, which they may use against the player in a future encounter.
-    * Regardless of the outcome, the player must now proceed to **Scene 5** to continue the hunt for Data Fragments.
+    * **SUCCESS:** The player passes through unharmed, with all attributes intact.
+    * **FAILURE:** The player slips or a piece of rubble gives way. They get through, but are injured or exhausted. They receive a temporary debuff or a minor permanent reduction (e.g., -1) to the attribute they used for the check (Strength, Intelligence, or Agility). This will make the skill check in Scene 5A more difficult.
+    * Leads to Scene 5.
 
 ---
 
-### **SCENE 5: THE FIRST TEST**
+### **SCENE 5: THE CROSSROADS & THE ANNOUNCEMENT**
+
+* **LOCATION:** A ruined city plaza outside the transit tunnel.
+* **CHARACTERS:** The Player, The Proctor (voice).
+* **SUMMARY:** The player emerges into a larger area with two clear paths. A high-Perception character may notice tracks. The Proctor's voice announces the **Major Event: The Drop**, a time-limited supply cache landing in the plaza.
+* **PLAYER CHOICE:**
+    1.  **Go for the Supply Drop:** Head towards the contested location.
+    2.  **Ignore the Drop:** Choose a path (rooftops or subway) to avoid the conflict.
+* **OUTCOME:** Leads to either **Scene 5A** (Go for Drop) or **Scene 6** (Ignore Drop).
+
+---
+
+### **SCENE 5A: THE CACHE**
+
+* **LOCATION:** Central Plaza, near the supply cache landing zone.
+* **CHARACTERS:** The Player, their Rival.
+* **SUMMARY:** The player approaches the supply cache and finds their Rival already there. This is their first meeting, a direct confrontation over a valuable prize.
+* **PLAYER CHOICE:**
+    1.  **Direct Confrontation (Skill Check):** Challenge the Rival. The check will be harder if the player failed in Scene 4.
+    2.  **Create a Diversion.**
+    3.  **Observe and Withdraw.**
+* **OUTCOME:** The player may gain the **Kinetic Field Emitter** at the cost of starting a hostile relationship, or play it safe. Leads to Scene 6.
+
+---
+
+### **SCENE 6: THE FIRST TEST**
 
 * **LOCATION:** Deeper within the chosen path (rooftops or subway).
 * **CHARACTERS:** The Player, The AI.
-* **SUMMARY:** The player discovers their first "Test Chamber," a controlled environment set up by the Archivists. The AI explains that completing this test will yield a Data Fragment. The nature of the test depends on the path taken.
-* **PLAYER CHOICE:**
-    1.  **The Rooftops Test (Traversal):** A timed climb up a crumbling comms tower.
-    2.  **The Subway Test (Combat/Stealth):** Confronting the "Slick-Skinned Skulker" guarding a terminal.
-* **OUTCOME:** On success, the player acquires their **first Data Fragment**. The AI informs them that more are needed to locate the Archive Gate. This solidifies the main goal of the chapter. Leads to Scene 6.
+* **SUMMARY:** The player discovers their first "Test Chamber" and must complete it to earn a Data Fragment.
+* **PLAYER CHOICE:** The test is path-dependent (Traversal or Combat/Stealth).
+* **OUTCOME:** Player acquires the **first Data Fragment**. Leads to Scene 7.
 
 ---
 
-### **SCENE 6: THE BARGAIN**
+### **SCENE 7: THE BARGAIN**
 
 * **LOCATION:** A dilapidated hab-block or a makeshift camp.
-* **CHARACTERS:** The Player, a Supporting Character (e.g., Jed the Old Timer).
-* **SUMMARY:** The AI directs the player toward a second energy signature. They find a non-hostile contestant (Jed) who has a Data Fragment but is in trouble (e.g., wounded, trapped, or lacking a key resource). He offers the fragment in exchange for help. This is the first major social and moral test.
-* **PLAYER CHOICE:**
-    1.  **Help Jed:** Fulfill his request (e.g., craft a splint, find clean water). This builds trust.
-    2.  **Threaten Jed:** Use intimidation to force him to hand over the fragment. This creates a negative relationship.
-    3.  **Attack Jed:** Kill him and take the fragment by force.
-* **OUTCOME:** The player acquires the **second Data Fragment**. Critically, this choice sets a "Consequence Flag" (`Jed_Helped`, `Jed_Threatened`, or `Jed_Hostile`) that will impact future encounters with this character. Leads to Scene 7.
+* **CHARACTERS:** The Player, a Supporting Character.
+* **SUMMARY:** The player finds a non-hostile contestant (Jed) who has the second Data Fragment but needs help.
+* **PLAYER CHOICE:** Help, threaten, or attack Jed.
+* **OUTCOME:** Player acquires the **second Data Fragment** and sets a "Consequence Flag" for future interactions. Leads to Scene 8.
 
 ---
 
-### **SCENE 7: THE LAIR**
+### **SCENE 8: THE LAIR**
 
-* **LOCATION:** A heavily defended nest (e.g., a subway nexus or a ruined generator room).
+* **LOCATION:** A heavily defended nest.
 * **CHARACTERS:** The Player, Alpha Skulker Matriarch.
-* **SUMMARY:** The AI pinpoints the final, powerful energy signature. The player finds the third Data Fragment integrated into the nest of the zone's Apex Predator, the Alpha Skulker Matriarch. The creature must be defeated or cleverly bypassed to acquire the prize.
-* **PLAYER CHOICE:**
-    1.  **Direct Assault:** Fight the Matriarch and her pack head-on (favors Kaelen).
-    2.  **Environmental Sabotage:** Trigger a collapse or an electrical surge to disable or weaken the boss (favors Aris).
-    3.  **Stealth Infiltration:** Create a diversion to sneak in and steal the fragment while the Matriarch is distracted (favors Lena).
-* **OUTCOME:** The player acquires the **third and final Data Fragment**. This is the climax of the chapter's survival challenge. Leads to Scene 8.
+* **SUMMARY:** The player finds the third Data Fragment in the nest of the zone's Apex Predator.
+* **PLAYER CHOICE:** Direct assault, environmental sabotage, or stealth infiltration.
+* **OUTCOME:** Player acquires the **third and final Data Fragment**. Leads to Scene 9.
 
 ---
 
-### **SCENE 8: THE GATE**
+### **SCENE 9: THE GATE**
 
 * **LOCATION:** A hidden, ancient-looking part of the ruins.
 * **CHARACTERS:** The Player, The AI.
-* **SUMMARY:** With all three fragments, the AI triangulates the location of the Archive Gate. The player travels to the location, finds the shimmering archway, and inserts the fragments. The Gate powers on with a low hum, revealing a swirling portal.
-* **PLAYER CHOICE:**
-    1.  **Step through the Gate.**
-* **OUTCOME:** The player is transported to the next zone, the Ash-Fall Isles. Chapter 1 concludes.
+* **SUMMARY:** With all fragments, the AI reveals the location of the Archive Gate. The player activates it.
+* **PLAYER CHOICE:** Step through the Gate.
+* **OUTCOME:** Chapter 1 concludes as the player is transported to the next zone.
