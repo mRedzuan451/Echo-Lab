@@ -234,7 +234,22 @@
 
 ---
 
-### **SCENE 9: THE LAIR**
+### **SCENE 9: THE PURGE PROTOCOL**
+
+* **LOCATION:** Anywhere in the Verdant Ruin.
+* **CHARACTERS:** The Player, The Proctor.
+* **SUMMARY:** This scene triggers if the "Phase 1" timer runs out (e.g., after 10 cycles) and the player has not acquired all three Data Fragments. Red emergency lights flash across the zone, and a blaring alarm sounds. The Proctor's voice echoes everywhere, cold and final.
+* **Proctor's Dialogue:** *"Phase One has concluded. Subject has failed to demonstrate adequate mastery of the environment. Specimen is deemed... substandard. Initiating sanitation protocol. Purge drone activated. Good luck."*
+* **PLAYER CHOICE:** None. This is a reactive, high-stakes survival sequence.
+* **OUTCOME:**
+    * A powerful, elite security drone (or another designated "purger" creature) is released into the zone with one objective: hunt and terminate the player.
+    * This is not a winnable fight. The player's new objective is to flee and find an emergency exit (e.g., a maintenance conduit, a garbage chute) to escape the zone.
+    * **SUCCESSFUL ESCAPE:** The player escapes the zone but with a significant penalty. They start Chapter 2 in a disadvantageous location, possibly injured, and without the benefit of any gear or lore they would have gained by activating the Archive Gate.
+    * **FAILURE TO ESCAPE:** The player is cornered and terminated by the purge unit. This results in a specific **GAME OVER** screen that highlights their failure to meet the Archivists' standards.
+
+---
+
+### **SCENE 10: THE LAIR**
 
 * **LOCATION:** A heavily defended nest.
 * **CHARACTERS:** The Player, Alpha Skulker Matriarch.
@@ -244,7 +259,7 @@
 
 ---
 
-### **SCENE 10: THE GATE**
+### **SCENE 11: THE GATE**
 
 * **LOCATION:** A hidden, ancient-looking part of the ruins.
 * **CHARACTERS:** The Player, The AI.
