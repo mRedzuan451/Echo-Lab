@@ -75,14 +75,38 @@
 
 ### **SCENE 5A: THE CACHE**
 
-* **LOCATION:** Central Plaza, near the supply cache landing zone.
-* **CHARACTERS:** The Player, their Rival.
-* **SUMMARY:** The player approaches the supply cache and finds their Rival already there. This is their first meeting, a direct confrontation over a valuable prize.
-* **PLAYER CHOICE:**
-    1.  **Direct Confrontation (Skill Check):** Challenge the Rival. The check will be harder if the player failed in Scene 4.
-    2.  **Create a Diversion.**
-    3.  **Observe and Withdraw.**
-* **OUTCOME:** The player may gain the **Kinetic Field Emitter** at the cost of starting a hostile relationship, or play it safe. Leads to Scene 6.
+* **LOCATION:** Central Plaza, beside a smoking crater where a large, metallic crate is half-buried in the ground.
+* **CHARACTERS:** The Player, their Rival (Xander, Isha, or Jinx).
+* **SUMMARY:** The player approaches the supply cache. Their Rival is already there, having just forced the main lock. They look up as the player approaches, a possessive glint in their eyes. The air is thick with tension.
+
+* **PLAYER CHOICE (If Kaelen vs. Xander):**
+    * Xander is kicking at a secondary lock on the crate. He smirks. "Look what the drop pod dragged in. Little late to the party, Rook. I've already claimed this prize."
+    * **1. [CONFRONT - Strength Check]:** "You've claimed nothing. Step aside, Xander."
+        * **SUCCESS:** Kaelen's raw, imposing presence gives Xander pause. Xander sizes him up and scoffs, "Fine. You can have the scraps." He kicks the crate, popping open the main compartment, but a smaller, secondary compartment remains locked. Xander walks away with a sneer, having taken something, but the main prize is Kaelen's. **(Outcome: Kaelen acquires the Kinetic Field Emitter).**
+        * **FAILURE (Especially if debuffed from Scene 4):** Kaelen's exhaustion shows. Xander laughs. "You look weak, Rook." A brief, brutal scuffle ensues. Kaelen is shoved back, and Xander manages to break the secondary lock, grabbing the Kinetic Field Emitter before retreating. "Always a step behind," he taunts. **(Outcome: Kaelen gets minor supplies, Rival gets the Emitter).**
+    * **2. [WITHDRAW]:** "Keep it. It's probably trapped."
+        * **OUTCOME:** Kaelen backs away. Xander watches him go with a look of contemptuous victory. Kaelen is safe, but has given a powerful tool to his worst enemy. **(Outcome: No supplies, Rival gets the Emitter).**
+
+* **PLAYER CHOICE (If Aris vs. Jinx):**
+    * Jinx is tinkering with the crate's lock, sparks flying from a jury-rigged device. She grins maniacally. "Ooh, a new lab rat! Come to see the light show? I'm about to give this thing a little... percussive maintenance."
+    * **1. [DECEIVE - Intelligence Check]:** "Stop! That's an Archivist thermal-sync lock. One more spark and you'll flash-fry everything in a 20-meter radius. Let me bypass the core."
+        * **SUCCESS:** Aris's confident, technical jargon makes Jinx hesitate, intrigued. "Ooh, dangerous! I like it." She lets him work. Aris "bypasses" the core, but actually rewires it to a secondary latch, popping it open silently. He grabs the Kinetic Field Emitter from inside and makes a run for it before Jinx realizes she's been tricked.
+        * **FAILURE (Especially if debuffed from Scene 4):** Jinx sees a flaw in Aris's technobabble. "Nice try, lab coat, but you forgot to account for the secondary capacitor!" She triggers her device. A localized EMP blast shorts out Aris's AI map for a minute and pops the crate open. Jinx cackles, grabs the Emitter, and vanishes into the ruins.
+    * **2. [WITHDRAW]:** "You're insane. It's all yours."
+        * **OUTCOME:** Aris backs away slowly. Jinx doesn't even seem to notice, too engrossed in her work. A moment later, a small explosion is heard. Aris is safe, but Jinx now has a new, powerful toy.
+
+* **PLAYER CHOICE (If Lena vs. Isha):**
+    * Isha is calmly examining the crate's lock, her movements patient and precise. She doesn't turn, but speaks in a low voice. "I heard you five minutes ago. The wind carried the sound of your boots on the concrete. Come out where I can see you."
+    * **1. [INFILTRATE - Agility Check]:** (From hiding) Create a diversion to draw her away.
+        * **SUCCESS:** Lena, realizing she's been spotted, uses it to her advantage. She throws a rock far to the left, but simultaneously circles around to the right. Isha's head tracks the sound, but Lena's silent movement allows her to reach the crate from the blind spot, pop the emergency latch, and grab the Kinetic Field Emitter before Isha can reacquire her target.
+        * **FAILURE (Especially if debuffed from Scene 4):** Lena's movement is not silent enough. As she reaches for the crate, an arrow whistles past her ear, embedding itself in the metal. "Too slow," Isha says. A tense chase ensues, forcing Lena to retreat empty-handed.
+    * **2. [REVEAL SELF]:** Step out from the shadows. "I'm not here for a fight. Just a look."
+        * **OUTCOME:** Isha finally turns, a predatory smile on her face. "A look is all you'll get." She expertly opens the crate, takes the Emitter, and gives Lena a final nod. "Now you know what I have. Run." It's a warning and a promise. The hunt has begun.
+
+* **OUTCOME:**
+    * The player's success or failure determines who gets the **Kinetic Field Emitter**, a powerful tool that will impact future encounters.
+    * This scene solidifies the hostile relationship with their Rival.
+    * The player now proceeds to **Scene 6** to continue the hunt for Data Fragments.
 
 ---
 
