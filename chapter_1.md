@@ -246,7 +246,7 @@
             * **Outcome:** Lena slips into the shadows and neutralizes Jed before he knows what's happening. She takes the fragment. The AI comments, *"Subject neutralized. Minimal energy expenditure. Optimal."*
             * **Consequence Flag:** `Jed_Dead` set.
 
-* **OUTCOME:** The player acquires the **second Data Fragment** and sets a critical story flag that will shape the narrative of Chapter 2 and beyond. Leads to Scene 7.
+* **OUTCOME:** The player acquires the **third Data Fragment** and sets a critical story flag that will shape the narrative of Chapter 2 and beyond. Leads to Scene 11.
 
 ---
 
