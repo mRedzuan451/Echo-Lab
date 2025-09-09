@@ -43,14 +43,20 @@
 
 * **LOCATION:** A collapsed transit tunnel connecting the Maintenance Bay to the Plaza.
 * **CHARACTERS:** The Player.
-* **SUMMARY:** To reach the plaza, the player must navigate a short but unstable tunnel. The floor is a mess of twisted metal and rubble, and the ceiling groans under the strain. This is a mandatory skill check to proceed.
-* **PLAYER CHOICE (Character-Dependent):**
-    * **If Kaelen:** [BRUTE FORCE - Strength Check] Shove a large piece of debris to create a stable, direct path.
-    * **If Aris:** [ANALYZE - Intelligence Check] Scan the structure for the most stable route and reinforce a weak point with scrap metal.
-    * **If Lena:** [NAVIGATE - Agility Check] Nimbly climb and weave through the most dangerous, but quickest, path.
+* **SUMMARY:** To reach the plaza, the player must navigate a short but unstable tunnel. The floor is a mess of twisted metal and rubble, and the ceiling groans under the strain. This is a mandatory challenge to proceed.
+* **PLAYER CHOICE (All characters see all options):**
+    1.  **[BRUTE FORCE]:** Shove a large piece of debris to create a stable, direct path.
+    2.  **[ANALYZE]:** Scan the structure for the most stable route and reinforce a weak point with scrap metal.
+    3.  **[NAVIGATE]:** Nimbly climb and weave through the most dangerous, but quickest, path.
 * **OUTCOME:**
-    * **SUCCESS:** The player passes through unharmed, with all attributes intact.
-    * **FAILURE:** The player slips or a piece of rubble gives way. They get through, but are injured or exhausted. They receive a temporary debuff or a minor permanent reduction (e.g., -1) to the attribute they used for the check (Strength, Intelligence, or Agility). This will make the skill check in Scene 5A more difficult.
+    * **SUCCESS (Choosing the correct option for your character):**
+        * If you are **Kaelen** and choose **[BRUTE FORCE]**...
+        * If you are **Aris** and choose **[ANALYZE]**...
+        * If you are **Lena** and choose **[NAVIGATE]**...
+        * ...you succeed. You use your natural talents to pass through the tunnel unharmed, all attributes intact.
+    * **FAILURE (Choosing the incorrect option for your character):**
+        * If you are Kaelen and choose to Analyze, or Lena and choose Brute Force, etc...
+        * ...your attempt is clumsy and ill-suited to your skills. A piece of rubble gives way, and you get through, but you are injured or exhausted. You receive a temporary debuff or a minor permanent reduction (e.g., -1) to the attribute you tried to use (Strength for Brute Force, Intelligence for Analyze, or Agility for Navigate). This will make the skill check in Scene 5A more difficult.
     * Leads to Scene 5.
 
 ---
@@ -59,7 +65,7 @@
 
 * **LOCATION:** A ruined city plaza outside the transit tunnel.
 * **CHARACTERS:** The Player, The Proctor (voice).
-* **SUMMARY:** The player emerges into a larger area with two clear paths. A high-Perception character may notice tracks. The Proctor's voice announces the **Major Event: The Drop**, a time-limited supply cache landing in the plaza.
+* **SUMMARY:** The player emerges into a larger area with two clear paths. A high-Perception character may notice tracks. The Proctor's booming voice announces the **Major Event: The Drop**, a time-limited supply cache landing in the plaza.
 * **PLAYER CHOICE:**
     1.  **Go for the Supply Drop:** Head towards the contested location.
     2.  **Ignore the Drop:** Choose a path (rooftops or subway) to avoid the conflict.
