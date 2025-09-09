@@ -127,7 +127,7 @@
     * **SUCCESS (High Agility):** The character moves with grace and speed, easily navigating the hazards. Lena would excel here, feeling right at home. They retrieve the **first Data Fragment** from the antenna array at the top with time to spare.
     * **PARTIAL SUCCESS (Moderate Agility/Strength):** The character struggles but makes it. Kaelen might use his raw strength to power through a difficult section, while Aris might struggle significantly. They retrieve the fragment but are exhausted, possibly suffering a temporary "Fatigued" debuff to their physical stats.
     * **FAILURE (Low Agility):** A handhold crumbles or a gust of wind throws them off balance. They fall a short distance, taking damage, and fail to reach the top. The AI's voice notes, *"Subject has failed the test. Data Fragment unretrievable."* The player must now find an alternative, more difficult path to acquire their first fragment.
-    * Regardless of the outcome, the player proceeds to **Scene 7**.
+    * Regardless of the outcome, the player proceeds to **Scene 8**.
 
 ---
 
@@ -145,7 +145,7 @@
     * **SUCCESS (Agility):** The character, likely Lena, uses the shadows and the sound of dripping water to slip past the creature unnoticed and access the terminal.
     * **SUCCESS (Intelligence):** The character, likely Aris, notices a sparking power conduit hanging over a puddle near the Skulker. A well-aimed piece of scrap metal can cause it to fall, electrocuting and neutralizing the creature from a safe distance.
     * **FAILURE:** A failed check results in a vicious fight. The player takes damage and is forced to retreat, failing the test. The AI notes, *"Subject has failed the test. Data Fragment unretrievable."* The player must now find an alternative, more difficult path.
-    * On success, the player downloads the **first Data Fragment**. Regardless of the outcome, they proceed to **Scene 7**.
+    * On success, the player downloads the **first Data Fragment**. Regardless of the outcome, they proceed to **Scene 8**.
 
 ---
 
