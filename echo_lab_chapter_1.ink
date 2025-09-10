@@ -99,6 +99,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         - else:
             // Failure
             You throw your shoulder against the door, but it only groans in protest. The rust holds it fast. You've only succeeded in bruising your shoulder and making a lot of noise.
+            ~ resolve = resolve - 1
         }
         -> scene_3_choices
     * {character_name == "Aris"} [HOTWIRE THE KEYPAD - Intelligence Check]
@@ -110,6 +111,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         - else:
             // Failure
             You try to create a circuit, but the components are too decayed. A final spark from the conduit singes your fingers and the keypad goes completely dead. It's useless now.
+            ~ resolve = resolve - 1
         }
         -> scene_3_choices
     * {character_name == "Lena"} [PICK THE LOCK - Agility Check]
@@ -121,6 +123,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         - else:
             // Failure
             You work at the lock, but the internal mechanism is rusted solid. A lockpick snaps with a sharp *tink*, leaving the lock hopelessly jammed. There's no getting in that way now.
+            ~ resolve = resolve - 1
         }
         -> scene_3_choices
     * [Leave it alone.]
@@ -152,4 +155,5 @@ You move closer to the wall. The moss gives off a soft, ethereal green light. It
 // === SCENE 4: THE FIRST OBSTACLE ===
 === scene_4_the_first_obstacle ===
 // Placeholder for the next scene.
+
 -> END
