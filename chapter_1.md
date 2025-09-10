@@ -181,6 +181,44 @@
 
 ---
 
+### **SCENE 7A: THE GHOST ECHO (Optional Detour)**
+
+LOCATION: A collapsed overpass, off the main path to the next objective.
+
+CHARACTERS: The Player, The AI.
+
+SUMMARY: While heading towards the next fragment's general location, a player with high enough Perception will get a special prompt. The AI's voice will crackle with static: "Anomaly detected. Faint signal emanating from a crashed vehicle below the overpass. Signal matches standard-issue contestant implant." Players with lower perception might just see the wreckage as part of the scenery unless they choose to explore off the beaten path.
+
+PLAYER CHOICE:
+
+[Investigate the Wreckage]: Carefully climb down the rubble to the crashed vehicle.
+
+[Ignore the Signal]: Stick to the mission and continue toward the next Data Fragment.
+
+OUTCOME (If Investigating):
+
+The player finds the skeletal remains of a previous contestant slumped inside the vehicle. A blinking light on their helmet indicates a damaged AI implant.
+
+The AI warns: "Implant is unstable. Interfacing carries a significant risk of data corruption or neural feedback."
+
+PLAYER CHOICE 2 (High-Risk Skill Check):
+
+[INTERFACE - Intelligence Check]: Attempt to carefully extract the data logs.
+
+SUCCESS: You successfully download a corrupted audio log. The voice is panicked: "It's not just testing us... it's learning from us! The Proctor... it's not just an AI, it's... it's a..." The log cuts out.
+
+REWARD: The player gains a crucial piece of early lore that foreshadows the AI's true nature and a small but permanent +1 boost to their Perception stat from analyzing the complex data.
+
+FAILURE: A jolt of neural feedback stuns the player, causing a temporary "Disoriented" debuff (e.g., map scrambles for 60 seconds) and a small loss of Resolve. The data is lost.
+
+[SALVAGE - Perception Check]: Ignore the risky data and just strip the contestant's gear.
+
+SUCCESS: The player finds a unique crafting component (e.g., "Insulated Wiring") that can be used later to create an item that grants resistance to EMP or electrical attacks. It's a tangible reward for their curiosity.
+
+FAILURE: The gear is too damaged or booby-trapped. The player finds nothing of use.
+
+Regardless of the outcome, the player proceeds to Scene 8.
+
 ### **SCENE 8: THE RACE TO THE ECHO**
 
 * **LOCATION:** A ruined, multi-level communications hub with a central broadcast antenna.
