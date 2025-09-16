@@ -81,11 +81,21 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
 -> scene_3_choices
 
 = scene_3_choices
-    * [Investigate the rusted locker.]
+    * **[Investigate the rusted locker.]**
         -> locker_encounter
-    * [Investigate the glowing moss.]
+    * **[Investigate the glowing moss.]**
         -> moss_encounter
-    * [Leave through the collapsed doorway.]
+    * **[Query the AI.]**
+    * The AI's calm voice responds in your mind.
+    * **[Ask: "Where am I?"]**
+        * *AI: "You are within Test Site Echo-7, located on a fragment of a planetary body designated 'The Shattered World'. My designation for this zone is the 'Ruined City-Isle'."*
+    * **[Ask: "What is this place? What is the 'Arena'?"]**
+        * *AI: "This 'Arena' is a controlled environment for a series of trials conducted by my creators, the Archivists. The objective is to test species' capacity for survival and adaptation."*
+    * **[Ask: "Who is the Proctor?"]**
+        * *AI: "The Proctor is the master control AI for this entire experiment. My function is to guide and observe subjects. The Proctor's function is to administrate the trials."*
+    * **[Ask: "Why am I here?"]**
+        * *AI: "Your selection criteria are not available in my data banks. Your purpose is to survive and demonstrate mastery of the environment. That is all the data I can provide on the subject."*
+    * **[Leave through the collapsed doorway.]**
         -> scene_4_the_first_obstacle
 
 = locker_encounter
