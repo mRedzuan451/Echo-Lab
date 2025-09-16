@@ -84,25 +84,85 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
 -> scene_3_choices
 
 = scene_3_choices
-* (investigate_locker) [Investigate the rusted locker.]
+* [Investigate the rusted locker.]
     -> locker_encounter
-* (investigate_moss) [Investigate the glowing moss.]
+* [Investigate the glowing moss.]
     -> moss_encounter
 * [Query the AI.]
-    * [Ask: "Where am I?"]
-        <i>AI: "You are within Test Site Echo-7, located on a fragment of a planetary body designated 'The Shattered World'. My designation for this zone is the 'Ruined City-Isle'."</i>
-        -> scene_3_choices
-    * [Ask: "What is this place? What is the 'Arena'?"]
-        <i>AI: "This 'Arena' is a controlled environment for a series of trials conducted by my creators, the Archivists. The objective is to test species' capacity for survival and adaptation."</i>
-        -> scene_3_choices
-    * [Ask: "Who is the Proctor?"]
-        <i>AI: "The Proctor is the master control AI for this entire experiment. My function is to guide and observe subjects. The Proctor's function is to administrate the trials."</i>
-        -> scene_3_choices
-    * [Ask: "Why am I here?"]
-        <i>AI: "Your selection criteria are not available in my data banks. Your purpose is to survive and demonstrate mastery of the environment. That is all the data I can provide on the subject."</i>
-        -> scene_3_choices
-* (leave_room) [Leave through the collapsed doorway.]
+    -> scene_3_ai_query
++ [Check Status.]
+    -> check_status
++ {has_degraded_power_cell || has_glimmer_moss_sample} [Analyze Items.]
+    -> analyze_items
+* [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
+    
+= analyze_items
+You take a moment to examine your findings.
+* {has_degraded_power_cell} [Analyze the Degraded Power Cell.]
+    { character_name == "Kaelen":
+        - You tap the power cell against a metal strut. It sparks weakly. Looks like it has a little juice, but it feels unstable. Probably best not to hit it too hard.
+    }
+    { character_name == "Aris":
+        - You run your multi-tool over the power cell. <i>AI: "Lithium-ion architecture, heavily degraded. Output is unstable, fluctuating between 3 and 19 volts. Could be repurposed for a directed electromagnetic pulse, with a moderate chance of catastrophic failure."</i> Fascinating.
+    }
+    { character_name == "Lena":
+        - It's a standard power cell, the kind used in old maintenance drones. Heavy. You notice a small crack in the casing near the positive terminal. It might be volatile.
+    }
+    -> analyze_items
+* {has_glimmer_moss_sample} [Analyze the Glimmer Moss Sample.]
+    { character_name == "Kaelen":
+        - You rub the moss between your fingers. It's cool to the touch and leaves a faint glowing residue. Doesn't seem very useful, but it smells... sweet.
+    }
+    { character_name == "Aris":
+        - You analyze the sample. <i>AI: "Fungal sample contains a unique bioluminescent enzyme and a mild coagulant. Spores are airborne. High probability of attracting local fauna."</i> Useful. The coagulant could be refined into a basic healing agent.
+    }
+    { character_name == "Lena":
+        - The moss glows, but the light is faint. You recall seeing similar fungi in deep-cave infiltration missions. The spores are light enough to travel on air currents; anything that hunts by scent would be drawn to this.
+    }
+    -> analyze_items
+* [Done analyzing.]
+    -> scene_3_choices
+
+= check_status
+    -- Character Status --
+    Name: {character_name}
+    Strength: {strength}
+    Intelligence: {intelligence}
+    Agility: {agility}
+    Perception: {perception}
+    Resolve: {resolve}
+    
+    -- Inventory --
+    { not has_degraded_power_cell and not has_glimmer_moss_sample:
+        - Your pockets are empty.
+    }
+    { has_degraded_power_cell:
+        - Degraded Power Cell
+    }
+    { has_glimmer_moss_sample:
+        - Glimmer Moss Sample
+    }
+    --------------------
+    * [Return.]
+        -> scene_3_choices
+
+= scene_3_ai_query
+The AI's calm voice is a presence in your mind.
+* (ask_where) [Ask: "Where am I?"]
+    <i>AI: "You are within Test Site Echo-7, located on a fragment of a planetary body designated 'The Shattered World'. My designation for this zone is the 'Ruined City-Isle'."</i>
+    -> scene_3_ai_query
+* (ask_what) [Ask: "What is this place? What is the 'Arena'?"]
+    <i>AI: "This 'Arena' is a controlled environment for a series of trials conducted by my creators, the Archivists. The objective is to test species' capacity for survival and adaptation."</i>
+    -> scene_3_ai_query
+* (ask_who) [Ask: "Who is the Proctor?"]
+    <i>AI: "The Proctor is the master control AI for this entire experiment. My function is to guide and observe subjects. The Proctor's function is to administrate the trials."</i>
+    -> scene_3_ai_query
+* (ask_why) [Ask: "Why am I here?"]
+    <i>AI: "Your selection criteria are not available in my data banks. Your purpose is to survive and demonstrate mastery of the environment. That is all the data I can provide on the subject."</i>
+    -> scene_3_ai_query
+* [That's enough for now.]
+    -> scene_3_choices
 
 = locker_encounter
 The locker is old and heavy. The locking mechanism is a simple electronic keypad, now dark and corroded. The door itself is dented and sealed shut with rust.
@@ -177,9 +237,16 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
         You use your natural talents to pass through the tunnel unharmed.
     - else:
         // Failure
-        Your attempt is clumsy. A piece of rubble gives way, and you get through, but you are injured. You receive a -1 debuff to Strength.
-        ~ strength -= 1
-        ~ scene_4_debuff_stat = "Strength"
+        Your attempt is clumsy. A piece of rubble gives way, and the strain affects your core skills.
+        { character_name == "Aris":
+            You receive a -1 debuff to Intelligence.
+            ~ intelligence -= 1
+            ~ scene_4_debuff_stat = "Intelligence"
+        - else: // Lena
+            You receive a -1 debuff to Agility.
+            ~ agility -= 1
+            ~ scene_4_debuff_stat = "Agility"
+        }
     }
     -> scene_5_crossroads
 * [ANALYZE: Scan the structure for the most stable route.]
@@ -188,9 +255,16 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
         You use your natural talents to pass through the tunnel unharmed.
     - else:
         // Failure
-        Your attempt is ill-suited to your skills. You get through, but you are exhausted. You receive a -1 debuff to Intelligence.
-        ~ intelligence -= 1
-        ~ scene_4_debuff_stat = "Intelligence"
+        Your attempt is ill-suited to your skills, and the mental effort affects your core abilities.
+        { character_name == "Kaelen":
+            You receive a -1 debuff to Strength.
+            ~ strength -= 1
+            ~ scene_4_debuff_stat = "Strength"
+        - else: // Lena
+            You receive a -1 debuff to Agility.
+            ~ agility -= 1
+            ~ scene_4_debuff_stat = "Agility"
+        }
     }
     -> scene_5_crossroads
 * [NAVIGATE: Nimbly climb through the quickest, most dangerous path.]
@@ -199,9 +273,16 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
         You use your natural talents to pass through the tunnel unharmed.
     - else:
         // Failure
-        Your attempt is clumsy. You get through, but you are injured. You receive a -1 debuff to Agility.
-        ~ agility -= 1
-        ~ scene_4_debuff_stat = "Agility"
+        Your attempt is clumsy, and the physical toll weakens your primary strengths.
+        { character_name == "Kaelen":
+            You receive a -1 debuff to Strength.
+            ~ strength -= 1
+            ~ scene_4_debuff_stat = "Strength"
+        - else: // Aris
+            You receive a -1 debuff to Intelligence.
+            ~ intelligence -= 1
+            ~ scene_4_debuff_stat = "Intelligence"
+        }
     }
     -> scene_5_crossroads
 
