@@ -20,6 +20,7 @@ VAR has_kinetic_emitter = false
 // Consequence Flags
 VAR jed_status = "UNKNOWN" // Can be UNKNOWN, HELPED, HOSTILE, DEAD
 VAR scene_4_debuff_stat = "" // To track debuff from Scene 4
+VAR rival_has_emitter = false
 
 // === GAME START ===
 -> scene_1_impact
@@ -318,15 +319,17 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
             - else:
-                // Original failure
+                // Original failure - Rival gets the emitter
                 You're shoved back, and Xander manages to break the secondary lock, grabbing the Kinetic Field Emitter before retreating. "Always a step behind," he taunts.
                 ~ has_kinetic_emitter = false
+                ~ rival_has_emitter = true
             }
         }
         -> scene_6_first_test
     * [WITHDRAW]: "Keep it. It's probably trapped."
         Xander watches you go with a look of contemptuous victory. You are safe, but have given a powerful tool to your worst enemy.
         ~ has_kinetic_emitter = false
+        ~ rival_has_emitter = true
         -> scene_6_first_test
 }
 
@@ -348,15 +351,17 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
             - else:
-                // Original failure
+                // Original failure - Rival gets the emitter
                 She triggers her device. A localized EMP blast shorts out your AI map and pops the crate. Jinx cackles, grabs the Emitter, and vanishes into the ruins.
                 ~ has_kinetic_emitter = false
+                ~ rival_has_emitter = true
             }
         }
         -> scene_6_first_test
     * [WITHDRAW]: "You're insane. It's all yours."
         You back away slowly. Jinx doesn't seem to notice, too engrossed in her work. A moment later, a small explosion is heard. You are safe, but Jinx now has a new, powerful toy.
         ~ has_kinetic_emitter = false
+        ~ rival_has_emitter = true
         -> scene_6_first_test
 }
 
@@ -378,15 +383,17 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
             - else:
-                // Original failure
+                // Original failure - Rival gets the emitter
                 A tense chase ensues, forcing you to retreat empty-handed.
                 ~ has_kinetic_emitter = false
+                ~ rival_has_emitter = true
             }
         }
         -> scene_6_first_test
     * [REVEAL SELF]: Step out from the shadows. "I'm not here for a fight. Just a look."
         Isha turns, a predatory smile on her face. "A look is all you'll get." She expertly opens the crate, takes the Emitter, and gives you a final nod. "Now you know what I have. Run." It's a warning and a promise. The hunt has begun.
         ~ has_kinetic_emitter = false
+        ~ rival_has_emitter = true
         -> scene_6_first_test
 }
 
