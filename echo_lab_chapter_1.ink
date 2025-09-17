@@ -296,12 +296,99 @@ Suddenly, a booming, disembodied voice echoes through the plaza.
 * [Go for the Supply Drop.] -> scene_5a_the_cache
 * [Ignore the Drop and find a safer path.] -> scene_6_first_test
 
-// === SCENE 5A: THE CACHE (Placeholder) ===
+// === SCENE 5A: THE CACHE ===
 === scene_5a_the_cache ===
-// This scene is not yet written. The player goes for the supply cache.
-You head towards the smoking crater where the supply cache landed.
-...To be continued...
--> END
+You sprint towards the center of the plaza. A large, metallic crate is half-buried in a smoking crater. Standing over it, having just forced the main lock, is a figure you instantly recognize with a cold dread. Your Rival.
+
+// --- Kaelen vs. Xander ---
+{ character_name == "Kaelen":
+    Xander "Vulture" Kade is kicking at a secondary lock on the crate. He smirks as you approach. "Look what the drop pod dragged in. Little late to the party, Rook. I've already claimed this prize."
+    * [CONFRONT - Strength Check]: "You've claimed nothing. Step aside, Xander."
+        { strength >= 7:
+            // Success
+            Your raw, imposing presence gives Xander pause. He sizes you up and scoffs, "Fine. You can have the scraps." He kicks the crate, popping open the main compartment, but a smaller, secondary compartment remains locked. Xander walks away with a sneer, having taken something, but the main prize is yours.
+            ~ has_kinetic_emitter = true
+        - else:
+            // Failure
+            Your exhaustion shows. Xander laughs. "You look weak, Rook." A brief, brutal scuffle ensues.
+            { has_degraded_power_cell:
+                // Use the power cell
+                Shoved back, you see an opportunity. You pull out the Degraded Power Cell and slam it against the crate's exposed wiring. A violent surge of energy fries the locking mechanism with a loud ZAP, but also overloads the device inside. A wisp of acrid smoke curls from the crate.
+                Xander stares, his smirk gone. "What did you do?!" He kicks the crate open to find the emitter fused into a slag of molten electronics. "Idiot! You destroyed it!" Annoyed, he shoves you aside and storms off.
+                ~ has_degraded_power_cell = false
+                ~ has_kinetic_emitter = false
+            - else:
+                // Original failure
+                You're shoved back, and Xander manages to break the secondary lock, grabbing the Kinetic Field Emitter before retreating. "Always a step behind," he taunts.
+                ~ has_kinetic_emitter = false
+            }
+        }
+        -> scene_6_first_test
+    * [WITHDRAW]: "Keep it. It's probably trapped."
+        Xander watches you go with a look of contemptuous victory. You are safe, but have given a powerful tool to your worst enemy.
+        ~ has_kinetic_emitter = false
+        -> scene_6_first_test
+}
+
+// --- Aris vs. Jinx ---
+{ character_name == "Aris":
+    Jinx is tinkering with the crate's lock, sparks flying from a jury-rigged device. She grins maniacally. "Ooh, a new lab rat! Come to see the light show? I'm about to give this thing a little... percussive maintenance."
+    * [DECEIVE - Intelligence Check]: "Stop! That's an Archivist thermal-sync lock. One more spark and you'll flash-fry everything. Let me bypass the core."
+        { intelligence >= 8:
+            // Success
+            Your confident, technical jargon makes Jinx hesitate, intrigued. "Ooh, dangerous! I like it." She lets you work. You "bypass" the core, but actually rewire it to a secondary latch, popping it open silently. You grab the Kinetic Field Emitter and make a run for it before she realizes she's been tricked.
+            ~ has_kinetic_emitter = true
+        - else:
+            // Failure
+            Jinx sees a flaw in your technobabble. "Nice try, lab coat, but you forgot the secondary capacitor!" She moves to trigger her device.
+            { has_degraded_power_cell:
+                // Use the power cell
+                Thinking fast, you jam the Degraded Power Cell into a port on her contraption. "Then I'll just have to add another one!" you retort. The resulting power feedback is spectacular. Sparks fly, Jinx yelps and jumps back, and the cache's lock and the emitter inside are both fried instantly.
+                She stares at the smoking mess, then at you, her grin wider than ever. "Ooooh! You're FUN! You broke my toy, but you made a much bigger bang!" She cackles and vanishes.
+                ~ has_degraded_power_cell = false
+                ~ has_kinetic_emitter = false
+            - else:
+                // Original failure
+                She triggers her device. A localized EMP blast shorts out your AI map and pops the crate. Jinx cackles, grabs the Emitter, and vanishes into the ruins.
+                ~ has_kinetic_emitter = false
+            }
+        }
+        -> scene_6_first_test
+    * [WITHDRAW]: "You're insane. It's all yours."
+        You back away slowly. Jinx doesn't seem to notice, too engrossed in her work. A moment later, a small explosion is heard. You are safe, but Jinx now has a new, powerful toy.
+        ~ has_kinetic_emitter = false
+        -> scene_6_first_test
+}
+
+// --- Lena vs. Isha ---
+{ character_name == "Lena":
+    You approach from the shadows. Isha "Hawkeye" is calmly examining the crate's lock. She doesn't turn, but speaks in a low voice. "I heard you five minutes ago. The wind carried the sound of your boots. Come out where I can see you."
+    * [INFILTRATE - Agility Check]: (From hiding) Create a diversion to draw her away.
+        { agility >= 7:
+            // Success
+            Realizing you're spotted, you use it. You throw a rock far to the left, but simultaneously circle to the right. Isha's head tracks the sound, and your silent movement allows you to reach the crate from her blind spot, pop the emergency latch, and grab the Kinetic Field Emitter before she can reacquire her target.
+            ~ has_kinetic_emitter = true
+        - else:
+            // Failure
+            Your movement isn't silent enough. As you reach for the crate, an arrow whistles past your ear, embedding itself in the metal. "Too slow," Isha says.
+            { has_degraded_power_cell:
+                // Use the power cell
+                Pinned down, you make a desperate move. You toss the unstable Power Cell towards the crate's control panel. The impact is enough. The cell ruptures, bathing the crate in a shower of sparks that shorts out the contents completely.
+                Isha lowers her bow, an unreadable expression on her face. "A scorched-earth tactic. You'd rather no one have it than lose. Interesting." She gives a slow nod and melts back into the shadows.
+                ~ has_degraded_power_cell = false
+                ~ has_kinetic_emitter = false
+            - else:
+                // Original failure
+                A tense chase ensues, forcing you to retreat empty-handed.
+                ~ has_kinetic_emitter = false
+            }
+        }
+        -> scene_6_first_test
+    * [REVEAL SELF]: Step out from the shadows. "I'm not here for a fight. Just a look."
+        Isha turns, a predatory smile on her face. "A look is all you'll get." She expertly opens the crate, takes the Emitter, and gives you a final nod. "Now you know what I have. Run." It's a warning and a promise. The hunt has begun.
+        ~ has_kinetic_emitter = false
+        -> scene_6_first_test
+}
 
 
 // === SCENE 6: THE FIRST TEST (Placeholder) ===
