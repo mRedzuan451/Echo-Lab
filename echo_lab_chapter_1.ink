@@ -9,6 +9,10 @@ VAR agility = 0
 VAR perception = 0
 VAR resolve = 100
 
+// Character Status
+VAR is_fatigued = false
+VAR is_injured = false
+
 // Player's chosen name
 VAR character_name = ""
 
@@ -95,7 +99,7 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
 * [Query the AI.]
     -> scene_3_ai_query
 + [Check Status.]
-    -> check_status
+    -> check_status(-> scene_3_choices)
 + {has_degraded_power_cell || has_glimmer_moss_sample} [Analyze Items.]
     -> analyze_items
 * [Leave through the collapsed doorway.]
@@ -128,7 +132,7 @@ You take a moment to examine your findings.
 * [Done analyzing.]
     -> scene_3_choices
 
-= check_status
+=== check_status(-> return_to) ===
     -- Character Status --
     Name: {character_name}
     Strength: {strength}
@@ -136,9 +140,20 @@ You take a moment to examine your findings.
     Agility: {agility}
     Perception: {perception}
     Resolve: {resolve}
-    
+
+    -- Condition --
+    { is_injured:
+        - INJURED
+    }
+    { is_fatigued:
+        - FATIGUED
+    }
+    { not is_injured and not is_fatigued:
+        - HEALTHY
+    }
+
     -- Inventory --
-    { not has_degraded_power_cell and not has_glimmer_moss_sample:
+    { not has_degraded_power_cell and not has_glimmer_moss_sample and not has_kinetic_emitter:
         - Your pockets are empty.
     }
     { has_degraded_power_cell:
@@ -147,9 +162,12 @@ You take a moment to examine your findings.
     { has_glimmer_moss_sample:
         - Glimmer Moss Sample
     }
+    { has_kinetic_emitter:
+        - Kinetic Field Emitter
+    }
     --------------------
     * [Return.]
-        -> scene_3_choices
+        -> return_to
 
 = scene_3_ai_query
 The AI's calm voice is a presence in your mind.
@@ -299,6 +317,21 @@ Suddenly, a booming, disembodied voice echoes through the plaza.
 <br><br>
 * [Go for the Supply Drop.] -> scene_5a_the_cache
 * [Ignore the Drop and find a safer path.] -> scene_6_first_test
++ [Check Status.]
+    -> check_status(-> scene_5_crossroads)
+* [Query the AI.]
+    -> scene_5_ai_query
+
+= scene_5_ai_query
+The AI is silent for a moment before responding.
+* (ask_proctor) [Ask: "Who was that?"]
+    <i>AI: "That was the Proctor. It administrates the trials."</i>
+    -> scene_5_ai_query
+* (ask_drop) [Ask: "What is this 'Supply Drop'?"]
+    <i>AI: "A resource distribution event. It is designed to test subjects' risk-assessment and acquisition capabilities under pressure."</i>
+    -> scene_5_ai_query
+* [That's all I need.]
+    -> scene_5_crossroads
 
 // === SCENE 5A: THE CACHE ===
 === scene_5a_the_cache ===
@@ -312,6 +345,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Success
             Your raw, imposing presence gives Xander pause. He sizes you up and scoffs, "Fine. You can have the scraps." He kicks the crate, popping open the main compartment, but a smaller, secondary compartment remains locked. Xander walks away with a sneer, having taken something, but the main prize is yours.
             ~ has_kinetic_emitter = true
+            ~ strength += 1
         - else:
             // Failure
             Your exhaustion shows. Xander laughs. "You look weak, Rook." A brief, brutal scuffle ensues.
@@ -347,6 +381,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Success
             Your confident, technical jargon makes Jinx hesitate, intrigued. "Ooh, dangerous! I like it." She lets you work. You "bypass" the core, but actually rewire it to a secondary latch, popping it open silently. You grab the Kinetic Field Emitter and make a run for it before she realizes she's been tricked.
             ~ has_kinetic_emitter = true
+            ~ intelligence += 1
         - else:
             // Failure
             Jinx sees a flaw in your technobabble. "Nice try, lab coat, but you forgot the secondary capacitor!" She moves to trigger her device.
@@ -382,6 +417,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Success
             Realizing you're spotted, you use it. You throw a rock far to the left, but simultaneously circle to the right. Isha's head tracks the sound, and your silent movement allows you to reach the crate from her blind spot, pop the emergency latch, and grab the Kinetic Field Emitter before she can reacquire her target.
             ~ has_kinetic_emitter = true
+            ~ agility += 1
         - else:
             // Failure
             Your movement isn't silent enough. As you reach for the crate, an arrow whistles past your ear, embedding itself in the metal. "Too slow," Isha says.
@@ -439,13 +475,14 @@ The wind howls around you. It's a long, dangerous climb.
             // PARTIAL SUCCESS
             You struggle, muscles burning, but you make it. {character_name == "Kaelen": At one point, a handhold crumbles, and you only manage to hang on through sheer, raw strength.|You manage to hang on through sheer grit.} You retrieve the fragment but are exhausted by the effort.
             ~ data_fragments += 1
-            // TODO: Add a "Fatigued" debuff mechanic here.
+            ~ is_fatigued = true
             -> scene_7_the_fragment
         - else: // A character with low physical stats will fail
             // FAILURE
             A handhold crumbles under your grip, and a gust of wind throws you off balance. You fall a short distance, slamming into a lower platform. Wounded and aching, you realize you can't reach the top from here.
             <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
             ~ resolve -= 10
+            ~ is_injured = true
             -> scene_8_the_race
         }
     }
@@ -471,6 +508,7 @@ A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head t
         The creature is faster and stronger than you anticipated. It lands a vicious blow, forcing you to retreat back into the tunnels, wounded. The terminal remains out of reach.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
+        ~ is_injured = true
         -> scene_8_the_race
     }
 * [Sneak to the Terminal - Agility Check]
@@ -482,8 +520,9 @@ A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head t
     - else:
         // Failure
         A loose piece of debris clatters under your foot. The Skulker shrieks and lunges. You barely manage to escape its claws, retreating with your heart pounding in your chest.
-        <i>AI: "Subject has failed thetest. Data Fragment unretrievable."</i>
+        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
+        ~ is_injured = true
         -> scene_8_the_race
     }
 * [Analyze the Environment - Intelligence Check]
