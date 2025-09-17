@@ -22,6 +22,9 @@ VAR jed_status = "UNKNOWN" // Can be UNKNOWN, HELPED, HOSTILE, DEAD
 VAR scene_4_debuff_stat = "" // To track debuff from Scene 4
 VAR rival_has_emitter = false
 
+// Data Fragments
+VAR data_fragments = 0
+
 // === GAME START ===
 -> scene_1_impact
 
@@ -407,9 +410,107 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
 }
 
 
-// === SCENE 6: THE FIRST TEST (Placeholder) ===
+// === SCENE 6: THE FIRST TEST ===
 === scene_6_first_test ===
-// This scene is not yet written. The player ignores the cache and finds another path.
-You decide to ignore the supply drop and look for a safer route.
+{ scene_5a_the_cache > 0:
+    You move on from the plaza, the encounter with your rival leaving a sour taste in your mouth.
+- else:
+    You decide to avoid the confrontation at the plaza, heading for a less obvious route.
+}
+You have a choice of paths ahead, one leading up, the other down.
+* [Take the high ground. Head for the rooftops.]
+    -> scene_6a_rooftops
+* [Descend into the darkness. Take the subway.]
+    -> scene_6b_subway
+
+// --- PATH A: THE ROOFTOPS TEST ---
+=== scene_6a_rooftops ===
+You follow a treacherous path across rusted gantries to the base of a massive, dilapidated communications tower clinging to the side of a skyscraper. The AI's voice chimes in.
+<i>AI: "Archivist Test Chamber detected. Objective: Retrieve Data Fragment from the tower's broadcast antenna. Warning: Structural integrity is compromised."</i>
+The wind howls around you. It's a long, dangerous climb.
+* [Begin the Climb - Agility Check]
+    { agility >= 8: // Lena excels here
+        // SUCCESS
+        You move with grace and speed, the dizzying height feeling like home. You easily navigate the broken ladders and exposed rebar, retrieving the **first Data Fragment** from the antenna array at the top.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    - else:
+        { agility >= 5 || strength >= 6: // A tough character can power through
+            // PARTIAL SUCCESS
+            You struggle, muscles burning, but you make it. {character_name == "Kaelen": At one point, a handhold crumbles, and you only manage to hang on through sheer, raw strength.|You manage to hang on through sheer grit.} You retrieve the fragment but are exhausted by the effort.
+            ~ data_fragments += 1
+            // TODO: Add a "Fatigued" debuff mechanic here.
+            -> scene_7_the_fragment
+        - else: // A character with low physical stats will fail
+            // FAILURE
+            A handhold crumbles under your grip, and a gust of wind throws you off balance. You fall a short distance, slamming into a lower platform. Wounded and aching, you realize you can't reach the top from here.
+            <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
+            ~ resolve -= 10
+            -> scene_8_the_race
+        }
+    }
+
+// --- PATH B: THE SUBWAY TEST ---
+=== scene_6b_subway ===
+You descend into a flooded subway station, lit by the eerie green glow of moss. In the center of the platform is a functioning Archivist terminal, humming with power.
+<i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
+A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head twitching at every sound.
+* { has_kinetic_emitter } [Use the Emitter's concussive blast.]
+    // Auto-Success with the right tool
+    You raise the Emitter and unleash a silent, powerful wave of kinetic energy. The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
+    ~ data_fragments += 1
+    -> scene_7_the_fragment
+* [Engage the Skulker - Strength Check]
+    { strength >= 6:
+        // Success
+        You charge, tackling the creature head-on. It's a brutal, short-lived fight that leaves you breathless but victorious. You access the terminal and download the **first Data Fragment**.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    - else:
+        // Failure
+        The creature is faster and stronger than you anticipated. It lands a vicious blow, forcing you to retreat back into the tunnels, wounded. The terminal remains out of reach.
+        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        -> scene_8_the_race
+    }
+* [Sneak to the Terminal - Agility Check]
+    { agility >= 6:
+        // Success
+        You slip through the shadows, your footsteps silent in the shallow water. The creature never senses you as you reach the terminal, download the **first Data Fragment**, and slip away.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    - else:
+        // Failure
+        A loose piece of debris clatters under your foot. The Skulker shrieks and lunges. You barely manage to escape its claws, retreating with your heart pounding in your chest.
+        <i>AI: "Subject has failed thetest. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        -> scene_8_the_race
+    }
+* [Analyze the Environment - Intelligence Check]
+    { intelligence >= 7:
+        // Success
+        You notice a leaking water pipe on the ceiling directly above a sparking, exposed power conduit near the creature. You throw a piece of rubble, shattering the pipe. Water gushes onto the conduit, creating a massive electrical surge that incapacitates the Skulker. You download the **first Data Fragment**.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    - else:
+        // Failure
+        You see a potential environmental advantage but miscalculate. Your attempt to create a distraction only succeeds in making a loud noise, drawing the Skulker's immediate, aggressive attention. You are forced to flee.
+        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        -> scene_8_the_race
+    }
+
+// === SCENE 7: THE FRAGMENT (Placeholder) ===
+=== scene_7_the_fragment ===
+// This scene will detail the player examining the fragment.
+You hold the Data Fragment. It hums with a faint energy.
+...To be continued...
+-> scene_8_the_race
+
+
+// === SCENE 8: THE RACE (Placeholder) ===
+=== scene_8_the_race ===
+// This scene will be the next major objective.
+The AI directs you towards a new energy signature.
 ...To be continued...
 -> END
