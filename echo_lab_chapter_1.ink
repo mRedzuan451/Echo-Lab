@@ -313,16 +313,18 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Failure
             Your exhaustion shows. Xander laughs. "You look weak, Rook." A brief, brutal scuffle ensues.
             { has_degraded_power_cell:
-                // Use the power cell
+                // Use the power cell - Draw
                 Shoved back, you see an opportunity. You pull out the Degraded Power Cell and slam it against the crate's exposed wiring. A violent surge of energy fries the locking mechanism with a loud ZAP, but also overloads the device inside. A wisp of acrid smoke curls from the crate.
                 Xander stares, his smirk gone. "What did you do?!" He kicks the crate open to find the emitter fused into a slag of molten electronics. "Idiot! You destroyed it!" Annoyed, he shoves you aside and storms off.
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
+                ~ resolve -= 5 // Penalty for a draw
             - else:
-                // Original failure - Rival gets the emitter
+                // Original failure - Defeat
                 You're shoved back, and Xander manages to break the secondary lock, grabbing the Kinetic Field Emitter before retreating. "Always a step behind," he taunts.
                 ~ has_kinetic_emitter = false
                 ~ rival_has_emitter = true
+                ~ resolve -= 10 // Penalty for defeat
             }
         }
         -> scene_6_first_test
@@ -330,6 +332,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         Xander watches you go with a look of contemptuous victory. You are safe, but have given a powerful tool to your worst enemy.
         ~ has_kinetic_emitter = false
         ~ rival_has_emitter = true
+        ~ resolve -= 5 // Penalty for withdrawal
         -> scene_6_first_test
 }
 
@@ -345,16 +348,18 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Failure
             Jinx sees a flaw in your technobabble. "Nice try, lab coat, but you forgot the secondary capacitor!" She moves to trigger her device.
             { has_degraded_power_cell:
-                // Use the power cell
+                // Use the power cell - Draw
                 Thinking fast, you jam the Degraded Power Cell into a port on her contraption. "Then I'll just have to add another one!" you retort. The resulting power feedback is spectacular. Sparks fly, Jinx yelps and jumps back, and the cache's lock and the emitter inside are both fried instantly.
                 She stares at the smoking mess, then at you, her grin wider than ever. "Ooooh! You're FUN! You broke my toy, but you made a much bigger bang!" She cackles and vanishes.
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
+                ~ resolve -= 5 // Penalty for a draw
             - else:
-                // Original failure - Rival gets the emitter
+                // Original failure - Defeat
                 She triggers her device. A localized EMP blast shorts out your AI map and pops the crate. Jinx cackles, grabs the Emitter, and vanishes into the ruins.
                 ~ has_kinetic_emitter = false
                 ~ rival_has_emitter = true
+                ~ resolve -= 10 // Penalty for defeat
             }
         }
         -> scene_6_first_test
@@ -362,6 +367,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         You back away slowly. Jinx doesn't seem to notice, too engrossed in her work. A moment later, a small explosion is heard. You are safe, but Jinx now has a new, powerful toy.
         ~ has_kinetic_emitter = false
         ~ rival_has_emitter = true
+        ~ resolve -= 5 // Penalty for withdrawal
         -> scene_6_first_test
 }
 
@@ -377,16 +383,18 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             // Failure
             Your movement isn't silent enough. As you reach for the crate, an arrow whistles past your ear, embedding itself in the metal. "Too slow," Isha says.
             { has_degraded_power_cell:
-                // Use the power cell
+                // Use the power cell - Draw
                 Pinned down, you make a desperate move. You toss the unstable Power Cell towards the crate's control panel. The impact is enough. The cell ruptures, bathing the crate in a shower of sparks that shorts out the contents completely.
                 Isha lowers her bow, an unreadable expression on her face. "A scorched-earth tactic. You'd rather no one have it than lose. Interesting." She gives a slow nod and melts back into the shadows.
                 ~ has_degraded_power_cell = false
                 ~ has_kinetic_emitter = false
+                ~ resolve -= 5 // Penalty for a draw
             - else:
-                // Original failure - Rival gets the emitter
+                // Original failure - Defeat
                 A tense chase ensues, forcing you to retreat empty-handed.
                 ~ has_kinetic_emitter = false
                 ~ rival_has_emitter = true
+                ~ resolve -= 10 // Penalty for defeat
             }
         }
         -> scene_6_first_test
@@ -394,6 +402,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         Isha turns, a predatory smile on her face. "A look is all you'll get." She expertly opens the crate, takes the Emitter, and gives you a final nod. "Now you know what I have. Run." It's a warning and a promise. The hunt has begun.
         ~ has_kinetic_emitter = false
         ~ rival_has_emitter = true
+        ~ resolve -= 5 // Penalty for withdrawal
         -> scene_6_first_test
 }
 
