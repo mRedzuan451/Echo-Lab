@@ -45,7 +45,6 @@ An alarm blares. The hum becomes a roar. The tiny pod you're in shudders as it h
 This isn't a rescue. It's a re-entry.
 
 The impact is absolute. Metal screams, your vision whites out, and then... nothing.
-
 Silence.
 
 -> scene_2_awakening
@@ -53,11 +52,12 @@ Silence.
 
 // === SCENE 2: AWAKENING ===
 === scene_2_awakening ===
-Your head throbs. The AI implant in your brain comes online with a soft chime, its voice a calm whisper against the panic in your mind.
-
+Your head throbs.
+The AI implant in your brain comes online with a soft chime, its voice a calm whisper against the panic in your mind.
 <i>"Implant activated. Vital signs are... suboptimal, but stable. Welcome to the Arena. You have been assigned to Test Site Echo-7."</i>
 
-You try to remember who you are. The name comes first, then the skills.
+You try to remember who you are.
+The name comes first, then the skills.
 * [I am Kaelen "Rook" Vance, the Soldier.]
     ~ character_name = "Kaelen"
     ~ strength = 7
@@ -83,11 +83,9 @@ You try to remember who you are. The name comes first, then the skills.
 // === SCENE 3: THE FIRST ROOM ===
 === scene_3_the_first_room ===
 The door of your drop pod hisses open, dumping you onto a floor of cracked concrete slick with rainwater and alien moss.
-
 <i>AI: "Location confirmed. Maintenance Bay. Zone designation: Ruined City-Isle."</i>
 
 You're in a cavernous, ruined maintenance bay. The air is thick with the smell of ozone and decay. A single emergency light casts long, dancing shadows across shattered computer terminals and the skeletal remains of what might have been a maintenance worker.
-
 Across the room, you see a patch of faintly glowing moss clinging to a damp wall. Next to it is a heavy, rusted metal locker. The only way out is a collapsed doorway to the north, choked with rubble but passable.
 -> scene_3_choices
 
@@ -151,7 +149,7 @@ You take a moment to examine your findings.
     { not is_injured and not is_fatigued:
         - HEALTHY
     }
-
+    
     -- Inventory --
     { not has_degraded_power_cell and not has_glimmer_moss_sample and not has_kinetic_emitter:
         - Your pockets are empty.
@@ -165,7 +163,6 @@ You take a moment to examine your findings.
     { has_kinetic_emitter:
         - Kinetic Field Emitter
     }
-    --------------------
     * [Return.]
         -> return_to
 
@@ -188,7 +185,9 @@ The AI's calm voice is a presence in your mind.
 
 = locker_encounter
 The locker is old and heavy. The locking mechanism is a simple electronic keypad, now dark and corroded. The door itself is dented and sealed shut with rust.
-* {character_name == "Kaelen"} [FORCE IT OPEN - Strength Check]
+
+{ character_name == "Kaelen":
+    // Kaelen's Action: Brute Force
     You plant your feet, grip the edge of the locker door, and pull with everything you've got.
     { strength >= 7:
         // Success
@@ -199,8 +198,9 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         You throw your shoulder against the door, but it only groans in protest. The rust holds it fast. You've only succeeded in bruising your shoulder and making a lot of noise.
         ~ resolve -= 1
     }
-    -> scene_3_choices
-* {character_name == "Aris"} [HOTWIRE THE KEYPAD - Intelligence Check]
+}
+{ character_name == "Aris":
+    // Aris's Action: Hotwire
     You spot a frayed power conduit hanging from the ceiling. Rerouting the cable, you attempt to send a jolt of power to the corroded keypad.
     { intelligence >= 8:
         // Success
@@ -211,8 +211,9 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         You try to create a circuit, but the components are too decayed. A final spark from the conduit singes your fingers and the keypad goes completely dead. It's useless now.
         ~ resolve -= 1
     }
-    -> scene_3_choices
-* {character_name == "Lena"} [PICK THE LOCK - Agility Check]
+}
+{ character_name == "Lena":
+    // Lena's Action: Lockpick
     The keypad is dead, but the manual override is still intact. Your deft fingers search for the tumblers.
     { agility >= 7:
         // Success
@@ -223,16 +224,17 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
         You work at the lock, but the internal mechanism is rusted solid. A lockpick snaps with a sharp *tink*, leaving the lock hopelessly jammed. There's no getting in that way now.
         ~ resolve -= 1
     }
-    -> scene_3_choices
-* [Leave it alone.]
-    -> scene_3_choices
+}
+-> scene_3_choices
 
 = moss_encounter
 You move closer to the wall. The moss gives off a soft, ethereal green light. It pulses gently, like a slow heartbeat.
-* {character_name == "Aris"} [Use Bio-Scan.]
+
+{ character_name == "Aris":
+    // Aris's Action: Bio-Scan
     <i>AI: "Glimmer Moss. Bioluminescent fungus. Mildly regenerative properties. Caution: Spores are a known attractant for subterranean fauna."</i>
-    -> harvest_moss
-* {character_name != "Aris"} [Examine it closely.]
+- else:
+    // Kaelen/Lena's Action: Examine
     { perception >= 6:
         // Success
         You notice the ground beneath the moss is disturbed with small tracks, and you can smell a strange, sweet scent. This moss is more than just a pretty light; it's an active part of the ecosystem here.
@@ -240,7 +242,8 @@ You move closer to the wall. The moss gives off a soft, ethereal green light. It
         // Failure
         It's a weird glowing plant. Looks cool, but you don't know anything else about it.
     }
-    -> harvest_moss
+}
+-> harvest_moss
         
 = harvest_moss
 +   [Take a sample.]
