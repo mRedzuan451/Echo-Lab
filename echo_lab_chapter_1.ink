@@ -51,6 +51,7 @@ VAR rival_def = 0
 // Analyzed item
 VAR analyzed_power_cell = false
 VAR analyzed_glimmer_moss = false
+VAR studied_emitter = false
 
 // === GAME START ===
 -> scene_1_impact
@@ -555,8 +556,33 @@ The adrenaline fades, leaving you panting in the quiet plaza. You take a moment 
     -> use_glimmer_moss
 * [Continue on.]
     -> scene_6_first_test
+* { has_kinetic_emitter and not studied_emitter } [Study the Kinetic Field Emitter.]
+    -> study_emitter
 + [Check Status.]
     -> check_status(-> post_rival_encounter)
+    
+= study_emitter
+~ studied_emitter = true
+You take a closer look at the device you won from your rival. It's a heavy, metallic object that hums with a low, contained energy.
+{ character_name == "Aris":
+    // Aris is a tech expert
+    You carefully pry open a maintenance hatch, your multi-tool tracing the alien circuitry. The design is elegant, almost organic. Understanding a fraction of its power source feels like unlocking a new law of physics. Your mind expands with the possibilities.
+    ~ intelligence += 1
+    <i>AI: "Intelligence increased to {intelligence}."</i>
+}
+{ character_name == "Lena":
+    // Lena is a practical operative
+    You handle the Emitter like a new weapon, testing its weight and grip. You spot a subtle calibration dial near the power conduit. A few careful adjustments, and the hum changes pitch, sounding more stable and efficient. You've learned to read its subtle cues.
+    ~ perception += 1
+    <i>AI: "Perception increased to {perception}."</i>
+}
+{ character_name == "Kaelen":
+    // Kaelen understands tools of war
+    This thing is beyond you, but you understand tools of war. You run it through a series of power-on and power-off tests, getting a feel for its activation time and recoil. It's not a gun, but it is a weapon. Knowing you can master it settles your nerves.
+    ~ resolve += 5
+    <i>AI: "Resolve has stabilized."</i>
+}
+-> post_rival_encounter
 
 = use_glimmer_moss
     ~ temp heal_amount = 0
