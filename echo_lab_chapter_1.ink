@@ -65,10 +65,6 @@ VAR data_fragments = 0
     }
     // (Future equipment bonuses would go here)
     
-    // 3. Finalize stats (e.g., heal to max if stats changed)
-    { hp > max_hp or hp == 0:
-        ~ hp = max_hp
-    }
     ~ return true
 
 // Global Combat State Variables
@@ -133,6 +129,7 @@ The name comes first, then the skills.
     ~ atk = 6
     ~ def = 3
     ~ update_combat_stats()
+    ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
 * [I am Dr. Aris Thorne, the Bio-Hacker.]
     ~ character_name = "Aris"
@@ -146,6 +143,7 @@ The name comes first, then the skills.
     ~ atk = 3
     ~ def = 5
     ~ update_combat_stats()
+    ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
 * [I am Lena "Ghost" Petrova, the Infiltrator.]
     ~ character_name = "Lena"
@@ -159,6 +157,7 @@ The name comes first, then the skills.
     ~ atk = 5
     ~ def = 2
     ~ update_combat_stats()
+    ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
 
 // === SCENE 3: THE FIRST ROOM ===
