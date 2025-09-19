@@ -687,42 +687,49 @@ You follow a treacherous path across rusted gantries to the base of a massive, d
 <i>AI: "Archivist Test Chamber detected. Objective: Retrieve Data Fragment from the tower's broadcast antenna. Warning: Structural integrity is compromised."</i>
 The wind howls around you. It's a long, dangerous climb.
 * [Begin the Climb - Agility Check]
-    { agility >= 8: // Lena excels here
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = agility + roll
+    { total_skill >= 10:
         // SUCCESS
         You move with grace and speed, the dizzying height feeling like home. You easily navigate the broken ladders and exposed rebar, retrieving the **first Data Fragment** from the antenna array at the top.
         ~ data_fragments += 1
         -> scene_7_the_fragment
     - else:
-        { agility >= 5 || strength >= 6: // A tough character can power through
-            // PARTIAL SUCCESS
-            You struggle, muscles burning, but you make it. {character_name == "Kaelen": At one point, a handhold crumbles, and you only manage to hang on through sheer, raw strength.|You manage to hang on through sheer grit.} You retrieve the fragment but are exhausted by the effort.
-            ~ data_fragments += 1
-            ~ is_fatigued = true
-            -> scene_7_the_fragment
-        - else: // A character with low physical stats will fail
-            // FAILURE
-            A handhold crumbles under your grip, and a gust of wind throws you off balance. You fall a short distance, slamming into a lower platform. Wounded and aching, you realize you can't reach the top from here.
-            <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
-            ~ resolve -= 10
-            ~ is_injured = true
-            -> scene_8_the_race
-        }
+        // FAILURE
+        A handhold crumbles under your grip, and a gust of wind throws you off balance. You fall a short distance, slamming into a lower platform. Wounded and aching, you realize you can't reach the top from here.
+        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        ~ is_injured = true
+        -> scene_8_the_race
     }
 
 // --- PATH B: THE SUBWAY TEST ---
 === scene_6b_subway ===
 You descend into a flooded subway station, lit by the eerie green glow of moss. In the center of the platform is a functioning Archivist terminal, humming with power.
 <i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
-A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head twitching at every sound.
+A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
 * { has_kinetic_emitter } [Use the Emitter's concussive blast.]
-    // Auto-Success with the right tool
-    You raise the Emitter and unleash a silent, powerful wave of kinetic energy. The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
-    ~ data_fragments += 1
-    -> scene_7_the_fragment
-* [Engage the Skulker]
-        -> setup_skulker_battle // Divert to the setup knot first
-* [Sneak to the Terminal]
-    { agility >= 6:
+    // ... (existing code)
+* [Engage the Skulker - Strength Check]
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = strength + roll
+    { total_skill >= 10:
+        // Success
+        You charge, tackling the creature head-on. It's a brutal, short-lived fight that leaves you breathless but victorious. You access the terminal and download the **first Data Fragment**.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    - else:
+        // Failure
+        The creature is faster and stronger than you anticipated. It lands a vicious blow, forcing you to retreat back into the tunnels, wounded. The terminal remains out of reach.
+        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        ~ is_injured = true
+        -> scene_8_the_race
+    }
+* [Sneak to the Terminal - Agility Check]
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = agility + roll
+    { total_skill >= 10:
         // Success
         You slip through the shadows, your footsteps silent in the shallow water. The creature never senses you as you reach the terminal, download the **first Data Fragment**, and slip away.
         ~ data_fragments += 1
@@ -735,8 +742,10 @@ A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head t
         ~ is_injured = true
         -> scene_8_the_race
     }
-* [Analyze the Environment]
-    { intelligence >= 7:
+* [Analyze the Environment - Intelligence Check]
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = intelligence + roll
+    { total_skill >= 11:
         // Success
         You notice a leaking water pipe on the ceiling directly above a sparking, exposed power conduit near the creature. You throw a piece of rubble, shattering the pipe. Water gushes onto the conduit, creating a massive electrical surge that incapacitates the Skulker. You download the **first Data Fragment**.
         ~ data_fragments += 1
