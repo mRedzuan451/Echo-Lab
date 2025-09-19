@@ -554,7 +554,21 @@ Your final blow connects, and your rival stumbles back, winded and defeated. The
 
 // === NEW SCENE: AFTERMATH ===
 === post_rival_encounter ===
-The adrenaline fades, leaving you panting in the quiet plaza. You take a moment to catch your breath before moving on.
+The adrenaline fades, leaving you panting in the quiet plaza. 
+// Check HP to determine condition after the fight
+{ hp <= max_hp / 4: // If HP is at 25% or less
+    ~ is_injured = true
+    ~ is_fatigued = false
+    You're badly wounded, and every movement is a struggle.
+- else: hp <= max_hp / 2: // If HP is at 50% or less
+    ~ is_injured = false
+    ~ is_fatigued = true
+    You're bruised and exhausted from the fight.
+- else:
+    ~ is_injured = false
+    ~ is_fatigued = false
+}
+You take a moment to catch your breath before moving on.
 * { analyzed_glimmer_moss and has_glimmer_moss_sample } [Use the Glimmer Moss to tend to your wounds.]
     -> use_glimmer_moss
 * [Continue on.]
