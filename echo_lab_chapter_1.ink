@@ -815,6 +815,10 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         The creature is faster and stronger than you anticipated. It lands a vicious blow, forcing you to retreat back into the tunnels, wounded. The terminal remains out of reach.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
+        ~ hp -= 5
+        { hp < 0:
+            ~ hp = 0
+        }
         ~ is_injured = true
         -> scene_8_the_race
     }
@@ -831,6 +835,10 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         A loose piece of debris clatters under your foot. The Skulker shrieks and lunges. You barely manage to escape its claws, retreating with your heart pounding in your chest.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
+        ~ hp -= 5
+        { hp < 0:
+            ~ hp = 0
+        }
         ~ is_injured = true
         -> scene_8_the_race
     }
@@ -846,7 +854,7 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         // Failure
         You see a potential environmental advantage but miscalculate. Your attempt to create a distraction only succeeds in making a loud noise, drawing the Skulker's immediate, aggressive attention. You are forced to flee.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
-        ~ resolve -= 10
+        ~ resolve -= 15
         -> scene_8_the_race
     }
 
