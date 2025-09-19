@@ -89,6 +89,8 @@ VAR analyzed_power_cell = false
 VAR analyzed_glimmer_moss = false
 VAR studied_emitter = false
 
+VAR emitter_charges = 0
+
 // Equip Item
 VAR emitter_equipped = false
 
@@ -281,8 +283,9 @@ You take a moment to examine your findings.
         - Glimmer Moss Sample
     }
     { has_kinetic_emitter:
-        - Kinetic Field Emitter
+        - Kinetic Field Emitter ({emitter_charges} charges)
     }
+    
     * [Return.]
         -> return_to
         
@@ -627,6 +630,7 @@ The blow sends you staggering back. You're injured and losing the fight, but the
 Your final blow connects, and your rival stumbles back, winded and defeated. The fight is over. You've won. You claim the **Kinetic Field Emitter** from the supply cache.
 ~ has_kinetic_emitter = true
 ~ rival_has_emitter = false
+~ emitter_charges = 3 // Emitter starts with 3 charges
 -> post_rival_encounter
 
 // === NEW SCENE: AFTERMATH ===
@@ -685,7 +689,7 @@ You strap the Kinetic Field Emitter to your forearm. It feels heavy, but hums wi
 // Recalculate all stats to apply the new equipment bonus
 ~ update_combat_stats()
 
-<i>AI: "Emitter equipped. Combat parameters updated. Attack is now {atk}."</i>
+<i>AI: "Emitter equipped. Unit has {emitter_charges} charges remaining. Attack is now {atk}."</i>
 -> post_rival_encounter
     
 = study_emitter
@@ -775,7 +779,17 @@ You descend into a flooded subway station, lit by the eerie green glow of moss. 
 <i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
 A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
 * { has_kinetic_emitter } [Use the Emitter's concussive blast.]
-    // ... (existing code)
+    ~ emitter_charges -= 1
+    // Auto-Success with the right tool
+    You raise the Emitter and unleash a silent, powerful wave of kinetic energy. The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
+    { emitter_charges == 0:
+            A final surge of power leaves the device inert, its internal mechanisms fused. It's broken for good.
+    }
+    ~ data_fragments += 1
+    -> scene_7_the_fragment
+* { has_kinetic_emitter and emitter_charges <= 0 } [Attempt to use the broken Emitter.]
+        You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
+        -> scene_6b_subway
 * [Engage the Skulker - Strength Check]
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = strength + roll
