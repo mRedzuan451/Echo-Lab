@@ -29,11 +29,47 @@ VAR rival_has_emitter = false
 // Data Fragments
 VAR data_fragments = 0
 
-// Combat Stats
-VAR hp = 0
-VAR max_hp = 0
-VAR atk = 0
-VAR def = 0
+// === DYNAMIC STAT CALCULATION ===
+=== function update_combat_stats() ===
+    // 1. Calculate BASE stats from attributes
+    { character_name == "Kaelen":
+        // The Soldier: Strength is key for attack and health.
+        ~ max_hp = 15 + (strength * 2)
+        ~ atk = 2 + strength
+        ~ def = agility
+    }
+    { character_name == "Aris":
+        // The Bio-Hacker: Intelligence drives his attack power.
+        ~ max_hp = 12 + strength
+        ~ atk = 1 + intelligence
+        ~ def = agility + 1
+    }
+    { character_name == "Lena":
+        // The Infiltrator: Agility makes her a fast hitter.
+        ~ max_hp = 14 + strength
+        ~ atk = 2 + agility
+        ~ def = INT(perception / 2)
+    }
+
+    // 2. Apply BONUSES from equipped items
+    { emitter_equipped:
+        { studied_emitter:
+            { character_name == "Aris":
+                ~ atk += 4 // Aris gets the biggest bonus
+            - else:
+                ~ atk += 3 // Other characters get a good bonus
+            }
+        - else:
+            ~ atk += 2 // Standard bonus if not studied
+        }
+    }
+    // (Future equipment bonuses would go here)
+    
+    // 3. Finalize stats (e.g., heal to max if stats changed)
+    { hp > max_hp or hp == 0:
+        ~ hp = max_hp
+    }
+    ~ return true
 
 // Global Combat State Variables
 VAR current_enemy_name = ""
@@ -96,6 +132,7 @@ The name comes first, then the skills.
     ~ hp = 25
     ~ atk = 6
     ~ def = 3
+    ~ update_combat_stats()
     -> scene_3_the_first_room
 * [I am Dr. Aris Thorne, the Bio-Hacker.]
     ~ character_name = "Aris"
@@ -108,6 +145,7 @@ The name comes first, then the skills.
     ~ hp = 18
     ~ atk = 3
     ~ def = 5
+    ~ update_combat_stats()
     -> scene_3_the_first_room
 * [I am Lena "Ghost" Petrova, the Infiltrator.]
     ~ character_name = "Lena"
@@ -120,6 +158,7 @@ The name comes first, then the skills.
     ~ hp = 20
     ~ atk = 5
     ~ def = 2
+    ~ update_combat_stats()
     -> scene_3_the_first_room
 
 // === SCENE 3: THE FIRST ROOM ===
@@ -387,10 +426,12 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
             You receive a -1 debuff to Intelligence.
             ~ intelligence -= 1
             ~ scene_4_debuff_stat = "Intelligence"
+            ~ update_combat_stats() // Recalculate stats
         - else: // Lena
             You receive a -1 debuff to Agility.
             ~ agility -= 1
             ~ scene_4_debuff_stat = "Agility"
+            ~ update_combat_stats() // Recalculate stats
         }
     }
     -> scene_5_crossroads
@@ -405,10 +446,12 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
             You receive a -1 debuff to Strength.
             ~ strength -= 1
             ~ scene_4_debuff_stat = "Strength"
+            ~ update_combat_stats() // Recalculate stats
         - else: // Lena
             You receive a -1 debuff to Agility.
             ~ agility -= 1
             ~ scene_4_debuff_stat = "Agility"
+            ~ update_combat_stats() // Recalculate stats
         }
     }
     -> scene_5_crossroads
@@ -423,10 +466,12 @@ To reach the plaza, you must navigate a short but unstable transit tunnel. The f
             You receive a -1 debuff to Strength.
             ~ strength -= 1
             ~ scene_4_debuff_stat = "Strength"
+            ~ update_combat_stats() // Recalculate stats
         - else: // Aris
             You receive a -1 debuff to Intelligence.
             ~ intelligence -= 1
             ~ scene_4_debuff_stat = "Intelligence"
+            ~ update_combat_stats() // Recalculate stats
         }
     }
     -> scene_5_crossroads
@@ -604,24 +649,11 @@ You scan the damp, shadowy corners of the plaza, looking for any signs of the gl
 = equip_emitter
 ~ emitter_equipped = true
 You strap the Kinetic Field Emitter to your forearm. It feels heavy, but hums with a responsive energy. You feel more dangerous.
-{ studied_emitter:
-    // Bonus for studying it first
-    Thanks to your prior analysis, you're able to integrate it more effectively.
-    { character_name == "Aris":
-        // Aris gets the biggest bonus
-        Your deep understanding of the alien tech allows you to overclock the emitter safely, squeezing out every ounce of power. Your Attack has massively increased!
-        ~ atk += 4
-    - else:
-        // Other characters get a smaller studied bonus
-        Your practical insights allow you to maximize its power output. Your Attack has significantly increased!
-        ~ atk += 3
-    }
-- else:
-    // Standard bonus if not studied
-    It feels alien and powerful, but you manage to get it operational. Your Attack has increased.
-    ~ atk += 2
-}
-<i>AI: "Attack increased to {atk}."</i>
+
+// Recalculate all stats to apply the new equipment bonus
+~ update_combat_stats()
+
+<i>AI: "Emitter equipped. Combat parameters updated. Attack is now {atk}."</i>
 -> post_rival_encounter
     
 = study_emitter
@@ -631,12 +663,14 @@ You take a closer look at the device you won from your rival. It's a heavy, meta
     // Aris is a tech expert
     You carefully pry open a maintenance hatch, your multi-tool tracing the alien circuitry. The design is elegant, almost organic. Understanding a fraction of its power source feels like unlocking a new law of physics. Your mind expands with the possibilities.
     ~ intelligence += 1
+    ~ update_combat_stats() // Recalculate stats
     <i>AI: "Intelligence increased to {intelligence}."</i>
 }
 { character_name == "Lena":
     // Lena is a practical operative
     You handle the Emitter like a new weapon, testing its weight and grip. You spot a subtle calibration dial near the power conduit. A few careful adjustments, and the hum changes pitch, sounding more stable and efficient. You've learned to read its subtle cues.
     ~ perception += 1
+    ~ update_combat_stats() // Recalculate stats
     <i>AI: "Perception increased to {perception}."</i>
 }
 { character_name == "Kaelen":
