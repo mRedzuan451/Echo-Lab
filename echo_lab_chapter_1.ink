@@ -83,6 +83,8 @@ VAR rival_hp = 0
 VAR rival_max_hp = 0
 VAR rival_atk = 0
 VAR rival_def = 0
+VAR used_skill_in_battle = false
+VAR rival_will_miss_next_turn = false
 
 // Analyzed item
 VAR analyzed_power_cell = false
@@ -572,12 +574,37 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         ~ rival_def = 4
     }
     ~ rival_hp = rival_max_hp
+    ~ used_skill_in_battle = false
+    ~ rival_will_miss_next_turn = false
     -> rival_battle_loop
 
 = rival_battle_loop
     You have {hp}/{max_hp} HP. Your rival has {rival_hp}/{rival_max_hp} HP.
     * [Attack!]
         -> rival_player_attack
+    + { not used_skill_in_battle } [Use Skill]
+        -> rival_use_skill
+    * [Give Up]
+        -> rival_battle_lose_choice
+
+= rival_use_skill
+    ~ used_skill_in_battle = true
+    { player_skills ? Survivalist: // Kaelen's Skill
+        You kick a cloud of dust and rubble into your rival's face, momentarily blinding them and giving you an opening. You feel a surge of adrenaline. Your Attack increases for this battle!
+        ~ atk += 2
+        -> rival_enemy_turn
+    }
+    { player_skills ? BioScan: // Aris's Skill
+        You activate your bio-scanner, analyzing your rival's physiology in real-time. You spot a minor strain in their shoulder... a weak point. Their Defense is permanently lowered!
+        ~ rival_def -= 2
+        { rival_def < 0: ~ rival_def = 0 }
+        -> rival_enemy_turn
+    }
+    { player_skills ? DiscerningEye: // Lena's Skill
+        Ignoring the direct threat, you watch your rival's footwork. You spot a subtle tell, a shift in weight just before they strike. You know exactly how to evade their next move. Your rival will miss their next attack.
+        ~ rival_will_miss_next_turn = true
+        -> rival_enemy_turn
+    }
 
 = rival_player_attack
     // --- Player's Turn ---
@@ -597,20 +624,26 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     }
 
 = rival_enemy_turn
-    // --- Rival's Turn ---
-    ~ temp r_multiplier = RANDOM(8, 12) / 10.0
-    ~ temp r_base_dmg = rival_atk - def
-    { r_base_dmg < 1: 
-        ~ r_base_dmg = 1
-    }
-    ~ temp r_final_dmg = INT(r_base_dmg * r_multiplier)
-    ~ hp -= r_final_dmg
-    Your rival counters, hitting you for {r_final_dmg} damage!
-    
-    { hp <= max_hp / 2:
-        -> rival_battle_lose_choice
-    - else:
+    { rival_will_miss_next_turn:
+        ~ rival_will_miss_next_turn = false
+        Using the opening you spotted, you easily sidestep your rival's clumsy attack. It misses completely.
         -> rival_battle_loop
+    - else:
+        // --- Rival's Turn ---
+        ~ temp r_multiplier = RANDOM(8, 12) / 10.0
+        ~ temp r_base_dmg = rival_atk - def
+        { r_base_dmg < 1: 
+            ~ r_base_dmg = 1
+        }
+        ~ temp r_final_dmg = INT(r_base_dmg * r_multiplier)
+        ~ hp -= r_final_dmg
+        Your rival counters, hitting you for {r_final_dmg} damage!
+        
+        { hp <= max_hp / 2:
+            -> rival_battle_lose_choice
+        - else:
+            -> rival_battle_loop
+        }
     }
 
 = rival_battle_lose_choice
@@ -835,7 +868,7 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         A loose piece of debris clatters under your foot. The Skulker shrieks and lunges. You barely manage to escape its claws, retreating with your heart pounding in your chest.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
-        ~ hp -= 5
+        ~ hp -= 2
         { hp < 0:
             ~ hp = 0
         }
