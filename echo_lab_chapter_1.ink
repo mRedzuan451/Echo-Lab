@@ -569,6 +569,10 @@ The adrenaline fades, leaving you panting in the quiet plaza.
     ~ is_fatigued = false
 }
 You take a moment to catch your breath before moving on.
+* { is_fatigued } [Rest for a moment.]
+    -> rest_a_moment
+* { is_injured and not has_glimmer_moss_sample } [Look for something to treat your wounds.]
+    -> look_for_moss
 * { analyzed_glimmer_moss and has_glimmer_moss_sample } [Use the Glimmer Moss to tend to your wounds.]
     -> use_glimmer_moss
 * [Continue on.]
@@ -579,6 +583,23 @@ You take a moment to catch your breath before moving on.
     -> equip_emitter
 + [Check Status.]
     -> check_status(-> post_rival_encounter)
+
+= rest_a_moment
+You find a relatively dry piece of rubble to sit on, closing your eyes for a moment to let the exhaustion wash over you. After a few minutes, you feel a bit more clear-headed. The fatigue subsides.
+~ is_fatigued = false
+-> post_rival_encounter
+
+= look_for_moss
+You scan the damp, shadowy corners of the plaza, looking for any signs of the glowing fungus you saw in the maintenance bay.
+{ perception >= 6:
+    // Success
+    Your sharp eyes spot a small patch clinging to the underside of a collapsed archway. You carefully scrape a sample into a pouch.
+    ~ has_glimmer_moss_sample = true
+- else:
+    // Failure
+    The plaza is picked clean. There's nothing here that can help you. You'll have to push on despite your injuries.
+}
+-> post_rival_encounter
 
 = equip_emitter
 ~ emitter_equipped = true
