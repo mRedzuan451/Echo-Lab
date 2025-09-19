@@ -91,6 +91,19 @@ VAR studied_emitter = false
 
 VAR emitter_charges = 0
 
+// === ITEM FUNCTIONS ===
+=== function use_emitter_charge() ===
+    { has_kinetic_emitter and emitter_charges > 0:
+        ~ emitter_charges -= 1
+        The Kinetic Field Emitter discharges with a powerful hum.
+        { emitter_charges == 0:
+            A final surge of power leaves the device inert, its internal mechanisms fused. It's broken for good.
+        }
+        ~ return true
+    - else:
+        ~ return false
+    }
+
 // Equip Item
 VAR emitter_equipped = false
 
@@ -778,18 +791,17 @@ The wind howls around you. It's a long, dangerous climb.
 You descend into a flooded subway station, lit by the eerie green glow of moss. In the center of the platform is a functioning Archivist terminal, humming with power.
 <i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
 A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
-* { has_kinetic_emitter } [Use the Emitter's concussive blast.]
-    ~ emitter_charges -= 1
-    // Auto-Success with the right tool
-    You raise the Emitter and unleash a silent, powerful wave of kinetic energy. The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
-    { emitter_charges == 0:
-            A final surge of power leaves the device inert, its internal mechanisms fused. It's broken for good.
-    }
-    ~ data_fragments += 1
-    -> scene_7_the_fragment
+* { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter's concussive blast ({emitter_charges} left).]
+        { use_emitter_charge():
+            // The function returned true, so the usage was successful.
+            The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
+            ~ data_fragments += 1
+            -> scene_7_the_fragment
+        }
+        
 * { has_kinetic_emitter and emitter_charges <= 0 } [Attempt to use the broken Emitter.]
-        You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
-        -> scene_6b_subway
+    You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
+    -> scene_6b_subway
 * [Engage the Skulker - Strength Check]
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = strength + roll
