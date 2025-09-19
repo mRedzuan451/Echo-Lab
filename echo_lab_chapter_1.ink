@@ -721,7 +721,7 @@ A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head t
     -> scene_7_the_fragment
 * [Engage the Skulker]
         -> setup_skulker_battle // Divert to the setup knot first
-* [Sneak to the Terminal - Agility Check]
+* [Sneak to the Terminal]
     { agility >= 6:
         // Success
         You slip through the shadows, your footsteps silent in the shallow water. The creature never senses you as you reach the terminal, download the **first Data Fragment**, and slip away.
@@ -735,7 +735,7 @@ A single, powerful Slick-Skinned Skulker guards the terminal, its eyeless head t
         ~ is_injured = true
         -> scene_8_the_race
     }
-* [Analyze the Environment - Intelligence Check]
+* [Analyze the Environment]
     { intelligence >= 7:
         // Success
         You notice a leaking water pipe on the ceiling directly above a sparking, exposed power conduit near the creature. You throw a piece of rubble, shattering the pipe. Water gushes onto the conduit, creating a massive electrical surge that incapacitates the Skulker. You download the **first Data Fragment**.
