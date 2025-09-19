@@ -29,6 +29,7 @@ VAR player_skills = ()
 VAR jed_status = "UNKNOWN" // Can be UNKNOWN, HELPED, HOSTILE, DEAD
 VAR scene_4_debuff_stat = "" // To track debuff from Scene 4
 VAR rival_has_emitter = false
+VAR rival_owes_favour = false
 
 // Data Fragments
 VAR data_fragments = 0
@@ -585,7 +586,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     + { not used_skill_in_battle } [Use Skill]
         -> rival_use_skill
     * [Give Up]
-        -> rival_battle_lose_choice
+        -> rival_battle_give_up
 
 = rival_use_skill
     ~ used_skill_in_battle = true
@@ -645,6 +646,25 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
             -> rival_battle_loop
         }
     }
+
+= rival_battle_give_up
+    "Enough!" you pant, lowering your arms. "It's yours. I yield."
+    
+    { character_name == "Kaelen": // Rival is Xander
+        Xander stops, an eyebrow raised in amusement. He saunters over to the cache and pulls out the Emitter. "Wise choice, Rook. I was getting bored anyway." He looks at you, a calculating glint in his eye. "For being so... cooperative, I'll remember this. Consider it a favour." His tone makes it sound more like a threat.
+    }
+    { character_name == "Aris": // Rival is Jinx
+        Jinx freezes mid-lunge, her manic grin faltering into a pout. "Awww, you're giving up? But the sparks were just getting pretty!" She bounces over and grabs the Emitter. "Fine, be a party pooper. But hey!" She points a greasy finger at you. "Since you didn't break all the way, I owe you one! It'll be something... flashy!"
+    }
+    { character_name == "Lena": // Rival is Isha
+        Isha lowers her weapon instantly, her predatory focus softening into a neutral calm. She retrieves the Emitter from the cache. "A tactical retreat. There is no dishonor in it," she says, her voice even. "You knew you were outmatched. For this, I owe you a debt. I will repay it." She gives a respectful nod before disappearing.
+    }
+    
+    ~ rival_owes_favour = true
+    ~ has_kinetic_emitter = false
+    ~ rival_has_emitter = true
+    ~ resolve -= 5 // Smaller resolve hit than a full defeat
+    -> post_rival_encounter
 
 = rival_battle_lose_choice
 The blow sends you staggering back. You're injured and losing the fight, but there might be a way out of this.
