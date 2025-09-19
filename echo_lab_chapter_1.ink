@@ -53,6 +53,9 @@ VAR analyzed_power_cell = false
 VAR analyzed_glimmer_moss = false
 VAR studied_emitter = false
 
+// Equip Item
+VAR emitter_equipped = false
+
 // === GAME START ===
 -> scene_1_impact
 
@@ -558,8 +561,33 @@ The adrenaline fades, leaving you panting in the quiet plaza. You take a moment 
     -> scene_6_first_test
 * { has_kinetic_emitter and not studied_emitter } [Study the Kinetic Field Emitter.]
     -> study_emitter
+* { has_kinetic_emitter and not emitter_equipped } [Equip the Kinetic Field Emitter.]
+    -> equip_emitter
 + [Check Status.]
     -> check_status(-> post_rival_encounter)
+
+= equip_emitter
+~ emitter_equipped = true
+You strap the Kinetic Field Emitter to your forearm. It feels heavy, but hums with a responsive energy. You feel more dangerous.
+{ studied_emitter:
+    // Bonus for studying it first
+    Thanks to your prior analysis, you're able to integrate it more effectively.
+    { character_name == "Aris":
+        // Aris gets the biggest bonus
+        Your deep understanding of the alien tech allows you to overclock the emitter safely, squeezing out every ounce of power. Your Attack has massively increased!
+        ~ atk += 4
+    - else:
+        // Other characters get a smaller studied bonus
+        Your practical insights allow you to maximize its power output. Your Attack has significantly increased!
+        ~ atk += 3
+    }
+- else:
+    // Standard bonus if not studied
+    It feels alien and powerful, but you manage to get it operational. Your Attack has increased.
+    ~ atk += 2
+}
+<i>AI: "Attack increased to {atk}."</i>
+-> post_rival_encounter
     
 = study_emitter
 ~ studied_emitter = true
