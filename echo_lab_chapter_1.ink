@@ -21,6 +21,10 @@ VAR has_degraded_power_cell = false
 VAR has_glimmer_moss_sample = false
 VAR has_kinetic_emitter = false
 
+// === SKILL SYSTEM ===
+LIST AllSkills = Survivalist, BioScan, DiscerningEye
+VAR player_skills = ()
+
 // Consequence Flags
 VAR jed_status = "UNKNOWN" // Can be UNKNOWN, HELPED, HOSTILE, DEAD
 VAR scene_4_debuff_stat = "" // To track debuff from Scene 4
@@ -128,6 +132,7 @@ The name comes first, then the skills.
     ~ hp = 25
     ~ atk = 6
     ~ def = 3
+    ~ player_skills = (Survivalist)
     ~ update_combat_stats()
     ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
@@ -142,6 +147,7 @@ The name comes first, then the skills.
     ~ hp = 18
     ~ atk = 3
     ~ def = 5
+    ~ player_skills = (BioScan)
     ~ update_combat_stats()
     ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
@@ -156,6 +162,7 @@ The name comes first, then the skills.
     ~ hp = 20
     ~ atk = 5
     ~ def = 2
+    ~ player_skills = (DiscerningEye)
     ~ update_combat_stats()
     ~ hp = max_hp           // Set current HP to full for the start of the game
     -> scene_3_the_first_room
@@ -176,12 +183,38 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
     -> moss_encounter     
 * [Query the AI.]
     -> scene_3_ai_query
++ [Use Skill]
+        -> use_skill
 + [Check Status.]
     -> check_status(-> scene_3_choices)
 + {has_degraded_power_cell || has_glimmer_moss_sample} [Analyze Items.]
     -> analyze_items
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
+
+// === SKILL MECHANICS ===
+=== use_skill ===
+You focus, preparing to use your unique training.
+* { player_skills ? Survivalist and not used_survivalist_here } [Use Survivalist]
+    ~ temp used_survivalist_here = true
+    You scan the wreckage with a soldier's eye for anything useful. Amidst a pile of debris, you spot a small, intact water purifier unit from a standard-issue survival kit, likely overlooked by scavengers. A valuable find for later.
+    // TODO: Add "Water Purifier" to inventory
+    -> scene_3_choices
+    
+* { player_skills ? BioScan and not used_bioscan_here } [Use Bio-Scan]
+    ~ temp used_bioscan_here = true
+    You activate your implant's bio-scanner, sweeping the room. The patch of moss on the wall lights up in your vision.
+    <i>AI: "Glimmer Moss. Bioluminescent fungus. Mildly regenerative properties. Caution: Spores are a known attractant for subterranean fauna."</i>
+    -> scene_3_choices
+
+* { player_skills ? DiscerningEye and not used_discerningeye_here } [Use Discerning Eye]
+    ~ temp used_discerningeye_here = true
+    You scan the room not for what's there, but for what's out of place. The wall behind the rusted locker seems... off. A slight discoloration, a seam that isn't quite right. You've found a hidden maintenance panel.
+    // TODO: Add a new choice to scene_3_choices to open the panel
+    -> scene_3_choices
+    
+* [Never mind.]
+    -> scene_3_choices
     
 = analyze_items
 You take a moment to examine your findings.
