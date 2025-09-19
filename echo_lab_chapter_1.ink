@@ -720,7 +720,7 @@ You take a moment to catch your breath before moving on.
     -> rest_a_moment
 * { is_injured and not has_glimmer_moss_sample } [Look for something to treat your wounds.]
     -> look_for_moss
-* { analyzed_glimmer_moss and has_glimmer_moss_sample } [Use the Glimmer Moss to tend to your wounds.]
+* { analyzed_glimmer_moss and has_glimmer_moss_sample and is_injured} [Use the Glimmer Moss to tend to your wounds.]
     -> use_glimmer_moss
 * [Continue on.]
     -> scene_6_first_test
@@ -801,6 +801,15 @@ You take a closer look at the device you won from your rival. It's a heavy, meta
     }
     The moss dissolves into a faint, glowing dust, its regenerative properties spent.
     ~ has_glimmer_moss_sample = false
+    ~ is_injured = false
+
+    // --- RANDOM ATTACK CHECK ---
+    ~ temp attack_chance = RANDOM(1, 4)
+    { attack_chance == 1:
+        As the glow fades, you hear a frantic chittering sound. A small, rat-like creature with pale skin darts out from a crack in the wall, attracted by the moss's sweet scent. It nips at your boot before you can react, then vanishes back into the darkness. It didn't hurt, but the startling encounter has left you on edge.
+        ~ resolve -= 3
+    }
+    
     -> post_rival_encounter
 
 
