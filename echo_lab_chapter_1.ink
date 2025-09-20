@@ -64,60 +64,17 @@ VAR rival_def = 0
 VAR used_skill_in_battle = false
 VAR rival_will_miss_next_turn = false
 
+// Skill Usage Flags (for specific scenes)
+VAR used_survivalist_in_bay = false
+VAR used_bioscan_in_bay = false
+VAR used_discerningeye_in_bay = false
 
-// === DYNAMIC STAT CALCULATION ===
-=== function update_combat_stats() ===
-    // 1. Calculate BASE stats from attributes
-    { character_name == "Kaelen":
-        [cite_start]// The Soldier: Strength is key for attack and health. [cite: 53]
-        ~ max_hp = 15 + (strength * 2)
-        ~ atk = 2 + strength
-        ~ def = agility
-    }
-    { character_name == "Aris":
-        [cite_start]// The Bio-Hacker: Intelligence drives his attack power. [cite: 54]
-        ~ max_hp = 12 + strength
-        ~ atk = 1 + intelligence
-        ~ def = agility + 1
-    }
-    { character_name == "Lena":
-        [cite_start]// The Infiltrator: Agility makes her a fast hitter. [cite: 55]
-        ~ max_hp = 14 + strength
-        ~ atk = 2 + agility
-        ~ def = INT(perception / 2)
-    }
+// Archivist Log Flags
+VAR found_first_log = false
+VAR know_skulker_weakness = false
 
-    [cite_start]// 2. Apply BONUSES from equipped items [cite: 56]
-    { emitter_equipped:
-        { studied_emitter:
-            { character_name == "Aris":
-                ~ atk += 4 // Aris gets the biggest bonus
-            - else:
-                ~ atk += 3 // Other characters get a good bonus
-            }
-        - else:
-            ~ atk += 2 // Standard bonus if not studied
-        }
-    }
-    [cite_start]// (Future equipment bonuses would go here) [cite: 57]
-    
-    ~ return true
 
-// === ITEM FUNCTIONS ===
-=== function use_emitter_charge() ===
-    { has_kinetic_emitter and emitter_charges > 0:
-        ~ emitter_charges -= 1
-        [cite_start]The Kinetic Field Emitter discharges with a powerful hum. [cite: 58]
-        { emitter_charges == 0:
-            [cite_start]A final surge of power leaves the device inert, its internal mechanisms fused. [cite: 59]
-            [cite_start]It's broken for good. [cite: 60]
-        }
-        ~ return true
-    - else:
-        ~ return false
-    }
-
-// === GAME START ===
+// === GAME_START ===
 -> scene_1_impact
 
 
@@ -137,6 +94,57 @@ Silence.
 
 -> scene_2_awakening
 
+// === DYNAMIC STAT CALCULATION ===
+=== function update_combat_stats() ===
+    // 1. Calculate BASE stats from attributes
+    { character_name == "Kaelen":
+        // The Soldier: Strength is key for attack and health.
+        ~ max_hp = 15 + (strength * 2)
+        ~ atk = 2 + strength
+        ~ def = agility
+    }
+    { character_name == "Aris":
+        // The Bio-Hacker: Intelligence drives his attack power.
+        ~ max_hp = 12 + strength
+        ~ atk = 1 + intelligence
+        ~ def = agility + 1
+    }
+    { character_name == "Lena":
+        // The Infiltrator: Agility makes her a fast hitter.
+        ~ max_hp = 14 + strength
+        ~ atk = 2 + agility
+        ~ def = INT(perception / 2)
+    }
+
+    // 2. Apply BONUSES from equipped items
+    { emitter_equipped:
+        { studied_emitter:
+            { character_name == "Aris":
+                ~ atk += 4 // Aris gets the biggest bonus
+            - else:
+                ~ atk += 3 // Other characters get a good bonus
+            }
+        - else:
+            ~ atk += 2 // Standard bonus if not studied
+        }
+    }
+    // (Future equipment bonuses would go here)
+    
+    ~ return true
+
+// === ITEM FUNCTIONS ===
+=== function use_emitter_charge() ===
+    { has_kinetic_emitter and emitter_charges > 0:
+        ~ emitter_charges -= 1
+        [cite_start]The Kinetic Field Emitter discharges with a powerful hum. [cite: 58]
+        { emitter_charges == 0:
+            [cite_start]A final surge of power leaves the device inert, its internal mechanisms fused. [cite: 59]
+            [cite_start]It's broken for good. [cite: 60]
+        }
+        ~ return true
+    - else:
+        ~ return false
+    }
 
 // === SCENE 2: AWAKENING ===
 === scene_2_awakening ===
@@ -218,27 +226,48 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
     -> scene_4_the_first_obstacle
 
 // === SKILL MECHANICS ===
+// === SKILL MECHANICS ===
 === use_skill ===
-You focus, preparing to use your unique training.
-* { player_skills ? Survivalist and not used_survivalist_here } [Use Survivalist]
-    ~ temp used_survivalist_here = true
-    You scan the wreckage with a soldier's eye for anything useful. Amidst a pile of debris, you spot a small, intact water purifier unit from a standard-issue survival kit, likely overlooked by scavengers. A valuable find for later.
-    // TODO: Add "Water Purifier" to inventory
-    -> scene_3_choices
+{ not found_first_log:
+    -> find_first_log_event
+}
     
-* { player_skills ? BioScan and not used_bioscan_here } [Use Bio-Scan]
-    ~ temp used_bioscan_here = true
-    You activate your implant's bio-scanner, sweeping the room. The patch of moss on the wall lights up in your vision.
-    <i>AI: "Glimmer Moss. Bioluminescent fungus. Mildly regenerative properties. Caution: Spores are a known attractant for subterranean fauna."</i>
+=== find_first_log_event ===
+~ found_first_log = true
+As you concentrate, your unique skill reveals something unexpected.
+{ character_name == "Kaelen":
+    While scanning the debris for anything useful, your hand brushes against a flat, metallic object wedged beneath a twisted girder.
+}
+{ character_name == "Aris":
+    Your bio-scan sweeps the room, but it also registers a faint, encrypted energy signature from a small datapad tucked inside a corroded wall panel.
+}
+{ character_name == "Lena":
+    Your eyes, trained to spot things that don't belong, catch the unnatural straight edge of a datapad almost perfectly concealed in the shadows of the ceiling.
+}
+
+You retrieve the device. It's an **Archivist Log**, its screen displaying a single, heavily encrypted file.
+<i>AI: "Log from a previous test cycle detected. Decryption is possible, but the file is protected by a high-level algorithm."</i>
+
+* [Attempt to decrypt the log - Intelligence Check]
+    -> decrypt_first_log
+* [Leave it for now.]
     -> scene_3_choices
 
-* { player_skills ? DiscerningEye and not used_discerningeye_here } [Use Discerning Eye]
-    ~ temp used_discerningeye_here = true
-    You scan the room not for what's there, but for what's out of place. The wall behind the rusted locker seems... off. A slight discoloration, a seam that isn't quite right. You've found a hidden maintenance panel.
-    // TODO: Add a new choice to scene_3_choices to open the panel
-    -> scene_3_choices
-    
-* [Never mind.]
+= decrypt_first_log
+    You focus on the complex encryption, trying to find a flaw in the code.
+    { intelligence >= 7:
+        // Success
+        With a surge of insight, you find a recursive loop in the encryption key. You bypass it, and a fragment of the log becomes readable. It's a combat record.
+        
+        <b>LOG FRAGMENT 77-B:</b> "...subject cornered by local fauna (Designation: 'Skulker'). Auditory sensitivity is a critical vulnerability. High-frequency sonics cause neural cascade failure..."
+        
+        You've learned a critical weakness of the Skulker creatures.
+        ~ know_skulker_weakness = true
+    - else:
+        // Failure
+        The code is a nonsensical wall of alien symbols. It's beyond your ability to comprehend right now.
+        <i>AI: "Decryption failed. Further attempts may be possible if cognitive processing power is enhanced."</i>
+    }
     -> scene_3_choices
     
 === analyze_items ===
@@ -307,6 +336,17 @@ You take a moment to examine your findings.
     }
     { has_kinetic_emitter:
         - Kinetic Field Emitter ({emitter_charges} charges)
+    }
+    
+    -- Logs & Intel --
+    { not found_first_log:
+        No intel recovered.
+    }
+    { found_first_log and not know_skulker_weakness:
+        Archivist Log #77-B (Encrypted)
+    }
+    { know_skulker_weakness:
+        Intel: Skulkers are vulnerable to high-frequency sonics.
     }
     
     * [Return.]
