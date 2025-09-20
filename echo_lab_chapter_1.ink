@@ -34,6 +34,15 @@ VAR rival_owes_favour = false
 // Data Fragments
 VAR data_fragments = 0
 
+// Stat
+VAR max_hp = 0
+VAR atk = 0
+VAR def = 0
+VAR hp = 0
+
+// Equipped
+VAR emitter_equipped = false
+
 // === DYNAMIC STAT CALCULATION ===
 === function update_combat_stats() ===
     // 1. Calculate BASE stats from attributes
@@ -106,9 +115,6 @@ VAR emitter_charges = 0
     - else:
         ~ return false
     }
-
-// Equip Item
-VAR emitter_equipped = false
 
 // === GAME START ===
 -> scene_1_impact
@@ -234,7 +240,7 @@ You focus, preparing to use your unique training.
 * [Never mind.]
     -> scene_3_choices
     
-= analyze_items
+=== analyze_items ===
 You take a moment to examine your findings.
 * {has_degraded_power_cell} [Analyze the Degraded Power Cell.]
     ~ analyzed_power_cell = true
@@ -598,7 +604,9 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     { player_skills ? BioScan: // Aris's Skill
         You activate your bio-scanner, analyzing your rival's physiology in real-time. You spot a minor strain in their shoulder... a weak point. Their Defense is permanently lowered!
         ~ rival_def -= 2
-        { rival_def < 0: ~ rival_def = 0 }
+        { rival_def < 0:
+            ~ rival_def = 0
+        }
         -> rival_enemy_turn
     }
     { player_skills ? DiscerningEye: // Lena's Skill
@@ -701,33 +709,34 @@ Your final blow connects, and your rival stumbles back, winded and defeated. The
 
 // === NEW SCENE: AFTERMATH ===
 === post_rival_encounter ===
-The adrenaline fades, leaving you panting in the quiet plaza. 
+The adrenaline fades, leaving you panting in the quiet plaza.
 // Check HP to determine condition after the fight
-{ hp <= max_hp / 4: // If HP is at 25% or less
-    ~ is_injured = true
-    ~ is_fatigued = false
-    You're badly wounded, and every movement is a struggle.
-- else: hp <= max_hp / 2: // If HP is at 50% or less
-    ~ is_injured = false
-    ~ is_fatigued = true
-    You're bruised and exhausted from the fight.
-- else:
-    ~ is_injured = false
-    ~ is_fatigued = false
+{
+    - hp <= max_hp / 4: // If HP is at 25% or less
+        ~ is_injured = true
+        ~ is_fatigued = false
+        You're badly wounded, and every movement is a struggle.
+    - hp <= max_hp / 2: // If HP is at 50% or less
+        ~ is_injured = false
+        ~ is_fatigued = true
+        You're bruised and exhausted from the fight.
+    - else:
+        ~ is_injured = false
+        ~ is_fatigued = false
 }
 You take a moment to catch your breath before moving on.
 * { is_fatigued } [Rest for a moment.]
     -> rest_a_moment
 * { is_injured and not has_glimmer_moss_sample } [Look for something to treat your wounds.]
     -> look_for_moss
-* { analyzed_glimmer_moss and has_glimmer_moss_sample and is_injured} [Use the Glimmer Moss to tend to your wounds.]
+* { has_glimmer_moss_sample and is_injured } [Use the Glimmer Moss to tend to your wounds.]
     -> use_glimmer_moss
-* [Continue on.]
-    -> scene_6_first_test
 * { has_kinetic_emitter and not studied_emitter } [Study the Kinetic Field Emitter.]
     -> study_emitter
 * { has_kinetic_emitter and not emitter_equipped } [Equip the Kinetic Field Emitter.]
     -> equip_emitter
+* [Continue on.]
+    -> scene_6_first_test
 + [Check Status.]
     -> check_status(-> post_rival_encounter)
 
@@ -850,21 +859,36 @@ The wind howls around you. It's a long, dangerous climb.
 
 // --- PATH B: THE SUBWAY TEST ---
 === scene_6b_subway ===
-You descend into a flooded subway station, lit by the eerie green glow of moss. In the center of the platform is a functioning Archivist terminal, humming with power.
-<i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
-A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
-* { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter's concussive blast ({emitter_charges} left).]
-        { use_emitter_charge():
-            // The function returned true, so the usage was successful.
-            The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
-            ~ data_fragments += 1
-            -> scene_7_the_fragment
-        }
+    You descend into a flooded subway station, lit by the eerie green glow of moss. In the center of the platform is a functioning Archivist terminal, humming with power.
+    <i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
+    A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
+    
+    * { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter's concussive blast ({emitter_charges} left).]
+        -> use_emitter_on_skulker
         
-* { has_kinetic_emitter and emitter_charges <= 0 } [Attempt to use the broken Emitter.]
-    You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
-    -> scene_6b_subway
-* [Engage the Skulker - Strength Check]
+    * { has_kinetic_emitter and emitter_charges <= 0 } [Attempt to use the broken Emitter.]
+        You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
+        -> scene_6b_subway
+        
+    * [Engage the Skulker]
+        -> engage_skulker
+
+    * [Sneak to the Terminal]
+        -> sneak_past_skulker
+        
+    * [Analyze the Environment]
+        -> analyze_skulker_env
+        
+= use_emitter_on_skulker
+    { use_emitter_charge():
+        // The function returned true, so the usage was successful.
+        The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
+        ~ data_fragments += 1
+        -> scene_7_the_fragment
+    }
+
+= engage_skulker
+    // Strength Check
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = strength + roll
     { total_skill >= 10:
@@ -878,13 +902,12 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
         ~ hp -= 5
-        { hp < 0:
-            ~ hp = 0
-        }
         ~ is_injured = true
         -> scene_8_the_race
     }
-* [Sneak to the Terminal - Agility Check]
+
+= sneak_past_skulker
+    // Agility Check
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = agility + roll
     { total_skill >= 10:
@@ -897,14 +920,13 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         A loose piece of debris clatters under your foot. The Skulker shrieks and lunges. You barely manage to escape its claws, retreating with your heart pounding in your chest.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
-        ~ hp -= 2
-        { hp < 0:
-            ~ hp = 0
-        }
+        ~ hp -= 5
         ~ is_injured = true
         -> scene_8_the_race
     }
-* [Analyze the Environment - Intelligence Check]
+    
+= analyze_skulker_env
+    // Intelligence Check
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = intelligence + roll
     { total_skill >= 11:
@@ -916,7 +938,7 @@ A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head t
         // Failure
         You see a potential environmental advantage but miscalculate. Your attempt to create a distraction only succeeds in making a loud noise, drawing the Skulker's immediate, aggressive attention. You are forced to flee.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
-        ~ resolve -= 15
+        ~ resolve -= 10
         -> scene_8_the_race
     }
 
