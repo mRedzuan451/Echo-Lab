@@ -24,6 +24,7 @@ VAR has_glimmer_moss_sample = false
 VAR has_kinetic_emitter = false
 VAR emitter_equipped = false
 VAR emitter_charges = 0
+VAR neuro_stim_state = "NONE" // Can be NONE, AVAILABLE, ACTIVE, USED
 
 // Analyzed item Flags
 VAR analyzed_power_cell = false
@@ -92,7 +93,18 @@ This isn't a rescue. It's a re-entry.
 The impact is absolute. Metal screams, your vision whites out, and then... nothing.
 Silence.
 
--> scene_2_awakening
+-> scene_1a_half_awake
+
+// === SCENE 1A: HALF-AWAKE ===
+=== scene_1a_half_awake ===
+Pain. A brief window of searing clarity in a sea of darkness. You're slumped forward in the wreckage of the drop pod, the emergency lights flickering erratically. An automated medical panel is open, its contents scattered. You see a blinking auto-injector with a green vial. A Neuro-Stim. Your vision is already starting to swim. You have just enough strength for one action.
+* [Grab the Neuro-Stim.]
+    Your fingers close around the cold metal of the injector just as you lose consciousness again. You managed to hold on to it.
+    ~ neuro_stim_state = "AVAILABLE"
+    -> scene_2_awakening
+* [Try to brace yourself.]
+    You instinctively try to curl into a defensive position, but the effort is too much. The darkness claims you completely.
+    -> scene_2_awakening
 
 // === DYNAMIC STAT CALCULATION ===
 === function update_combat_stats() ===
@@ -136,10 +148,10 @@ Silence.
 === function use_emitter_charge() ===
     { has_kinetic_emitter and emitter_charges > 0:
         ~ emitter_charges -= 1
-        [cite_start]The Kinetic Field Emitter discharges with a powerful hum. [cite: 58]
+        The Kinetic Field Emitter discharges with a powerful hum.
         { emitter_charges == 0:
-            [cite_start]A final surge of power leaves the device inert, its internal mechanisms fused. [cite: 59]
-            [cite_start]It's broken for good. [cite: 60]
+            A final surge of power leaves the device inert, its internal mechanisms fused.
+            It's broken for good.
         }
         ~ return true
     - else:
@@ -216,16 +228,15 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
     -> moss_encounter     
 * [Query the AI.]
     -> scene_3_ai_query
-+ [Use Skill]
+* [Use Skill]
         -> use_skill
 + [Check Status.]
     -> check_status(-> scene_3_choices)
-+ {has_degraded_power_cell || has_glimmer_moss_sample} [Analyze Items.]
++ {has_degraded_power_cell || has_glimmer_moss_sample || found_first_log} [Analyze Items.]
     -> analyze_items
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
 
-// === SKILL MECHANICS ===
 // === SKILL MECHANICS ===
 === use_skill ===
 { not found_first_log:
@@ -253,7 +264,11 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
 * [Leave it for now.]
     -> scene_3_choices
 
-= decrypt_first_log
+=== decrypt_first_log ===
+    ~ temp original_intelligence = intelligence
+    { neuro_stim_state == "ACTIVE":
+        ~ intelligence += 3
+    }
     You focus on the complex encryption, trying to find a flaw in the code.
     { intelligence >= 7:
         // Success
@@ -263,12 +278,32 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
         
         You've learned a critical weakness of the Skulker creatures.
         ~ know_skulker_weakness = true
+        
+        // If the boost was active, it wears off now
+        { neuro_stim_state == "ACTIVE":
+            The intense focus fades as the Neuro-Stim wears off, leaving a dull ache behind your eyes.
+            ~ neuro_stim_state = "USED"
+        }
+        ~ intelligence = original_intelligence
+        -> scene_3_choices
     - else:
         // Failure
         The code is a nonsensical wall of alien symbols. It's beyond your ability to comprehend right now.
-        <i>AI: "Decryption failed. Further attempts may be possible if cognitive processing power is enhanced."</i>
+        <i>AI: "Decryption failed. Cognitive processing power is insufficient."</i>
+        
+        // If the stim is available, the AI offers it
+        { neuro_stim_state == "AVAILABLE":
+            <i>AI: "A neuro-stimulant is detected in your possession. Administering it may temporarily enhance cognitive function enough to bypass the encryption. This action will consume the device."</i>
+            * [Use the Neuro-Stim and try again.]
+                You press the Neuro-Stim against your neck. With a sharp hiss, it injects its contents. A cold fire spreads through your mind, clearing the fog of the crash.
+                ~ neuro_stim_state = "ACTIVE"
+                -> decrypt_first_log
+            * [Save it for later.]
+                -> scene_3_choices
+        - else:
+             -> scene_3_choices
+        }
     }
-    -> scene_3_choices
     
 === analyze_items ===
 You take a moment to examine your findings.
@@ -296,6 +331,8 @@ You take a moment to examine your findings.
         - The moss glows, but the light is faint. You recall seeing similar fungi in deep-cave infiltration missions. The spores are light enough to travel on air currents; anything that hunts by scent would be drawn to this.
     }
     -> analyze_items
+* {found_first_log} [Analyze the Archivist Log #77-B]
+    -> decrypt_first_log
 * [Done analyzing.]
     -> scene_3_choices
 
@@ -337,19 +374,22 @@ You take a moment to examine your findings.
     { has_kinetic_emitter:
         - Kinetic Field Emitter ({emitter_charges} charges)
     }
+    { neuro_stim_state == "AVAILABLE":
+        - Neuro-Stim - Single Use
+    }
     
     -- Logs & Intel --
     { not found_first_log:
         No intel recovered.
     }
     { found_first_log and not know_skulker_weakness:
-        Archivist Log #77-B (Encrypted)
+        Archivist Log \#77-B (Encrypted)
     }
     { know_skulker_weakness:
         Intel: Skulkers are vulnerable to high-frequency sonics.
     }
     
-    * [Return.]
+    + [Return.]
         -> return_to
         
 // === BATTLE MECHANIC ===
@@ -628,7 +668,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
 
 = rival_battle_loop
     You have {hp}/{max_hp} HP. Your rival has {rival_hp}/{rival_max_hp} HP.
-    * [Attack!]
+    + [Attack!]
         -> rival_player_attack
     + { not used_skill_in_battle } [Use Skill]
         -> rival_use_skill
@@ -904,6 +944,9 @@ The wind howls around you. It's a long, dangerous climb.
     <i>AI: "Archivist Test Chamber detected. Objective: Access the terminal to download one Data Fragment."</i>
     A single, powerful Slick-skinned Skulker guards the terminal, its eyeless head twitching at every sound.
     
+    * { know_skulker_weakness } [Use your knowledge of its weakness.]
+        -> exploit_skulker_weakness
+        
     * { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter's concussive blast ({emitter_charges} left).]
         -> use_emitter_on_skulker
         
@@ -919,6 +962,12 @@ The wind howls around you. It's a long, dangerous climb.
         
     * [Analyze the Environment]
         -> analyze_skulker_env
+        
+= exploit_skulker_weakness
+    Remembering the Archivist Log, you tell your implant to emit a high-frequency sonic pulse. The AI complies. A piercing, silent-to-you shriek fills the subway. The Skulker instantly recoils, thrashing in agony as its sensitive auditory organs overload. It collapses, twitching, completely incapacitated.
+    The path to the terminal is clear. Your intel paid off.
+    ~ data_fragments += 1
+    -> scene_7_the_fragment
         
 = use_emitter_on_skulker
     { use_emitter_charge():
