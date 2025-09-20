@@ -15,7 +15,7 @@ VAR is_injured = false
 VAR character_name = ""
 
 // Inventory Flags (true = has, false = doesn't have)
-VAR has_degraded_power_cell = false
+VAR power_cell_stack = 0
 VAR glimmer_moss_stack = 0
 VAR has_kinetic_emitter = false
 VAR emitter_charges = 0

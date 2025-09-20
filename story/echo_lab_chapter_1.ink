@@ -109,7 +109,7 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
         -> use_skill
 + [Check Status.]
     -> check_status(-> scene_3_choices)
-+ {has_degraded_power_cell || glimmer_moss_stack > 0 || found_first_log} [Analyze Items.]
++ {power_cell_stack > 0 || glimmer_moss_stack > 0 || found_first_log} [Analyze Items.]
     -> analyze_items
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
@@ -362,7 +362,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
 The blow sends you staggering back. You're injured and losing the fight, but there might be a way out of this.
 * { analyzed_power_cell } [Use the Degraded Power Cell!]
     You pull out the unstable power cell. It's a desperate gambit. You hurl it at the supply cache. The resulting explosion is deafening, frying the crate's contents and forcing your rival to dive for cover. The prize is gone, but you've denied them the victory.
-    ~ has_degraded_power_cell = false
+    ~ power_cell_stack -= 1
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = false
     ~ resolve -= 5
@@ -819,10 +819,10 @@ Knowing you'll need more than just wits to survive, you decide to scavenge the i
         Your trained eyes spot useful components that others would dismiss as junk. You salvage some intact copper wires and a magnetic coil from a ruined transformer.
         ~ has_copper_wiring = true
         ~ has_magnetic_coil = true
-        { not has_degraded_power_cell:
+        { power_cell_stack == 0:
              // If Aris used the first one, he can find another
              Tucked away inside the transformer's casing is another Degraded Power Cell, apparently undamaged by the overload. A lucky find.
-             ~ has_degraded_power_cell = true
+             ~ power_cell_stack += 1
         }
     }
     You've gathered what you can.
@@ -833,9 +833,11 @@ Knowing you'll need more than just wits to survive, you decide to scavenge the i
 Before you proceed, you find a relatively sheltered alcove in the ruins to catch your breath and take stock of what you have. This is a good opportunity to prepare for what's ahead.
 * [Use your resources to craft something useful.]
     -> crafting_options
++ [Scour the area for more resources.]
+    -> scene_7b_grinding
 * { not has_reinforced_club and not has_recurve_bow and not has_emp_grenade } [Save your resources and move on.]
     -> scene_8_the_tower
-* { has_reinforced_club or has_recurve_bow or has_emp_grenade } [You are prepared. Move on.]
+* { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or has_poison_bomb } [You are prepared. Move on.]
     -> scene_8_the_tower
 + [Check Status]
     -> check_status( -> scene_7a_gearing_up)
@@ -851,21 +853,21 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
         -> crafting_options
 
     // Aris's Crafting Option
-    * { character_name == "Aris" and has_degraded_power_cell and not has_emp_grenade } [Assemble an EMP Grenade.]
+    * { character_name == "Aris" and power_cell_stack > 0 and not has_emp_grenade } [Assemble an EMP Grenade.]
         You carefully pry open the casing of the Degraded Power Cell. Bypassing the safety regulators, you rig it to overload on impact. It's a volatile, single-use weapon, perfect for disabling electronics... or stunning biological targets.
         ~ has_emp_grenade = true
-        ~ has_degraded_power_cell = false // The cell is consumed
+        ~ power_cell_stack -= 1 // The cell is consumed
         -> crafting_options
     * { character_name == "Aris" and glimmer_moss_stack > 0 } [Refine Glimmer Moss into Poison.]
         You crush the Glimmer Moss, carefully isolating the coagulant you discovered earlier. By mixing it with a mild solvent from your kit, you refine it into a sticky, paralytic poison. You place it in an empty vial, ready for use.
         ~ has_moss_poison_vial += 1
         ~ glimmer_moss_stack -= 1
         -> crafting_options
-    * { character_name == "Aris" and has_skulker_venom_gland and has_degraded_power_cell and not has_poison_bomb } [Create a Poison Gas Bomb.]
+    * { character_name == "Aris" and has_skulker_venom_gland and power_cell_stack > 0 and not has_poison_bomb } [Create a Poison Gas Bomb.]
         This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
         ~ has_poison_bomb = true
         ~ has_skulker_venom_gland = false
-        ~ has_degraded_power_cell = false
+        ~ power_cell_stack -= 1
         -> crafting_options
 
     // Lena's Crafting Option
@@ -889,6 +891,39 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
     * [That's all for now.]
         -> scene_7a_gearing_up
 
+// === SCENE 7B: RESOURCE GRINDING ===
+=== scene_7b_grinding ===
+You scan the immediate vicinity for any useful materials you may have missed.
++ [Search the damp crevices for Glimmer Moss.]
+    -> grind_moss
++ [Sift through the wreckage for Power Cells.]
+    -> grind_power_cells
+* [Stop searching and return.]
+    -> scene_7a_gearing_up
+
+= grind_moss
+    ~ temp roll = RANDOM(1, 3)
+    { roll <= 2:
+        // Success
+        You find another small patch of the glowing fungus. You add it to your collection.
+        ~ glimmer_moss_stack += 1
+    - else:
+        // Failure
+        You search for a while but find nothing. This area seems picked clean for now.
+    }
+    -> scene_7b_grinding
+
+= grind_power_cells
+    ~ temp roll = RANDOM(1, 4)
+    { roll == 1:
+        // Success
+        Your persistence pays off. Wedged inside a damaged console, you find another Degraded Power Cell.
+        ~ power_cell_stack += 1
+    - else:
+        // Failure
+        You find plenty of scrap, but no functional power sources.
+    }
+    -> scene_7b_grinding
 
 // === SCENE 8: THE TOWER CLIMB ===
 === scene_8_the_tower ===

@@ -69,7 +69,7 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
     
 === analyze_items ===
 You take a moment to examine your findings.
-* {has_degraded_power_cell} [Analyze the Degraded Power Cell.]
+* {power_cell_stack > 0} [Analyze the Degraded Power Cell.]
     ~ analyzed_power_cell = true
     { character_name == "Kaelen":
         - You tap the power cell against a metal strut. It sparks weakly. Looks like it has a little juice, but it feels unstable. Probably best not to hit it too hard.
@@ -124,7 +124,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
     { strength >= 7:
         // Success
         The metal groans, shrieks, and finally tears open with a deafening CRUNCH. Inside, you find a **Degraded Power Cell**. It's heavy, but it might be useful.
-        ~ has_degraded_power_cell = true
+        ~ power_cell_stack += 1
     - else:
         // Failure
         You throw your shoulder against the door, but it only groans in protest. The rust holds it fast. You've only succeeded in bruising your shoulder and making a lot of noise.
@@ -137,7 +137,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
     { intelligence >= 8:
         // Success
         It sparks to life for just a moment, long enough for the lock to disengage with a loud THUNK. Inside, you find a **Degraded Power Cell**. Fascinating.
-        ~ has_degraded_power_cell = true
+        ~ power_cell_stack += 1
     - else:
         // Failure
         You try to create a circuit, but the components are too decayed. A final spark from the conduit singes your fingers and the keypad goes completely dead. It's useless now.
@@ -150,7 +150,7 @@ The locker is old and heavy. The locking mechanism is a simple electronic keypad
     { agility >= 7:
         // Success
         With a series of satisfying clicks, the lock disengages. The door swings open silently. Inside, you find a **Degraded Power Cell**. A valuable find.
-        ~ has_degraded_power_cell = true
+        ~ power_cell_stack += 1
     - else:
         // Failure
         You work at the lock, but the internal mechanism is rusted solid. A lockpick snaps with a sharp *tink*, leaving the lock hopelessly jammed. There's no getting in that way now.

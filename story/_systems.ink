@@ -82,10 +82,10 @@
     }
     
     -- Inventory --
-    { not has_degraded_power_cell and glimmer_moss_stack == 0 and not has_kinetic_emitter and neuro_stim_state != "AVAILABLE" and not has_reinforced_club and not has_recurve_bow and not has_emp_grenade:
+    { power_cell_stack == 0 and glimmer_moss_stack == 0 and not has_kinetic_emitter and neuro_stim_state != "AVAILABLE" and not has_reinforced_club and not has_recurve_bow and not has_emp_grenade:
         - Your pockets are empty.
     }
-    { has_degraded_power_cell: - Degraded Power Cell }
+    { power_cell_stack > 0: - Degraded Power Cell (x{power_cell_stack }) }
     { glimmer_moss_stack > 0: - Glimmer Moss Sample (x{glimmer_moss_stack}) }
     { has_kinetic_emitter: - Kinetic Field Emitter ({emitter_charges} charges) }
     { neuro_stim_state == "AVAILABLE": - Neuro-Stim - Single Use }
