@@ -114,167 +114,6 @@ Across the room, you see a patch of faintly glowing moss clinging to a damp wall
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
 
-
-
-        
-// === BATTLE MECHANIC ===
-=== battle_loop ===
-    // Display current status
-    You have {hp} HP. The {current_enemy_name} has {current_enemy_hp} HP.
-    
-    * [Attack]
-        -> player_attack
-        
-    * [Defend]
-        ~ is_defending = true
-        You brace for an attack, increasing your defense for this turn.
-        -> enemy_turn
-        
-= player_attack
-    ~ temp player_damage = atk - current_enemy_def
-    { player_damage < 1: 
-        ~ player_damage = 1 
-    }
-    ~ current_enemy_hp -= player_damage
-    
-    You strike the {current_enemy_name} for {player_damage} damage.
-    
-    { current_enemy_hp <= 0:
-        -> battle_won
-    }
-    
-    -> enemy_turn
-
-= enemy_turn
-    ~ temp current_def = def
-    { is_defending:
-         ~ current_def = def + 3
-    }
-    
-    ~ temp enemy_damage = current_enemy_atk - current_def
-    { enemy_damage < 1: 
-        ~ enemy_damage = 1
-    }
-    ~ hp -= enemy_damage
-    
-    The {current_enemy_name} attacks you for {enemy_damage} damage.
-    
-    // Reset defending state for the next turn
-    ~ is_defending = false
-    
-    { hp <= 0:
-        -> battle_lost
-    - else:
-        -> battle_loop
-    }
-
-=== battle_won ===
-The {current_enemy_name} collapses. You are victorious.
-// Check which enemy was defeated to continue the correct story path
-{ current_enemy_name == "Slick-Skinned Skulker":
-    -> skulker_win
-- else:
-    // A default win case, in case you add other battles
-    -> END
-}
-
-=== battle_lost ===
-Your vision fades to black as the creature's final blow lands.
-// Check which enemy defeated you
-{ current_enemy_name == "Slick-Skinned Skulker":
-    -> scene_6c_skulker_lair
-- else:
-    // A default lose case
-    -> END
-}
-
-=== scene_3_ai_query ===
-The AI's calm voice is a presence in your mind.
-* (ask_where) [Ask: "Where am I?"]
-    <i>AI: "You are within Test Site Echo-7, located on a fragment of a planetary body designated 'The Shattered World'. My designation for this zone is the 'Ruined City-Isle'."</i>
-    -> scene_3_ai_query
-* (ask_what) [Ask: "What is this place? What is the 'Arena'?"]
-    <i>AI: "This 'Arena' is a controlled environment for a series of trials conducted by my creators, the Archivists. The objective is to test species' capacity for survival and adaptation."</i>
-    -> scene_3_ai_query
-* (ask_who) [Ask: "Who is the Proctor?"]
-    <i>AI: "The Proctor is the master control AI for this entire experiment. My function is to guide and observe subjects. The Proctor's function is to administrate the trials."</i>
-    -> scene_3_ai_query
-* (ask_why) [Ask: "Why am I here?"]
-    <i>AI: "Your selection criteria are not available in my data banks. Your purpose is to survive and demonstrate mastery of the environment. That is all the data I can provide on the subject."</i>
-    -> scene_3_ai_query
-* [That's enough for now.]
-    -> scene_3_choices
-
-=== locker_encounter ===
-The locker is old and heavy. The locking mechanism is a simple electronic keypad, now dark and corroded. The door itself is dented and sealed shut with rust.
-
-{ character_name == "Kaelen":
-    // Kaelen's Action: Brute Force
-    You plant your feet, grip the edge of the locker door, and pull with everything you've got.
-    { strength >= 7:
-        // Success
-        The metal groans, shrieks, and finally tears open with a deafening CRUNCH. Inside, you find a **Degraded Power Cell**. It's heavy, but it might be useful.
-        ~ has_degraded_power_cell = true
-    - else:
-        // Failure
-        You throw your shoulder against the door, but it only groans in protest. The rust holds it fast. You've only succeeded in bruising your shoulder and making a lot of noise.
-        ~ resolve -= 1
-    }
-}
-{ character_name == "Aris":
-    // Aris's Action: Hotwire
-    You spot a frayed power conduit hanging from the ceiling. Rerouting the cable, you attempt to send a jolt of power to the corroded keypad.
-    { intelligence >= 8:
-        // Success
-        It sparks to life for just a moment, long enough for the lock to disengage with a loud THUNK. Inside, you find a **Degraded Power Cell**. Fascinating.
-        ~ has_degraded_power_cell = true
-    - else:
-        // Failure
-        You try to create a circuit, but the components are too decayed. A final spark from the conduit singes your fingers and the keypad goes completely dead. It's useless now.
-        ~ resolve -= 1
-    }
-}
-{ character_name == "Lena":
-    // Lena's Action: Lockpick
-    The keypad is dead, but the manual override is still intact. Your deft fingers search for the tumblers.
-    { agility >= 7:
-        // Success
-        With a series of satisfying clicks, the lock disengages. The door swings open silently. Inside, you find a **Degraded Power Cell**. A valuable find.
-        ~ has_degraded_power_cell = true
-    - else:
-        // Failure
-        You work at the lock, but the internal mechanism is rusted solid. A lockpick snaps with a sharp *tink*, leaving the lock hopelessly jammed. There's no getting in that way now.
-        ~ resolve -= 1
-    }
-}
--> scene_3_choices
-
-== moss_encounter ===
-You move closer to the wall. The moss gives off a soft, ethereal green light. It pulses gently, like a slow heartbeat.
-
-{ character_name == "Aris":
-    // Aris's Action: Bio-Scan
-    <i>AI: "Glimmer Moss. Bioluminescent fungus. Mildly regenerative properties. Caution: Spores are a known attractant for subterranean fauna."</i>
-- else:
-    // Kaelen/Lena's Action: Examine
-    { perception >= 6:
-        // Success
-        You notice the ground beneath the moss is disturbed with small tracks, and you can smell a strange, sweet scent. This moss is more than just a pretty light; it's an active part of the ecosystem here.
-    - else:
-        // Failure
-        It's a weird glowing plant. Looks cool, but you don't know anything else about it.
-    }
-}
--> harvest_moss
-        
-= harvest_moss
-+   [Take a sample.]
-    You scrape a handful of the glowing moss off the wall and store it in a pouch. It feels cool and damp to the touch.
-    ~ glimmer_moss_stack += 1
-    -> scene_3_choices
-+   [Leave it be.]
-    -> scene_3_choices
-
 // === SCENE 4: THE FIRST OBSTACLE ===
 === scene_4_the_first_obstacle ===
 To reach the plaza, you must navigate a short but unstable transit tunnel. The floor is a mess of twisted metal and rubble, and the ceiling groans under the strain.
@@ -373,7 +212,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     // Set up rival stats based on who they are
     { character_name == "Kaelen": // Rival is Xander
         ~ rival_max_hp = 22
-        ~ rival_atk = 5
+        ~ rival_atk = 8
         ~ rival_def = 3
     }
     { character_name == "Aris": // Rival is Jinx
@@ -524,11 +363,7 @@ Your final blow connects, and your rival stumbles back, winded and defeated. The
 ~ emitter_charges = 3 // Emitter starts with 3 charges
 -> post_rival_encounter
 
-// === GAME OVER SCENES ===
-=== game_over_death ===
-Your vision fades to black as the final blow lands. The last thing you hear is the AI's detached voice in your mind.
-<i>AI: "Subject's vital signs have ceased. Test failed."</i>
--> END
+
 
 // === NEW SCENE: AFTERMATH ===
 === post_rival_encounter ===
@@ -677,7 +512,7 @@ The wind howls around you. It's a long, dangerous climb.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
         ~ is_injured = true
-        -> scene_8_the_race
+        -> scene_8_the_tower
     }
 
 // --- PATH B: THE SUBWAY TEST ---
@@ -725,6 +560,8 @@ The wind howls around you. It's a long, dangerous climb.
     ~ current_enemy_hp = 15
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 2
+    ~ used_skill_in_battle = false
+    ~ rival_will_miss_next_turn = false // Re-using this for any enemy
     The Skulker lets out a piercing shriek and lunges!
     -> skulker_battle_loop
 
@@ -791,7 +628,7 @@ The wind howls around you. It's a long, dangerous climb.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
         ~ is_injured = true
-        -> scene_8_the_race
+        -> scene_8_the_tower
 
 = sneak_past_skulker
     // Agility Check
@@ -809,7 +646,7 @@ The wind howls around you. It's a long, dangerous climb.
         ~ resolve -= 10
         ~ hp -= 5
         ~ is_injured = true
-        -> scene_8_the_race
+        -> scene_8_the_tower
     }
     
 = analyze_skulker_env
@@ -826,7 +663,7 @@ The wind howls around you. It's a long, dangerous climb.
         You see a potential environmental advantage but miscalculate. Your attempt to create a distraction only succeeds in making a loud noise, drawing the Skulker's immediate, aggressive attention. You are forced to flee.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
-        -> scene_8_the_race
+        -> scene_8_the_tower
     }
 
 = setup_skulker_battle
@@ -837,14 +674,7 @@ The wind howls around you. It's a long, dangerous climb.
     ~ current_enemy_def = 2
     -> battle_loop // Now, start the battle loop
 
-=== skulker_win ===
-    The path to the terminal is clear. You download the **first Data Fragment**.
-    ~ data_fragments += 1
-    -> scene_7_the_fragment
 
-=== skulker_lose ===
-    You have been defeated by the Skulker.
-    -> END
     
 // === SPECIAL DEFEAT SCENE ===
 === scene_6c_skulker_lair ===
@@ -866,7 +696,7 @@ You see one clear exit, a narrow tunnel leading back up into the subway system. 
     { total_skill >= 12:
         // Success
         You move with absolute silence, your body hugging the shadows. The creature is too engrossed in its meal to notice as you slip past and into the tunnel, escaping back into the subway proper. You've survived, but you failed to get the Data Fragment.
-        -> scene_8_the_race
+        -> scene_8_the_tower
     - else:
         // Failure
         A loose rock shifts under your foot. The Skulker's head whips around, its eyeless face emitting a piercing shriek. It lunges. This time, there is no escape.
@@ -879,7 +709,7 @@ You see one clear exit, a narrow tunnel leading back up into the subway system. 
     { total_skill >= 11:
         // Success
         You spot a loose chunk of metal propped precariously above a far corner of the nest. You grab a small stone and toss it with perfect aim. The metal sheet clatters to the ground, and the Skulker screeches, darting towards the sound. The distraction gives you the precious seconds you need to scramble into the exit tunnel.
-        -> scene_8_the_race
+        -> scene_8_the_tower
     - else:
         // Failure
         Your throw is off. The stone clinks uselessly against the wall, only serving to draw the creature's immediate attention directly to you. It shrieks and attacks.
@@ -976,9 +806,9 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
 * [Use your resources to craft something useful.]
     -> crafting_options
 * { not has_reinforced_club and not has_recurve_bow and not has_emp_grenade } [Save your resources and move on.]
-    -> scene_8_the_race
+    -> scene_8_the_tower
 * { has_reinforced_club or has_recurve_bow or has_emp_grenade } [You are prepared. Move on.]
-    -> scene_8_the_race
+    -> scene_8_the_tower
 + [Check Status]
     -> check_status( -> scene_7a_gearing_up)
 
@@ -1004,14 +834,103 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
         You take the length of flexible polymer and the high-tensile cable. With your deft hands, you shape the polymer and string the cable, creating a makeshift but deadly silent bow. You'll need to find arrows, but the frame is perfect.
         ~ has_recurve_bow = true
         -> crafting_options
+    
+    // Equip Options
+    * { has_reinforced_club and not club_equipped } [Equip the Reinforced Club.]
+        ~ club_equipped = true
+        You grip the club tightly. It's a crude but effective weapon. Your Attack has increased.
+        ~ update_combat_stats()
+        -> crafting_options
+    * { has_recurve_bow and not bow_equipped } [Equip the Recurve Bow.]
+        ~ bow_equipped = true
+        You sling the bow over your shoulder. You'll be able to strike from the shadows. Your Attack has increased.
+        ~ update_combat_stats()
+        -> crafting_options
 
     * [That's all for now.]
         -> scene_7a_gearing_up
 
 
-// === SCENE 8: THE RACE (Placeholder) ===
-=== scene_8_the_race ===
-// This scene will be the next major objective.
-The AI directs you towards a new energy signature.
+// === SCENE 8: THE TOWER CLIMB ===
+=== scene_8_the_tower ===
+Following the AI's directions, you arrive at the base of another massive communications spire. This one is different—a single emergency light pulses at the very top, indicating the location of the next Data Fragment. The main entrance is sealed, but a service ladder leads up to the first floor landing. The climb has begun.
+-> tower_floor_1
+
+= tower_floor_1
+You haul yourself onto the first-floor landing, a wide platform of rusted metal grating. A lithe contestant, the "Scrambler," is already there. They see you, grin, and make a dash for the stairs to the next level.
+<i>PROCTOR: "First subject to ascend demonstrates superior traversal capability."</i>
+
+* [Beat them to the stairs - Agility Check]
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = agility + roll
+    { total_skill >= 12:
+        // Success
+        You're faster. You easily bound over the obstacles and cut them off, claiming the path upwards. They scowl and retreat to find another way.
+    - else:
+        // Failure
+        They're too quick, vaulting over a railing while you're still navigating the debris. They're gone before you can catch them. The path is clear, but your pride is stung.
+        ~ resolve -= 3
+    }
+    -> tower_floor_2
+
+=== tower_floor_2 ===
+The second floor is a cramped server room. A hulking figure, the "Brute," blocks the only doorway, cracking their knuckles. "Tower's mine," they grunt. "Get lost or get broken." This will be a fight.
+-> setup_brute_battle
+
+=== tower_floor_3 ===
+After defeating the Brute, you ascend to the third floor, a darkened observation deck. You don't see anyone, but your instincts scream "trap."
+<i>PROCTOR: "First subject to bypass the obstacle demonstrates superior situational awareness."</i>
+* [Scan for the trap - Perception/Intelligence Check]
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = perception + intelligence + roll
+    { total_skill >= 18:
+        // Success
+        { character_name == "Aris": Your AI implant flags a hidden pressure plate wired to a jury-rigged arc welder. A nasty trap. | Your eyes catch the faint shimmer of a tripwire connected to a weighted net. Amateurish, but deadly.} You easily disable it. A shadowy figure, the "Ghost," curses from the far side of the room and flees upwards.
+    - else:
+        // Failure
+        You step forward and a trap springs! A heavy cargo net drops from the ceiling, entangling you. It takes you precious moments to cut yourself free. You've lost time, and the Ghost is long gone.
+        ~ is_fatigued = true
+    }
+    -> tower_floor_4
+
+= tower_floor_4
+The fourth floor is a chaotic workshop, filled with sparking contraptions. A contestant in a customized tech-suit, the "Tinkerer," is working on a device. "Ah, a new test subject!" they exclaim, leveling a whirring gadget at you.
+-> setup_tinkerer_battle
+
+=== tower_floor_5 ===
+You reach the final floor before the spire's peak. A contestant with cold, professional eyes, the "Veteran," stands waiting for you. They hold a sharpened piece of rebar like a short sword. "Only one of us gets that fragment," they say calmly. "Let's make this quick."
+-> setup_veteran_battle
+
+=== tower_top ===
+Panting and bruised, you finally reach the open-air platform at the peak of the tower. The emergency light flashes on the console where the **second Data Fragment** is waiting. You take it.
+~ data_fragments += 1
+-> scene_9_the_bargain // Now points to the correct next scene
+
+// --- Tower Battle Setups ---
+=== setup_brute_battle ===
+    ~ current_enemy_name = "The Brute"
+    ~ current_enemy_hp = 30
+    ~ current_enemy_atk = 7
+    ~ current_enemy_def = 4
+    -> battle_loop
+    
+=== setup_tinkerer_battle ===
+    ~ current_enemy_name = "The Tinkerer"
+    ~ current_enemy_hp = 20
+    ~ current_enemy_atk = 8
+    ~ current_enemy_def = 2
+    -> battle_loop
+    
+=== setup_veteran_battle ===
+    ~ current_enemy_name = "The Veteran"
+    ~ current_enemy_hp = 25
+    ~ current_enemy_atk = 7
+    ~ current_enemy_def = 3
+    -> battle_loop
+
+// === SCENE 9: THE BARGAIN (Placeholder) ===
+=== scene_9_the_bargain ===
+With your second Data Fragment secured, you continue on.
 ...To be continued...
 -> END
+

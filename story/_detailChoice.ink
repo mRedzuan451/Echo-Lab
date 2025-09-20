@@ -1,5 +1,5 @@
 // scene 3 choices
-// === SKILL MECHANICS ===
+
 === use_skill ===
 { not found_first_log:
     -> find_first_log_event
@@ -98,3 +98,89 @@ You take a moment to examine your findings.
 * [Done analyzing.]
     -> scene_3_choices
 
+=== scene_3_ai_query ===
+The AI's calm voice is a presence in your mind.
+* (ask_where) [Ask: "Where am I?"]
+    <i>AI: "You are within Test Site Echo-7, located on a fragment of a planetary body designated 'The Shattered World'. My designation for this zone is the 'Ruined City-Isle'."</i>
+    -> scene_3_ai_query
+* (ask_what) [Ask: "What is this place? What is the 'Arena'?"]
+    <i>AI: "This 'Arena' is a controlled environment for a series of trials conducted by my creators, the Archivists. The objective is to test species' capacity for survival and adaptation."</i>
+    -> scene_3_ai_query
+* (ask_who) [Ask: "Who is the Proctor?"]
+    <i>AI: "The Proctor is the master control AI for this entire experiment. My function is to guide and observe subjects. The Proctor's function is to administrate the trials."</i>
+    -> scene_3_ai_query
+* (ask_why) [Ask: "Why am I here?"]
+    <i>AI: "Your selection criteria are not available in my data banks. Your purpose is to survive and demonstrate mastery of the environment. That is all the data I can provide on the subject."</i>
+    -> scene_3_ai_query
+* [That's enough for now.]
+    -> scene_3_choices
+
+=== locker_encounter ===
+The locker is old and heavy. The locking mechanism is a simple electronic keypad, now dark and corroded. The door itself is dented and sealed shut with rust.
+
+{ character_name == "Kaelen":
+    // Kaelen's Action: Brute Force
+    You plant your feet, grip the edge of the locker door, and pull with everything you've got.
+    { strength >= 7:
+        // Success
+        The metal groans, shrieks, and finally tears open with a deafening CRUNCH. Inside, you find a **Degraded Power Cell**. It's heavy, but it might be useful.
+        ~ has_degraded_power_cell = true
+    - else:
+        // Failure
+        You throw your shoulder against the door, but it only groans in protest. The rust holds it fast. You've only succeeded in bruising your shoulder and making a lot of noise.
+        ~ resolve -= 1
+    }
+}
+{ character_name == "Aris":
+    // Aris's Action: Hotwire
+    You spot a frayed power conduit hanging from the ceiling. Rerouting the cable, you attempt to send a jolt of power to the corroded keypad.
+    { intelligence >= 8:
+        // Success
+        It sparks to life for just a moment, long enough for the lock to disengage with a loud THUNK. Inside, you find a **Degraded Power Cell**. Fascinating.
+        ~ has_degraded_power_cell = true
+    - else:
+        // Failure
+        You try to create a circuit, but the components are too decayed. A final spark from the conduit singes your fingers and the keypad goes completely dead. It's useless now.
+        ~ resolve -= 1
+    }
+}
+{ character_name == "Lena":
+    // Lena's Action: Lockpick
+    The keypad is dead, but the manual override is still intact. Your deft fingers search for the tumblers.
+    { agility >= 7:
+        // Success
+        With a series of satisfying clicks, the lock disengages. The door swings open silently. Inside, you find a **Degraded Power Cell**. A valuable find.
+        ~ has_degraded_power_cell = true
+    - else:
+        // Failure
+        You work at the lock, but the internal mechanism is rusted solid. A lockpick snaps with a sharp *tink*, leaving the lock hopelessly jammed. There's no getting in that way now.
+        ~ resolve -= 1
+    }
+}
+-> scene_3_choices
+
+== moss_encounter ===
+You move closer to the wall. The moss gives off a soft, ethereal green light. It pulses gently, like a slow heartbeat.
+
+{ character_name == "Aris":
+    // Aris's Action: Bio-Scan
+    <i>AI: "Glimmer Moss. Bioluminescent fungus. Mildly regenerative properties. Caution: Spores are a known attractant for subterranean fauna."</i>
+- else:
+    // Kaelen/Lena's Action: Examine
+    { perception >= 6:
+        // Success
+        You notice the ground beneath the moss is disturbed with small tracks, and you can smell a strange, sweet scent. This moss is more than just a pretty light; it's an active part of the ecosystem here.
+    - else:
+        // Failure
+        It's a weird glowing plant. Looks cool, but you don't know anything else about it.
+    }
+}
+-> harvest_moss
+        
+= harvest_moss
++   [Take a sample.]
+    You scrape a handful of the glowing moss off the wall and store it in a pouch. It feels cool and damp to the touch.
+    ~ glimmer_moss_stack += 1
+    -> scene_3_choices
++   [Leave it be.]
+    -> scene_3_choices

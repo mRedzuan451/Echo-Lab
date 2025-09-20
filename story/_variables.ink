@@ -18,7 +18,6 @@ VAR character_name = ""
 VAR has_degraded_power_cell = false
 VAR glimmer_moss_stack = 0
 VAR has_kinetic_emitter = false
-VAR emitter_equipped = false
 VAR emitter_charges = 0
 VAR neuro_stim_state = "NONE" // Can be NONE, AVAILABLE, ACTIVE, USED
 
@@ -82,3 +81,8 @@ VAR has_flexible_polymer = false
 VAR has_tensile_cable = false
 VAR has_copper_wiring = false
 VAR has_magnetic_coil = false
+
+// Equip Equipment
+VAR emitter_equipped = false
+VAR club_equipped = false
+VAR bow_equipped = false
