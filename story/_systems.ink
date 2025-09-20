@@ -97,6 +97,13 @@
     { has_flexible_polymer: - Flexible Polymer }
     { has_tensile_cable: - High-Tensile Cable }
     { has_copper_wiring: - Copper Wiring }
+    { has_skulker_venom_gland: - Skulker Venom Gland }
+    { has_moss_poison_vial > 0:
+        - Moss Poison Vial (x{has_moss_poison_vial})
+    }
+    { has_poison_bomb:
+        - Poison Gas Bomb (Single Use)
+    }
     { has_magnetic_coil: - Magnetic Coil }
     
     -- Logs & Intel --
@@ -125,12 +132,29 @@
         -> player_attack
     + { not used_skill_in_battle } [Use Skill]
         -> battle_use_skill
+    + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
+        -> player_use_moss_poison
+    + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
+        -> player_use_poison_bomb
     + [Defend]
         ~ is_defending = true
         You brace for an attack, increasing your defense for this turn.
         -> enemy_turn
     * [Run Away]
         -> battle_fled
+
+= player_use_moss_poison
+    ~ has_moss_poison_vial -= 1
+    You coat your weapon with the sticky, paralytic poison. The {current_enemy_name} is now poisoned!
+    ~ enemy_is_poisoned = true
+    ~ poison_turns_remaining = 3 // Poison lasts for 3 turns
+    -> enemy_turn
+
+= player_use_poison_bomb
+    ~ has_poison_bomb = false
+    You hurl the makeshift bomb. It shatters at the {current_enemy_name}'s feet, releasing a cloud of aerosolized neurotoxin. The creature shrieks, convulses, and then collapses, neutralized instantly.
+    ~ current_enemy_hp = 0
+    -> battle_won
 
 === battle_fled ===
 You take a chance and disengage, turning to flee. The {current_enemy_name} lets out a cry of frustration but doesn't pursue.
@@ -232,6 +256,11 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
 
 === battle_won ===
 The {current_enemy_name} collapses. You are victorious.
+// Check if Aris can loot the creature
+{ character_name == "Aris" and current_enemy_name == "Slick-Skinned Skulker":
+    -> loot_skulker
+}
+
 // Check which enemy was defeated to continue the correct story path
 { 
 - current_enemy_name == "Slick-Skinned Skulker":
@@ -250,6 +279,25 @@ The {current_enemy_name} collapses. You are victorious.
     -> END
 }
 
+=== skulker_defeated_hub ===
+// This is the new central hub for when the Skulker is defeated.
+// First, check if Aris can loot the creature.
+{ character_name == "Aris":
+    -> loot_skulker
+}
+// If not Aris, or after looting, proceed to the standard win scene.
+-> skulker_win
+
+=== loot_skulker ===
+    As the Skulker lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.
+    * [Harvest the Venom Gland]
+        You carefully extract the gland, a pulsating sac of green fluid. This could be a powerful ingredient.
+        ~ has_skulker_venom_gland = true
+    * [Leave it.]
+        // Do nothing
+- The path to the terminal is clear.
+-> skulker_win
+
 === battle_lost ===
 // Check which enemy defeated you
 { 
@@ -265,7 +313,7 @@ Your vision fades to black as the opponent's final blow lands.
 }
 
 === skulker_win ===
-    The path to the terminal is clear. You download the **first Data Fragment**.
+    You download the **first Data Fragment**.
     ~ data_fragments += 1
     -> scene_7_the_fragment
 

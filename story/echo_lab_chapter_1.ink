@@ -228,12 +228,18 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     ~ rival_hp = rival_max_hp
     ~ used_skill_in_battle = false
     ~ rival_will_miss_next_turn = false
+    ~ enemy_is_poisoned = false
+    ~ poison_turns_remaining = 0
     -> rival_battle_loop
 
 = rival_battle_loop
     You have {hp}/{max_hp} HP. Your rival has {rival_hp}/{rival_max_hp} HP.
     + [Attack!]
         -> rival_player_attack
+    + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
+        -> rival_use_moss_poison
+    + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
+        -> rival_use_poison_bomb
     * [Defend]
         ~ is_defending = true
         You anticipate your rival's next move and prepare to block.
@@ -242,6 +248,19 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         -> rival_use_skill
     * [Give Up]
         -> rival_battle_give_up
+
+= rival_use_moss_poison
+    ~ has_moss_poison_vial -= 1
+    You discreetly coat a small dart with the paralytic poison and fling it at your rival. It finds its mark. Your rival is now poisoned!
+    ~ enemy_is_poisoned = true
+    ~ poison_turns_remaining = 3
+    -> rival_enemy_turn
+    
+= rival_use_poison_bomb
+    ~ has_poison_bomb = false
+    You hurl the bomb at your rival's feet. It shatters, releasing a cloud of thick, green gas. Your rival coughs and staggers back, weakened and disoriented by the neurotoxin. They're in no condition to continue the fight.
+    ~ rival_hp = 1 // Leave them with 1 HP to trigger the win condition
+    -> rival_battle_win
 
 = rival_use_skill
     ~ used_skill_in_battle = true
@@ -282,12 +301,21 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     }
 
 = rival_enemy_turn
-    { rival_will_miss_next_turn:
+    { 
+    - rival_will_miss_next_turn:
         ~ rival_will_miss_next_turn = false
         Using the opening you spotted, you easily sidestep your rival's clumsy attack. It misses completely.
         -> rival_battle_loop
     - else:
         // --- Rival's Turn ---
+        enemy_is_poisoned:
+        ~ poison_turns_remaining -= 1
+        Your rival winces as the poison takes effect, dealing 4 damage.
+        ~ rival_hp -= 4
+        { poison_turns_remaining <= 0:
+            ~ enemy_is_poisoned = false
+            The poison wears off.
+        }
         ~ temp current_def = def
         { is_defending:
             ~ current_def = def + 3 // Temporarily boost defense
@@ -543,15 +571,13 @@ The wind howls around you. It's a long, dangerous climb.
 = exploit_skulker_weakness
     Remembering the Archivist Log, you tell your implant to emit a high-frequency sonic pulse. The AI complies. A piercing, silent-to-you shriek fills the subway. The Skulker instantly recoils, thrashing in agony as its sensitive auditory organs overload. It collapses, twitching, completely incapacitated.
     The path to the terminal is clear. Your intel paid off.
-    ~ data_fragments += 1
-    -> scene_7_the_fragment
+    -> skulker_defeated_hub
         
 = use_emitter_on_skulker
     { use_emitter_charge():
         // The function returned true, so the usage was successful.
         The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
-        ~ data_fragments += 1
-        -> scene_7_the_fragment
+        -> skulker_defeated_hub
     }
 
 = engage_skulker_setup
@@ -562,6 +588,8 @@ The wind howls around you. It's a long, dangerous climb.
     ~ current_enemy_def = 2
     ~ used_skill_in_battle = false
     ~ rival_will_miss_next_turn = false // Re-using this for any enemy
+    ~ enemy_is_poisoned = false
+    ~ poison_turns_remaining = 0
     The Skulker lets out a piercing shriek and lunges!
     -> skulker_battle_loop
 
@@ -827,6 +855,17 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
         You carefully pry open the casing of the Degraded Power Cell. Bypassing the safety regulators, you rig it to overload on impact. It's a volatile, single-use weapon, perfect for disabling electronics... or stunning biological targets.
         ~ has_emp_grenade = true
         ~ has_degraded_power_cell = false // The cell is consumed
+        -> crafting_options
+    * { character_name == "Aris" and glimmer_moss_stack > 0 } [Refine Glimmer Moss into Poison.]
+        You crush the Glimmer Moss, carefully isolating the coagulant you discovered earlier. By mixing it with a mild solvent from your kit, you refine it into a sticky, paralytic poison. You place it in an empty vial, ready for use.
+        ~ has_moss_poison_vial += 1
+        ~ glimmer_moss_stack -= 1
+        -> crafting_options
+    * { character_name == "Aris" and has_skulker_venom_gland and has_degraded_power_cell and not has_poison_bomb } [Create a Poison Gas Bomb.]
+        This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
+        ~ has_poison_bomb = true
+        ~ has_skulker_venom_gland = false
+        ~ has_degraded_power_cell = false
         -> crafting_options
 
     // Lena's Crafting Option

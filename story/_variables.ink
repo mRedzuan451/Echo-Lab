@@ -82,6 +82,15 @@ VAR has_tensile_cable = false
 VAR has_copper_wiring = false
 VAR has_magnetic_coil = false
 
+// Aris's Organic Resources & Crafted Items
+VAR has_skulker_venom_gland = false
+VAR has_moss_poison_vial = 0 // Can craft multiple
+VAR has_poison_bomb = false
+
+// Poison Status Effect
+VAR enemy_is_poisoned = false
+VAR poison_turns_remaining = 0
+
 // Equip Equipment
 VAR emitter_equipped = false
 VAR club_equipped = false
