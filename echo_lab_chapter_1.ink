@@ -2,6 +2,8 @@
 // This is the playable script for the first chapter of the game.
 
 // === VARIABLE DEFINITIONS ===
+// ALL VAR AND LIST DEFINITIONS MUST BE AT THE TOP OF THE FILE
+
 // Character stats
 VAR strength = 0
 VAR intelligence = 0
@@ -20,8 +22,15 @@ VAR character_name = ""
 VAR has_degraded_power_cell = false
 VAR has_glimmer_moss_sample = false
 VAR has_kinetic_emitter = false
+VAR emitter_equipped = false
+VAR emitter_charges = 0
 
-// === SKILL SYSTEM ===
+// Analyzed item Flags
+VAR analyzed_power_cell = false
+VAR analyzed_glimmer_moss = false
+VAR studied_emitter = false
+
+// Skill System
 LIST AllSkills = Survivalist, BioScan, DiscerningEye
 VAR player_skills = ()
 
@@ -34,52 +43,11 @@ VAR rival_owes_favour = false
 // Data Fragments
 VAR data_fragments = 0
 
-// Stat
+// Combat Stats
 VAR max_hp = 0
+VAR hp = 0
 VAR atk = 0
 VAR def = 0
-VAR hp = 0
-
-// Equipped
-VAR emitter_equipped = false
-
-// === DYNAMIC STAT CALCULATION ===
-=== function update_combat_stats() ===
-    // 1. Calculate BASE stats from attributes
-    { character_name == "Kaelen":
-        // The Soldier: Strength is key for attack and health.
-        ~ max_hp = 15 + (strength * 2)
-        ~ atk = 2 + strength
-        ~ def = agility
-    }
-    { character_name == "Aris":
-        // The Bio-Hacker: Intelligence drives his attack power.
-        ~ max_hp = 12 + strength
-        ~ atk = 1 + intelligence
-        ~ def = agility + 1
-    }
-    { character_name == "Lena":
-        // The Infiltrator: Agility makes her a fast hitter.
-        ~ max_hp = 14 + strength
-        ~ atk = 2 + agility
-        ~ def = INT(perception / 2)
-    }
-
-    // 2. Apply BONUSES from equipped items
-    { emitter_equipped:
-        { studied_emitter:
-            { character_name == "Aris":
-                ~ atk += 4 // Aris gets the biggest bonus
-            - else:
-                ~ atk += 3 // Other characters get a good bonus
-            }
-        - else:
-            ~ atk += 2 // Standard bonus if not studied
-        }
-    }
-    // (Future equipment bonuses would go here)
-    
-    ~ return true
 
 // Global Combat State Variables
 VAR current_enemy_name = ""
@@ -96,20 +64,53 @@ VAR rival_def = 0
 VAR used_skill_in_battle = false
 VAR rival_will_miss_next_turn = false
 
-// Analyzed item
-VAR analyzed_power_cell = false
-VAR analyzed_glimmer_moss = false
-VAR studied_emitter = false
 
-VAR emitter_charges = 0
+// === DYNAMIC STAT CALCULATION ===
+=== function update_combat_stats() ===
+    // 1. Calculate BASE stats from attributes
+    { character_name == "Kaelen":
+        [cite_start]// The Soldier: Strength is key for attack and health. [cite: 53]
+        ~ max_hp = 15 + (strength * 2)
+        ~ atk = 2 + strength
+        ~ def = agility
+    }
+    { character_name == "Aris":
+        [cite_start]// The Bio-Hacker: Intelligence drives his attack power. [cite: 54]
+        ~ max_hp = 12 + strength
+        ~ atk = 1 + intelligence
+        ~ def = agility + 1
+    }
+    { character_name == "Lena":
+        [cite_start]// The Infiltrator: Agility makes her a fast hitter. [cite: 55]
+        ~ max_hp = 14 + strength
+        ~ atk = 2 + agility
+        ~ def = INT(perception / 2)
+    }
+
+    [cite_start]// 2. Apply BONUSES from equipped items [cite: 56]
+    { emitter_equipped:
+        { studied_emitter:
+            { character_name == "Aris":
+                ~ atk += 4 // Aris gets the biggest bonus
+            - else:
+                ~ atk += 3 // Other characters get a good bonus
+            }
+        - else:
+            ~ atk += 2 // Standard bonus if not studied
+        }
+    }
+    [cite_start]// (Future equipment bonuses would go here) [cite: 57]
+    
+    ~ return true
 
 // === ITEM FUNCTIONS ===
 === function use_emitter_charge() ===
     { has_kinetic_emitter and emitter_charges > 0:
         ~ emitter_charges -= 1
-        The Kinetic Field Emitter discharges with a powerful hum.
+        [cite_start]The Kinetic Field Emitter discharges with a powerful hum. [cite: 58]
         { emitter_charges == 0:
-            A final surge of power leaves the device inert, its internal mechanisms fused. It's broken for good.
+            [cite_start]A final surge of power leaves the device inert, its internal mechanisms fused. [cite: 59]
+            [cite_start]It's broken for good. [cite: 60]
         }
         ~ return true
     - else:
