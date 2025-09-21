@@ -13,6 +13,7 @@ VAR is_injured = false
 
 // Player's chosen name
 VAR character_name = ""
+VAR rival_name = ""
 
 // Inventory Flags (true = has, false = doesn't have)
 VAR power_cell_stack = 0
@@ -87,7 +88,7 @@ VAR has_copper_wiring = false
 VAR has_magnetic_coil = false
 
 // Aris's Organic Resources & Crafted Items
-VAR has_skulker_venom_gland = false
+VAR skulker_venom_gland_stack = 0
 VAR has_moss_poison_vial = 0 // Can craft multiple
 VAR has_poison_bomb = false
 
@@ -115,3 +116,31 @@ VAR club_is_upgraded = false
 // New Scavenging Finds
 VAR has_titan_beetle_carapace = false
 VAR has_adrenaline_shot = false
+
+// === SCENE 10: FINAL BATTLE STATE ===
+// Contribution Tracking
+VAR player_contribution = 0
+VAR rival_contribution = 0
+VAR jed_contribution = 0
+VAR ally_3_contribution = 0
+VAR ally_4_contribution = 0
+
+// Boss Stats & State
+VAR alpha_skulker_hp = 0
+VAR alpha_skulker_max_hp = 0
+VAR alpha_skulker_atk = 0
+VAR alpha_skulker_def = 0
+VAR alpha_is_berserk = false
+
+// Rival Event Flags
+VAR rival_is_in_danger = false
+
+// === 2v2 BATTLE STATE ===
+VAR enemy2_name = ""
+VAR enemy2_hp = 0
+VAR enemy2_atk = 0
+VAR enemy2_def = 0
+VAR jed_hp = 0
+VAR jed_max_hp = 20
+VAR jed_atk = 6
+VAR jed_def = 4

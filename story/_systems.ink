@@ -109,7 +109,7 @@
     { has_flexible_polymer: - Flexible Polymer }
     { has_tensile_cable: - High-Tensile Cable }
     { has_copper_wiring: - Copper Wiring }
-    { has_skulker_venom_gland: - Skulker Venom Gland }
+    { skulker_venom_gland_stack > 0: - Skulker Venom Gland (x{skulker_venom_gland_stack}) }
     { has_moss_poison_vial > 0:
         - Moss Poison Vial (x{has_moss_poison_vial})
     }
@@ -212,9 +212,20 @@
 
 = player_use_poison_bomb
     ~ has_poison_bomb = false
-    You hurl the makeshift bomb. It shatters at the {current_enemy_name}'s feet, releasing a cloud of aerosolized neurotoxin. The creature shrieks, convulses, and then collapses, neutralized instantly.
-    ~ current_enemy_hp = 0
-    -> battle_won
+    You hurl the makeshift bomb. It shatters at the {current_enemy_name}'s feet, releasing a cloud of aerosolized neurotoxin. The creature shrieks and convulses from the initial blast!
+    ~ temp bomb_damage = atk * 3
+    ~ current_enemy_hp -= bomb_damage
+    The bomb deals {bomb_damage} initial damage!
+    
+    // Apply a stronger, longer-lasting poison
+    ~ enemy_is_poisoned = true
+    ~ poison_turns_remaining = 5
+    
+    { current_enemy_hp <= 0:
+        -> battle_won
+    - else:
+        -> enemy_turn
+    }
 
 = player_use_emp_grenade
     ~ has_emp_grenade = false
@@ -394,6 +405,13 @@ The {current_enemy_name} collapses. You are victorious.
         ~ player_skills += CounterAttack
         The Veteran's calm, precise fighting style was a lesson in efficiency. You've adapted their technique into a new skill: **Counter Attack**.
         <i>AI: "Subject Lena has assimilated a more efficient combat doctrine based on observation. Optimal."</i>
+    - current_enemy_name == "Skulker Guard":
+            You defeat the guard, and the rest of the horde scatters, but you see two larger Skulkers coordinating their attacks, blocking the path forward.
+    { jed_status == "HELPED":
+        Jed stands back-to-back with you. "You take the one on the left?" he asks, readying his own weapon.
+    }
+        This is your first major obstacle.
+        -> setup_two_skulker_battle
 }
 
 // Check if Aris can loot the creature
@@ -406,8 +424,12 @@ The {current_enemy_name} collapses. You are victorious.
 - current_enemy_name == "Slick-Skinned Skulker":
     -> skulker_win
 - current_enemy_name == "Ambush Skulker":
-            You dispatch the creature and catch your breath. The hab-unit is now clear to search.
-            -> final_scavenge
+            { character_name == "Aris":
+                -> loot_ambush_skulker
+            - else:
+                You dispatch the creature and catch your breath. The hab-unit is now clear.
+                -> final_scavenge
+            }
 - current_enemy_name == "The Brute":
         You step over the unconscious form of the Brute and head for the stairs.
         -> tower_buffer_room(-> tower_floor_3)
@@ -422,6 +444,23 @@ The {current_enemy_name} collapses. You are victorious.
     -> END
 }
 
+= loot_ambush_skulker
+    As the Skulker lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.
+    * [Harvest the Venom Gland]
+        ~ temp roll = RANDOM(1, 3)
+        { roll == 1:
+            // Success (33% chance)
+            You carefully extract the gland, a pulsating sac of green fluid. This could be a powerful ingredient.
+            ~ skulker_venom_gland_stack += 1
+        - else:
+            // Failure
+            You try to extract the gland, but your hands are unsteady from the fight. You accidentally puncture the sac, and the venom spills uselessly onto the floor, dissolving into a foul-smelling vapor. The opportunity is lost.
+        }
+    * [Leave it.]
+        // Do nothing
+- The hab-unit is now clear.
+-> final_scavenge
+
 === skulker_defeated_hub ===
 // This is the new central hub for when the Skulker is defeated.
 // First, check if Aris can loot the creature.
@@ -434,11 +473,18 @@ The {current_enemy_name} collapses. You are victorious.
 === loot_skulker ===
     As the Skulker lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.
     * [Harvest the Venom Gland]
-        You carefully extract the gland, a pulsating sac of green fluid. This could be a powerful ingredient.
-        ~ has_skulker_venom_gland = true
+        ~ temp roll = RANDOM(1, 3)
+        { roll == 1:
+            // Success (33% chance)
+            You carefully extract the gland, a pulsating sac of green fluid. This could be a powerful ingredient.
+            ~ skulker_venom_gland_stack += 1
+        - else:
+            // Failure
+            You try to extract the gland, but your hands are unsteady from the fight. You accidentally puncture the sac, and the venom spills uselessly onto the floor, dissolving into a foul-smelling vapor. The opportunity is lost.
+        }
     * [Leave it.]
         // Do nothing
-- The path to the terminal is clear.
+- The path to the terminal is clear..
 -> skulker_win
 
 === battle_lost ===
@@ -492,10 +538,10 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
         ~ has_moss_poison_vial += 1
         ~ glimmer_moss_stack -= 1
         -> crafting_options(return_point)
-    + { character_name == "Aris" and has_skulker_venom_gland and power_cell_stack > 0 and not has_poison_bomb } [Create a Poison Gas Bomb.]
+    + { character_name == "Aris" and skulker_venom_gland_stack > 0 and power_cell_stack > 0 and not has_poison_bomb } [Create a Poison Gas Bomb.]
         This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
         ~ has_poison_bomb = true
-        ~ has_skulker_venom_gland = false
+        ~ skulker_venom_gland_stack -= 1
         ~ power_cell_stack -= 1
         -> crafting_options(return_point)
 
@@ -504,11 +550,17 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
         You take the length of flexible polymer and the high-tensile cable. With your deft hands, you shape the polymer and string the cable, creating a makeshift but deadly silent bow. You'll need to find arrows, but the frame is perfect.
         ~ has_recurve_bow = true
         ->crafting_options(return_point)
-    * { character_name == "Lena" and has_recurve_bow and scrap_arrow_count > 0 and power_cell_stack > 0 } [Craft Shock Arrows.]
+    + { character_name == "Lena" and has_recurve_bow } [Fletch Scrap Arrows.]
+        You find a few thin pieces of rebar for shafts and some sharpened scrap metal for heads. With some tattered fabric for fletching, you can assemble a small quiver's worth of arrows.
+        ~ temp arrows_crafted = RANDOM(2, 4)
+        ~ scrap_arrow_count += arrows_crafted
+        You craft {arrows_crafted} scrap arrows.
+        -> crafting_options(return_point)
+    + { character_name == "Lena" and has_recurve_bow and scrap_arrow_count > 0 and power_cell_stack > 0 } [Craft Shock Arrows.]
         You carefully attach the live wire from a Degraded Power Cell to the head of a scrap arrow. It's a crude but effective way to deliver a powerful electrical jolt on impact. You manage to create a small bundle of them before the power cell is drained.
-        ~ temp arrows_crafted = RANDOM(1, 3)
-        ~ shock_arrow_count += arrows_crafted
-        ~ scrap_arrow_count -= arrows_crafted
+        ~ temp arrows_crafted2 = RANDOM(1, 3)
+        ~ shock_arrow_count += arrows_crafted2
+        ~ scrap_arrow_count -= arrows_crafted2
         ~ power_cell_stack -= 1
         You craft {arrows_crafted} shock arrows.
         -> crafting_options(return_point)
@@ -527,3 +579,103 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
 
     * [That's all for now.]
         -> return_point
+        
+// === 2v2 BATTLE MECHANIC ===
+=== two_v_two_battle_loop ===
+    // --- STATUS DISPLAY ---
+    You have {hp}/{max_hp} HP.
+    { jed_status == "HELPED":
+        Jed has {jed_hp}/{jed_max_hp} HP.
+    }
+    The {current_enemy_name} has {current_enemy_hp} HP. The {enemy2_name} has {enemy2_hp} HP.
+    
+    // --- PLAYER'S TURN ---
+    * [Attack the first {current_enemy_name}]
+        -> player_attack_2v2(-> jed_turn_2v2, false)
+    * [Attack the second {enemy2_name}]
+        -> player_attack_2v2(-> jed_turn_2v2, true) // Pass a flag for the second enemy
+        
+= player_attack_2v2(-> return_point, is_second_enemy)
+    ~ temp target_hp = 0
+    ~ temp target_def = 0
+    { is_second_enemy:
+        ~ target_hp = enemy2_hp
+        ~ target_def = enemy2_def
+    - else:
+        ~ target_hp = current_enemy_hp
+        ~ target_def = current_enemy_def
+    }
+    
+    ~ temp damage = atk - target_def
+    { damage < 1: 
+        ~ damage = 1 
+    }
+    ~ target_hp -= damage
+    
+    { is_second_enemy:
+        ~ enemy2_hp = target_hp
+        You attack the second Skulker for {damage} damage!
+    - else:
+        ~ current_enemy_hp = target_hp
+        You attack the first Skulker for {damage} damage!
+    }
+    -> return_point
+
+= jed_turn_2v2
+    { jed_status == "HELPED":
+        Jed fights alongside you, a seasoned survivor. He takes a shot at one of the Skulkers.
+        ~ temp target_roll = RANDOM(1, 2)
+        {
+            - target_roll == 1 and current_enemy_hp > 0:
+                ~ current_enemy_hp -= jed_atk
+                Jed hits the first Skulker for {jed_atk} damage!
+            - enemy2_hp > 0:
+                ~ enemy2_hp -= jed_atk
+                Jed hits the second Skulker for {jed_atk} damage!
+            - else:
+                // If the second is dead, hit the first
+                ~ current_enemy_hp -= jed_atk
+                Jed hits the first Skulker for {jed_atk} damage!
+        }
+    }
+    -> enemy_turn_2v2
+
+= enemy_turn_2v2
+    // Check if enemies are still alive before their turn
+    { current_enemy_hp > 0:
+        // First Skulker attacks
+        The first Skulker lunges!
+        ~ hp -= current_enemy_atk
+        It hits you for {current_enemy_atk} damage!
+        { hp <= 0: -> game_over_death }
+    }
+    { enemy2_hp > 0:
+        // Second Skulker attacks
+        The second Skulker attacks!
+        { jed_status == "HELPED":
+            // If Jed is here, it might attack him
+            ~ temp target_roll = RANDOM(1, 2)
+            { target_roll == 1:
+                ~ hp -= enemy2_atk
+                It hits you for {enemy2_atk} damage!
+            - else:
+                ~ jed_hp -= enemy2_atk
+                It hits Jed for {enemy2_atk} damage!
+            }
+        - else:
+            ~ hp -= enemy2_atk
+            It hits you for {enemy2_atk} damage!
+        }
+        { hp <= 0: -> game_over_death }
+        { jed_hp <= 0: 
+            ~ jed_status = "DEAD" 
+        }
+    }
+
+    // Check for victory
+    { current_enemy_hp <= 0 and enemy2_hp <= 0:
+        You've defeated both Skulkers!
+        -> setup_alpha_skulker_battle // Proceed to the next part of the horde battle
+    - else:
+        -> two_v_two_battle_loop
+    }
