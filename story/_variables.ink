@@ -27,7 +27,7 @@ VAR analyzed_glimmer_moss = false
 VAR studied_emitter = false
 
 // Skill System
-LIST AllSkills = Survivalist, BioScan, DiscerningEye
+LIST AllSkills = Survivalist, BioScan, DiscerningEye, HeavyHitter, Overcharge, CounterAttack
 VAR player_skills = ()
 
 // Consequence Flags
@@ -68,6 +68,10 @@ VAR used_discerningeye_in_bay = false
 // Archivist Log Flags
 VAR found_first_log = false
 VAR know_skulker_weakness = false
+// Jed's Unlocked Log Intel
+VAR log_knows_site_purpose = false
+VAR log_knows_shattered_world_cause = false
+VAR log_knows_proctor_ethics = false
 
 // Crafted Weapon Flags
 VAR has_reinforced_club = false
@@ -95,3 +99,19 @@ VAR poison_turns_remaining = 0
 VAR emitter_equipped = false
 VAR club_equipped = false
 VAR bow_equipped = false
+
+// New Skill State Flags
+VAR is_overcharging = false
+VAR is_countering = false
+
+// Jed's Character-Specific Rewards
+VAR has_club_upgrade_kit = false
+VAR knows_calming_poultice_recipe = false
+VAR silent_arrow_count = 0
+VAR scrap_arrow_count = 0
+VAR shock_arrow_count = 0
+VAR club_is_upgraded = false
+
+// New Scavenging Finds
+VAR has_titan_beetle_carapace = false
+VAR has_adrenaline_shot = false

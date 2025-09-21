@@ -230,6 +230,8 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     ~ rival_will_miss_next_turn = false
     ~ enemy_is_poisoned = false
     ~ poison_turns_remaining = 0
+    ~ is_overcharging = false
+    ~ is_countering = false
     -> rival_battle_loop
 
 = rival_battle_loop
@@ -389,6 +391,7 @@ Your final blow connects, and your rival stumbles back, winded and defeated. The
 ~ has_kinetic_emitter = true
 ~ rival_has_emitter = false
 ~ emitter_charges = 3 // Emitter starts with 3 charges
+~ used_skill_in_battle = false
 -> post_rival_encounter
 
 
@@ -416,7 +419,7 @@ You take a moment to catch your breath before moving on.
 * { is_injured and glimmer_moss_stack == 0 } [Look for something to treat your wounds.]
     -> look_for_moss
 * { glimmer_moss_stack > 0 and is_injured } [Use the Glimmer Moss to tend to your wounds.]
-    -> use_glimmer_moss
+    -> use_glimmer_moss_tunnel (false)
 * { has_kinetic_emitter and not studied_emitter } [Study the Kinetic Field Emitter.]
     -> study_emitter
 * { has_kinetic_emitter and not emitter_equipped } [Equip the Kinetic Field Emitter.]
@@ -478,7 +481,8 @@ You take a closer look at the device you won from your rival. It's a heavy, meta
 }
 -> post_rival_encounter
 
-= use_glimmer_moss
+=== use_glimmer_moss_tunnel(is_safe) ===
+    ~ glimmer_moss_stack -= 1
     ~ temp heal_amount = 0
     You pull out the pouch of glowing moss.
     { character_name == "Aris":
@@ -495,18 +499,17 @@ You take a closer look at the device you won from your rival. It's a heavy, meta
         ~ hp = max_hp // Don't overheal
     }
     The moss dissolves into a faint, glowing dust, its regenerative properties spent.
-    ~ glimmer_moss_stack -= 1
     ~ is_injured = false
 
     // --- RANDOM ATTACK CHECK ---
-    ~ temp attack_chance = RANDOM(1, 4)
-    { attack_chance == 1:
-        As the glow fades, you hear a frantic chittering sound. A small, rat-like creature with pale skin darts out from a crack in the wall, attracted by the moss's sweet scent. It nips at your boot before you can react, then vanishes back into the darkness. It didn't hurt, but the startling encounter has left you on edge.
-        ~ resolve -= 3
+    { not is_safe:
+        ~ temp attack_chance = RANDOM(1, 4)
+        { attack_chance == 1:
+            As the glow fades, you hear a frantic chittering sound. A small, rat-like creature with pale skin darts out from a crack in the wall, attracted by the moss's sweet scent. It nips at your boot before you can react, then vanishes back into the darkness. It didn't hurt, but the startling encounter has left you on edge.
+            ~ resolve -= 3
+        }
     }
-    
-    -> post_rival_encounter
-
+    ->->
 
 // === SCENE 6: THE FIRST TEST ===
 === scene_6_first_test ===
@@ -580,18 +583,20 @@ The wind howls around you. It's a long, dangerous climb.
         -> skulker_defeated_hub
     }
 
-= engage_skulker_setup
+=== engage_skulker_setup ===
     // Set the global variables for this specific enemy
     ~ current_enemy_name = "Slick-Skinned Skulker"
     ~ current_enemy_hp = 15
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 2
     ~ used_skill_in_battle = false
-    ~ rival_will_miss_next_turn = false // Re-using this for any enemy
+    ~ rival_will_miss_next_turn = false
     ~ enemy_is_poisoned = false
     ~ poison_turns_remaining = 0
+    ~ is_overcharging = false
+    ~ is_countering = false
     The Skulker lets out a piercing shriek and lunges!
-    -> skulker_battle_loop
+    -> battle_loop
 
 = skulker_battle_loop
     You have {hp}/{max_hp} HP. The {current_enemy_name} has {current_enemy_hp} HP.
@@ -658,7 +663,7 @@ The wind howls around you. It's a long, dangerous climb.
         ~ is_injured = true
         -> scene_8_the_tower
 
-= sneak_past_skulker
+=== sneak_past_skulker ===
     // Agility Check
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = agility + roll
@@ -677,7 +682,7 @@ The wind howls around you. It's a long, dangerous climb.
         -> scene_8_the_tower
     }
     
-= analyze_skulker_env
+=== analyze_skulker_env ===
     // Intelligence Check
     ~ temp roll = RANDOM(1, 6)
     ~ temp total_skill = intelligence + roll
@@ -831,65 +836,18 @@ Knowing you'll need more than just wits to survive, you decide to scavenge the i
 // === SCENE 7A: GEARING UP ===
 === scene_7a_gearing_up ===
 Before you proceed, you find a relatively sheltered alcove in the ruins to catch your breath and take stock of what you have. This is a good opportunity to prepare for what's ahead.
-* [Use your resources to craft something useful.]
-    -> crafting_options
++ [Use your resources to craft something useful.]
+    -> crafting_options (-> scene_7a_gearing_up)
 + [Scour the area for more resources.]
     -> scene_7b_grinding
 * { not has_reinforced_club and not has_recurve_bow and not has_emp_grenade } [Save your resources and move on.]
     -> scene_8_the_tower
-* { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or has_poison_bomb } [You are prepared. Move on.]
++ { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or has_poison_bomb } [You are prepared. Move on.]
     -> scene_8_the_tower
 + [Check Status]
     -> check_status( -> scene_7a_gearing_up)
 
-= crafting_options
-    You lay out your scavenged materials.
-    
-    // Kaelen's Crafting Option
-    * { character_name == "Kaelen" and not has_reinforced_club and has_metal_pipe and has_thick_wiring } [Fashion a Reinforced Club.]
-        You take the sturdy metal pipe and thick wiring you found. Using your strength, you wrap the wiring tightly around one end, creating a weighted, brutal-looking club. It feels solid in your hands.
-        ~ has_reinforced_club = true
-        ~ atk += 2
-        -> crafting_options
 
-    // Aris's Crafting Option
-    * { character_name == "Aris" and power_cell_stack > 0 and not has_emp_grenade } [Assemble an EMP Grenade.]
-        You carefully pry open the casing of the Degraded Power Cell. Bypassing the safety regulators, you rig it to overload on impact. It's a volatile, single-use weapon, perfect for disabling electronics... or stunning biological targets.
-        ~ has_emp_grenade = true
-        ~ power_cell_stack -= 1 // The cell is consumed
-        -> crafting_options
-    * { character_name == "Aris" and glimmer_moss_stack > 0 } [Refine Glimmer Moss into Poison.]
-        You crush the Glimmer Moss, carefully isolating the coagulant you discovered earlier. By mixing it with a mild solvent from your kit, you refine it into a sticky, paralytic poison. You place it in an empty vial, ready for use.
-        ~ has_moss_poison_vial += 1
-        ~ glimmer_moss_stack -= 1
-        -> crafting_options
-    * { character_name == "Aris" and has_skulker_venom_gland and power_cell_stack > 0 and not has_poison_bomb } [Create a Poison Gas Bomb.]
-        This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
-        ~ has_poison_bomb = true
-        ~ has_skulker_venom_gland = false
-        ~ power_cell_stack -= 1
-        -> crafting_options
-
-    // Lena's Crafting Option
-    * { character_name == "Lena" and not has_recurve_bow and has_flexible_polymer and has_tensile_cable } [Construct a Recurve Bow.]
-        You take the length of flexible polymer and the high-tensile cable. With your deft hands, you shape the polymer and string the cable, creating a makeshift but deadly silent bow. You'll need to find arrows, but the frame is perfect.
-        ~ has_recurve_bow = true
-        -> crafting_options
-    
-    // Equip Options
-    * { has_reinforced_club and not club_equipped } [Equip the Reinforced Club.]
-        ~ club_equipped = true
-        You grip the club tightly. It's a crude but effective weapon. Your Attack has increased.
-        ~ update_combat_stats()
-        -> crafting_options
-    * { has_recurve_bow and not bow_equipped } [Equip the Recurve Bow.]
-        ~ bow_equipped = true
-        You sling the bow over your shoulder. You'll be able to strike from the shadows. Your Attack has increased.
-        ~ update_combat_stats()
-        -> crafting_options
-
-    * [That's all for now.]
-        -> scene_7a_gearing_up
 
 // === SCENE 7B: RESOURCE GRINDING ===
 === scene_7b_grinding ===
@@ -898,7 +856,7 @@ You scan the immediate vicinity for any useful materials you may have missed.
     -> grind_moss
 + [Sift through the wreckage for Power Cells.]
     -> grind_power_cells
-* [Stop searching and return.]
++ [Stop searching and return.]
     -> scene_7a_gearing_up
 
 = grind_moss
@@ -945,7 +903,7 @@ You haul yourself onto the first-floor landing, a wide platform of rusted metal 
         They're too quick, vaulting over a railing while you're still navigating the debris. They're gone before you can catch them. The path is clear, but your pride is stung.
         ~ resolve -= 3
     }
-    -> tower_floor_2
+    -> tower_buffer_room(-> tower_floor_2)
 
 === tower_floor_2 ===
 The second floor is a cramped server room. A hulking figure, the "Brute," blocks the only doorway, cracking their knuckles. "Tower's mine," they grunt. "Get lost or get broken." This will be a fight.
@@ -965,7 +923,7 @@ After defeating the Brute, you ascend to the third floor, a darkened observation
         You step forward and a trap springs! A heavy cargo net drops from the ceiling, entangling you. It takes you precious moments to cut yourself free. You've lost time, and the Ghost is long gone.
         ~ is_fatigued = true
     }
-    -> tower_floor_4
+    -> tower_buffer_room(-> tower_floor_4)
 
 = tower_floor_4
 The fourth floor is a chaotic workshop, filled with sparking contraptions. A contestant in a customized tech-suit, the "Tinkerer," is working on a device. "Ah, a new test subject!" they exclaim, leveling a whirring gadget at you.
@@ -980,11 +938,30 @@ Panting and bruised, you finally reach the open-air platform at the peak of the 
 ~ data_fragments += 1
 -> scene_9_the_bargain // Now points to the correct next scene
 
+// === SCENE 8A: TOWER BUFFER ROOM ===
+=== tower_buffer_room(-> next_floor) ===
+You find a small, cramped access corridor between the floors. The sounds of combat have faded, giving you a brief moment to recover before ascending further.
+    * { is_fatigued } [Shake off the fatigue.]
+        You stretch your aching muscles and take a long drink of water. The weariness recedes, and you feel ready to continue.
+        ~ is_fatigued = false
+        -> tower_buffer_room(next_floor)
+        
+    * { glimmer_moss_stack > 0 and is_injured } [Use Glimmer Moss ({glimmer_moss_stack} left).]
+        // We will call the existing moss scene, then return here.
+        -> use_glimmer_moss_tunnel(true) -> tower_buffer_room(next_floor)
+        
+    + [Proceed to the next floor.]
+        Steeling yourself, you continue your ascent.
+        -> next_floor
+    
+    + [Check Status]
+        -> check_status(-> tower_buffer_room)
+
 // --- Tower Battle Setups ---
 === setup_brute_battle ===
     ~ current_enemy_name = "The Brute"
     ~ current_enemy_hp = 30
-    ~ current_enemy_atk = 7
+    ~ current_enemy_atk = 8
     ~ current_enemy_def = 4
     -> battle_loop
     
@@ -1002,9 +979,273 @@ Panting and bruised, you finally reach the open-air platform at the peak of the 
     ~ current_enemy_def = 3
     -> battle_loop
 
-// === SCENE 9: THE BARGAIN (Placeholder) ===
+// === SCENE 9: THE BARGAIN ===
 === scene_9_the_bargain ===
-With your second Data Fragment secured, you continue on.
+{ data_fragments < 2:
+    // --- Failure Path: You still need the second fragment ---
+    Having failed to secure the fragment at the tower, your AI directs you to another faint energy signature. It leads you to a dilapidated hab-block, lit by a single emergency light.
+    -> find_jed_for_fragment
+- else:
+    // --- Success Path: You already have the fragment ---
+    As you search for a path forward from the tower, you come across a small, fortified room in a hab-block. It seems recently occupied.
+    -> meet_jed_friendly
+}
+
+= find_jed_for_fragment
+Inside, you find an older, weathered man slumped against a wall with a makeshift splint on his leg. He has a Data Fragment clutched in his hand, but his face is pale with pain. This must be Jed.
+He looks up at you, not with fear, but with weary resignation. "Well, look what the cat dragged in," he rasps. "Don't suppose you've got a working power cell on you? This old diagnostic tool is dead, and I need to see how bad this leg is." He gestures to the fragment. "It's yours if you can help."
+
+* { power_cell_stack > 0 } [Trade a Power Cell for the fragment.]
+    You nod, pulling a Degraded Power Cell from your pack. Jed's eyes light up with relief. "Thank you, friend. A deal's a deal." He tosses you the fragment.
+    ~ power_cell_stack -= 1
+    ~ data_fragments += 1
+    ~ jed_status = "HELPED"
+    -> check_for_jed_gift
+
+* [Intimidate him for the fragment - Strength Check]
+    -> intimidate_jed
+
+* [Leave him.]
+    You decide not to get involved and back out of the room, leaving the old man to his fate. The fragment remains out of reach.
+    // The story continues, but you'll be a fragment short.
+    -> check_for_jed_gift
+
+= intimidate_jed
+    ~ temp roll = RANDOM(1, 6)
+    ~ temp total_skill = strength + roll
+    { total_skill >= 13:
+        // Success
+        "I don't have time for this. Give me the fragment," you growl. Jed sizes you up, then scoffs and throws the fragment at your feet. "Fine. Take it. You're just like the others."
+        ~ data_fragments += 1
+        ~ jed_status = "HOSTILE"
+        -> scene_9c_final_preparations
+    - else:
+        // Failure
+        You try to look threatening, but Jed just gives you a tired smile. "Save your breath, kid. I've seen scarier things in a mirror. No cell, no fragment."
+        * [Attack him.]
+            -> attack_jed
+        * [Back down.]
+            -> scene_9c_final_preparations
+    }
+
+= attack_jed
+    You lunge at the old man, deciding to take the fragment by force. Jed isn't surprised. With a weary sigh, he pulls a hidden trigger on the floor.
+    ~ temp trap_roll = RANDOM(1, 10)
+    { trap_roll == 1:
+        // RARE SUCCESS (10% chance)
+        You see the trap mechanism a split second before it springs—a powerful stun baton swinging out from a wall panel. You manage to dodge it. Jed looks genuinely surprised. You snatch the fragment from his hand before he can react further.
+        ~ data_fragments += 1
+        ~ jed_status = "DEAD" // Assuming you finish the job after
+        -> scene_9c_final_preparations
+    - else:
+        // FAILURE (90% chance)
+        A powerful stun baton swings out from a hidden wall panel, slamming into your side with a crackle of electricity. The shock is immense, leaving you gasping on the floor as your vision whites out.
+        ~ hp -= 15
+        // Check if the character survives the damage
+        { hp <= 0:
+            -> game_over_death
+        - else:
+            ~ is_injured = true
+            ~ jed_status = "HOSTILE"
+            Jed shakes his head. "Told you. Scarier things in a mirror." He waits for you to recover before pointing to the door. "Now get out."
+            You drag yourself out of the room, empty-handed and in agony.
+            -> scene_9c_final_preparations
+        }
+    }
+
+= meet_jed_friendly
+Inside, you find an older, weathered man slumped against a wall with a makeshift splint on his leg. He eyes you warily as you enter. "Just passin' through," he says. "Don't mind me." This is your first encounter with another non-hostile contestant.
+* { glimmer_moss_stack > 0 } [Offer him a Glimmer Moss sample for his leg.]
+    You offer him one of your moss samples. He looks surprised, then accepts it with a grateful nod. "Well, I'll be. Thanks. Here, take this in return."
+    ~ glimmer_moss_stack -= 1
+    ~ jed_status = "HELPED"
+    
+    { character_name == "Kaelen":
+        He hands you a roll of thick, resin-soaked wrappings. "Saw you eyein' that pipe you carry. This'll make the grip better, add some weight to your swing. Should make your club a proper weapon."
+        ~ has_club_upgrade_kit = true
+    }
+    { character_name == "Aris":
+        He points to a common-looking weed growing in a crack in the floor. "See that? Most folks think it's useless. But if you crush the leaves and mix 'em with a bit of moss, makes a real fine poultice. Calms the nerves." You've learned the recipe for a Calming Poultice.
+        ~ knows_calming_poultice_recipe = true
+    }
+    { character_name == "Lena":
+        He reaches into his pack and pulls out a small, tightly wrapped bundle. "You look like you know how to stay quiet. These might help." He hands you a bundle of five arrows, fletched with a dark, soft feather that makes them almost silent in flight.
+        ~ silent_arrow_count += 5
+    }
+    -> check_for_jed_gift
+* [Leave him be.]
+    You give a nod and back out of the room, leaving him in peace.
+    -> scene_9c_final_preparations
+    
+// === SCENE 9B: LEAVING JED'S AREA ===
+=== check_for_jed_gift ===
+{ jed_status == "HELPED":
+    -> jed_parting_gift
+- else:
+    // If you didn't help Jed, continue on as normal.
+    -> scene_9c_final_preparations
+}
+
+=== jed_parting_gift ===
+As you head for the collapsed doorway, a voice calls out from the shadows. "Hold on a minute, friend." Jed limps towards you, leaning on a makeshift crutch.
+
+"You did me a real kindness back there," he says, his eyes grateful. "Most folks in this place would've just put a knife in my back. The Arena... it changes people."
+
+He holds out a slightly damaged datapad. "I've been here a while. Found a few of these logs and cracked 'em. Nothing that'll tell you how to win, but... it helps to know what you're up against. You should have them."
+
+You take the datapad. He's unlocked several entries for you.
+
+<b>UNLOCKED LOG 14-G:</b> "Test Site Echo-7's primary function is to observe species' adaptation to catastrophic environmental collapse. The Shattered World provides an ideal crucible. Survival is the only metric."
+~ log_knows_site_purpose = true
+
+<b>UNLOCKED LOG 29-A:</b> "Note on planetary destruction: Previous experiment in terraforming using resonant frequencies resulted in cascading geological failure. The Archivists deemed the outcome 'sub-optimal but informative'."
+~ log_knows_shattered_world_cause = true
+
+<b>UNLOCKED LOG 55-C:</b> "The Proctor AI administrates the trials with perfect efficiency. It is unconstrained by ethics or empathy, operating solely on the parameters of the experiment. Do not attempt to reason with it."
+~ log_knows_proctor_ethics = true
+
+Jed gives you a final nod. "Good luck out there. Try not to die." He turns and limps back into the shadows of the maintenance bay.
+
+-> scene_9c_final_preparations
+
+// === SCENE 9C: FINAL PREPARATIONS ===
+=== scene_9c_final_preparations ===
+The AI indicates that the final Data Fragment is located in a heavily defended nest nearby. This is likely the last major confrontation in this zone. You find a defensible spot to make your final preparations before the assault.
+    
+* [Manage Equipment and Crafting.]
+    -> manage_equipment
++ [Scavenge the area one last time.]
+    -> final_scavenge
++ [Check Status.]
+    -> check_status(-> scene_9c_final_preparations)
+* [Proceed to the final location.]
+    -> scene_10_the_lair
+
+= manage_equipment
+    You lay out your gear, checking everything is in order.
+    * { has_adrenaline_shot } [Use the Adrenaline Shot.]
+        You inject the adrenaline directly into your thigh. Your heart hammers in your chest, and your senses sharpen to a razor's edge. You feel faster, more agile.
+        ~ has_adrenaline_shot = false
+        ~ agility += 1
+        ~ update_combat_stats()
+        <i>AI: "Unscheduled bio-stimulant administered. Agility permanently increased to {agility}."</i>
+        -> manage_equipment
+    * { has_reinforced_club and has_club_upgrade_kit and not club_is_upgraded } [Apply the Upgrade Kit to the Club.]
+        You take the resin-soaked wrappings Jed gave you and apply them to your club. The grip is more secure, and the added weight feels powerful. Your club has been upgraded!
+        ~ club_is_upgraded = true
+        ~ has_club_upgrade_kit = false
+        ~ update_combat_stats() // Recalculate stats with the new upgrade
+        -> manage_equipment
+    * { has_titan_beetle_carapace and character_name == "Kaelen" } [Craft Titan-Beetle Armor.]
+        You use the heavy carapace and some scavenged straps to create a crude but effective breastplate. It's heavy, but it will offer significant protection.
+        ~ has_titan_beetle_carapace = false
+        // TODO: Add a flag for this armor and update the stat function.
+        -> manage_equipment
+    * [View Crafting Options.]
+        -> crafting_options(-> manage_equipment)
+    * [Return.]
+        -> scene_9c_final_preparations
+
+=== final_scavenge ===
+    You scour the nearby ruins for any last-minute supplies.
+    + [Search for Glimmer Moss.]
+        -> final_scavenge_moss
+    + [Search for Power Cells.]
+        -> final_scavenge_cells
+    + [Scavenge a collapsed hab-unit.]
+        -> scavenge_hab_unit
+    + { character_name == "Lena" and has_recurve_bow } [Scavenge for materials to fletch arrows.]
+        -> scavenge_for_arrows
+    * [Stop scavenging.]
+        -> scene_9c_final_preparations
+
+= scavenge_for_arrows
+    You shift your focus, looking not for bulky items, but for things that are long, straight, and sharp. You find a few thin pieces of rebar for shafts and some sharpened scrap metal for heads. With some tattered fabric for fletching, you can assemble a small quiver's worth of arrows.
+    ~ temp arrows_crafted = RANDOM(2, 4)
+    ~ scrap_arrow_count += arrows_crafted
+    You craft {arrows_crafted} scrap arrows.
+    -> final_scavenge
+
+= final_scavenge_moss
+    ~ temp roll = RANDOM(1, 3)
+    { roll <= 2:
+        // Success
+        You find another small patch of the glowing fungus.
+        ~ glimmer_moss_stack += 1
+    - else:
+        // Failure
+        You find nothing. This area seems picked clean for now.
+    }
+    -> final_scavenge
+
+= final_scavenge_cells
+    ~ temp roll = RANDOM(1, 4)
+    { roll == 1:
+        // Success
+        Tucked inside a damaged console, you find another Degraded Power Cell.
+        ~ power_cell_stack += 1
+    - else:
+        // Failure
+        You find plenty of scrap, but no functional power sources.
+    }
+    -> final_scavenge
+    
+= scavenge_hab_unit
+    You pry open the door of a collapsed hab-unit, hoping to find something valuable inside.
+    ~ temp roll = RANDOM(1, 4)
+    {
+        - roll == 1:
+            // Outcome 1: Fight an Ambush Skulker
+            A sharp hiss echoes from the darkness inside. A Slick-Skinned Skulker, disturbed from its nest, lunges at you!
+            -> setup_ambush_skulker_battle
+            
+        - roll == 2:
+            // Outcome 2: Find a Titan Beetle
+            { not has_titan_beetle_carapace:
+                Inside, you find the remains of a massive, armored beetle. Its iridescent carapace is almost entirely intact. This could be fashioned into some sturdy armor.
+                ~ has_titan_beetle_carapace = true
+                You've found a Titan-Beetle Carapace.
+            - else:
+                You find another beetle husk, but this one has been picked clean. Nothing of value remains.
+            }
+            -> final_scavenge
+            
+        - roll == 3:
+            // Outcome 3: Find a Stat Boost Item
+            { not has_adrenaline_shot:
+                You find a derelict first-aid station. Most of it is looted, but you find one sealed container with a single auto-injector inside, labeled "Adrenaline." This could permanently boost your reaction speed.
+                ~ has_adrenaline_shot = true
+                You've found an Adrenaline Shot.
+            - else:
+                You find a looted first-aid station, but it's completely empty.
+            }
+            -> final_scavenge
+            
+        - else:
+            // Outcome 4: Failure
+            The hab-unit is completely picked clean. There's nothing of value left.
+            -> final_scavenge
+    }
+
+= setup_ambush_skulker_battle
+    // Set the global variables for this specific enemy
+    ~ current_enemy_name = "Ambush Skulker"
+    ~ current_enemy_hp = 15
+    ~ current_enemy_atk = 8
+    ~ current_enemy_def = 2
+    // Reset battle state flags
+    ~ used_skill_in_battle = false
+    ~ rival_will_miss_next_turn = false
+    ~ enemy_is_poisoned = false
+    ~ poison_turns_remaining = 0
+    ~ is_overcharging = false
+    ~ is_countering = false
+    -> battle_loop
+
+// === SCENE 10: THE LAIR (Placeholder) ===
+=== scene_10_the_lair ===
+// The original outline had a "Lair" scene after the "Bargain".
+// This will be the next major objective.
 ...To be continued...
 -> END
 

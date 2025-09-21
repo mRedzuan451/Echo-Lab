@@ -34,6 +34,9 @@
     }
     { club_equipped:
         ~ atk += 2
+        { club_is_upgraded:
+            ~ atk += 1 // The upgrade adds an extra +1 attack
+        }
     }
     { bow_equipped:
         ~ atk += 2 // A base bonus for now, can be changed later
@@ -63,6 +66,13 @@
     Attack: {atk}
     Defense: {def}
     
+    -- Skills --
+    { player_skills:
+        {player_skills}
+    - else:
+        No skills learned.
+    }
+    
     -- Attributes --
     Strength: {strength}
     Intelligence: {intelligence}
@@ -89,7 +99,9 @@
     { glimmer_moss_stack > 0: - Glimmer Moss Sample (x{glimmer_moss_stack}) }
     { has_kinetic_emitter: - Kinetic Field Emitter ({emitter_charges} charges) }
     { neuro_stim_state == "AVAILABLE": - Neuro-Stim - Single Use }
-    { has_reinforced_club: - Reinforced Club }
+    { has_reinforced_club:
+        - Reinforced Club {club_is_upgraded:(Upgraded)}
+    }
     { has_recurve_bow: - Recurve Bow }
     { has_emp_grenade: - EMP Grenade (Single Use) }
     { has_metal_pipe: - Sturdy Metal Pipe }
@@ -104,6 +116,13 @@
     { has_poison_bomb:
         - Poison Gas Bomb (Single Use)
     }
+    { has_club_upgrade_kit: - Club Upgrade Kit }
+    { knows_calming_poultice_recipe: - Recipe: Calming Poultice }
+    { silent_arrow_count > 0: - Silent Arrows (x{silent_arrow_count}) }
+    { scrap_arrow_count > 0: - Scrap Arrows (x{scrap_arrow_count}) }
+    { shock_arrow_count > 0: - Shock Arrows (x{shock_arrow_count}) }
+    { has_titan_beetle_carapace: - Titan-Beetle Carapace }
+    { has_adrenaline_shot: - Adrenaline Shot (Single Use) }
     { has_magnetic_coil: - Magnetic Coil }
     
     -- Logs & Intel --
@@ -136,12 +155,53 @@
         -> player_use_moss_poison
     + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
         -> player_use_poison_bomb
+    + { character_name == "Aris" and has_emp_grenade } [Use EMP Grenade]
+        -> player_use_emp_grenade
+    + { character_name == "Lena" and scrap_arrow_count > 0 } [Fire a Scrap Arrow ({scrap_arrow_count} left)]
+        -> player_fire_scrap_arrow
+    + { character_name == "Lena" and silent_arrow_count > 0 } [Fire a Silent Arrow ({silent_arrow_count} left)]
+        -> player_fire_silent_arrow
+    + { character_name == "Lena" and shock_arrow_count > 0 } [Fire a Shock Arrow ({shock_arrow_count} left)]
+        -> player_fire_shock_arrow
     + [Defend]
         ~ is_defending = true
         You brace for an attack, increasing your defense for this turn.
         -> enemy_turn
     * [Run Away]
         -> battle_fled
+
+= player_fire_shock_arrow
+    ~ shock_arrow_count -= 1
+    The arrow crackles with stored energy as you loose it. It hits the {current_enemy_name} with a shower of sparks, delivering a powerful electric shock.
+    ~ temp arrow_damage = 12 // High damage
+    ~ current_enemy_hp -= arrow_damage
+    { current_enemy_hp <= 0:
+        -> battle_won
+    - else:
+        -> enemy_turn
+    }
+
+= player_fire_scrap_arrow
+    ~ scrap_arrow_count -= 1
+    You loose a crudely made arrow. It flies true, striking the {current_enemy_name} for moderate damage.
+    ~ temp arrow_damage = 5
+    ~ current_enemy_hp -= arrow_damage
+    { current_enemy_hp <= 0:
+        -> battle_won
+    - else:
+        -> enemy_turn
+    }
+
+= player_fire_silent_arrow
+    ~ silent_arrow_count -= 1
+    The silent arrow whispers through the air, finding a weak point in the {current_enemy_name}'s defense. A critical hit!
+    ~ temp arrow_damage = 9
+    ~ current_enemy_hp -= arrow_damage
+    { current_enemy_hp <= 0:
+        -> battle_won
+    - else:
+        -> enemy_turn
+    }
 
 = player_use_moss_poison
     ~ has_moss_poison_vial -= 1
@@ -156,7 +216,14 @@
     ~ current_enemy_hp = 0
     -> battle_won
 
+= player_use_emp_grenade
+    ~ has_emp_grenade = false
+    You hurl the jury-rigged power cell. It detonates with a sharp crackle and a flash of blue light, releasing a powerful electromagnetic pulse. The {current_enemy_name} seizes up, disoriented by the assault on its nervous system. It will be stunned for its next turn.
+    ~ rival_will_miss_next_turn = true
+    -> enemy_turn
+
 === battle_fled ===
+~ used_skill_in_battle = false
 You take a chance and disengage, turning to flee. The {current_enemy_name} lets out a cry of frustration but doesn't pursue.
 ~ resolve -= 5 // A small penalty for retreating
 
@@ -195,12 +262,38 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         ~ rival_will_miss_next_turn = true
         -> enemy_turn // The skill use takes your turn
     }
+    // --- NEWLY LEARNED SKILLS ---
+    * { player_skills ? HeavyHitter } [Use Heavy Hitter]
+        You channel all your strength into a single, devastating blow. It's slow, but powerful.
+        ~ temp heavy_damage = INT(atk * 1.5)
+        ~ current_enemy_hp -= heavy_damage
+        You slam the {current_enemy_name} for {heavy_damage} damage!
+        { current_enemy_hp <= 0:
+            -> battle_won
+        - else:
+            -> enemy_turn
+        }
+
+    * { player_skills ? Overcharge } [Use Overcharge]
+        You reroute power through the Kinetic Emitter, preparing to unleash an overloaded blast. Your next Emitter use will be massively amplified.
+        ~ is_overcharging = true
+        -> enemy_turn
+
+    * { player_skills ? CounterAttack } [Prepare to Counter Attack]
+        You take a defensive stance, watching your enemy's every move, ready to strike the moment they commit to an attack.
+        ~ is_countering = true
+        -> enemy_turn
 
 === player_use_emitter ===
     { use_emitter_charge():
         // The function returned true, so the usage was successful.
         You unleash a wave of pure force from the emitter. It slams into the {current_enemy_name}, sending it reeling.
         ~ temp emitter_damage = 10 // Emitter deals a flat 10 damage
+        { is_overcharging:
+            ~ emitter_damage = 25 // Overcharge boosts damage to 25
+            ~ is_overcharging = false
+            The Emitter shrieks as it discharges the excess energy.
+        }
         ~ current_enemy_hp -= emitter_damage
     }
     
@@ -243,7 +336,17 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     ~ hp -= enemy_damage
     
     The {current_enemy_name} attacks you for {enemy_damage} damage.
-    
+    // --- Counter Attack Logic ---
+        { is_countering:
+            ~ is_countering = false
+            As the enemy strikes, you pivot and deliver a vicious counter blow!
+            ~ temp counter_damage = INT(atk * 0.75)
+            You counter for {counter_damage} damage!
+            ~ current_enemy_hp -= counter_damage
+            { current_enemy_hp <= 0:
+                -> battle_won
+            }
+        }
     // Reset defending state for the next turn
     ~ is_defending = false
     
@@ -255,7 +358,44 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     }
 
 === battle_won ===
+~ used_skill_in_battle = false
+
+// Check HP to determine condition after the fight
+{
+    - hp <= max_hp / 4: // If HP is at 25% or less
+        ~ is_injured = true
+        ~ is_fatigued = false
+        You are badly wounded from the fight.
+    - hp <= max_hp / 2: // If HP is at 50% or less
+        ~ is_injured = false
+        ~ is_fatigued = true
+        The fight has left you bruised and exhausted.
+    - else:
+        ~ is_injured = false
+        ~ is_fatigued = false
+}
+
 The {current_enemy_name} collapses. You are victorious.
+
+// --- LEARN NEW SKILL ---
+// Check for specific character vs. enemy matchups to learn a new skill.
+{
+    - character_name == "Kaelen" and current_enemy_name == "The Brute" and not (player_skills ? HeavyHitter):
+        ~ player_skills += HeavyHitter
+        Watching the Brute fight, you learned something about raw, unrestrained power. You've learned the **Heavy Hitter** skill!
+        <i>AI: "Subject Kaelen has adapted to superior physical force by mimicking it. A predictable, yet effective, development."</i>
+        
+    - character_name == "Aris" and current_enemy_name == "The Tinkerer" and not (player_skills ? Overcharge):
+        ~ player_skills += Overcharge
+        By observing the Tinkerer's unstable technology, you've figured out how to apply their reckless principles to your own gear. You've learned the **Overcharge** skill!
+        <i>AI: "Subject Aris has reverse-engineered a crude but effective energy modulation technique. Logical progression."</i>
+        
+    - character_name == "Lena" and current_enemy_name == "The Veteran" and not (player_skills ? CounterAttack):
+        ~ player_skills += CounterAttack
+        The Veteran's calm, precise fighting style was a lesson in efficiency. You've adapted their technique into a new skill: **Counter Attack**.
+        <i>AI: "Subject Lena has assimilated a more efficient combat doctrine based on observation. Optimal."</i>
+}
+
 // Check if Aris can loot the creature
 { character_name == "Aris" and current_enemy_name == "Slick-Skinned Skulker":
     -> loot_skulker
@@ -265,12 +405,15 @@ The {current_enemy_name} collapses. You are victorious.
 { 
 - current_enemy_name == "Slick-Skinned Skulker":
     -> skulker_win
+- current_enemy_name == "Ambush Skulker":
+            You dispatch the creature and catch your breath. The hab-unit is now clear to search.
+            -> final_scavenge
 - current_enemy_name == "The Brute":
         You step over the unconscious form of the Brute and head for the stairs.
-        -> tower_floor_3
+        -> tower_buffer_room(-> tower_floor_3)
     - current_enemy_name == "The Tinkerer":
         The Tinkerer's device sputters and dies, and they surrender immediately. You move to the next floor.
-        -> tower_floor_5
+        -> tower_buffer_room(-> tower_floor_5)
     - current_enemy_name == "The Veteran":
         The Veteran gives a single, respectful nod as they fall back, defeated. The path to the top is clear.
         -> tower_top
@@ -299,6 +442,7 @@ The {current_enemy_name} collapses. You are victorious.
 -> skulker_win
 
 === battle_lost ===
+~ used_skill_in_battle = false
 // Check which enemy defeated you
 { 
 - current_enemy_name == "Slick-Skinned Skulker":
@@ -326,3 +470,60 @@ Your vision fades to black as the opponent's final blow lands.
 Your vision fades to black as the final blow lands. The last thing you hear is the AI's detached voice in your mind.
 <i>AI: "Subject's vital signs have ceased. Test failed."</i>
 -> END
+
+=== crafting_options(-> return_point) ===
+    You lay out your scavenged materials.
+    
+    // Kaelen's Crafting Option
+    + { character_name == "Kaelen" and not has_reinforced_club and has_metal_pipe and has_thick_wiring } [Fashion a Reinforced Club.]
+        You take the sturdy metal pipe and thick wiring you found. Using your strength, you wrap the wiring tightly around one end, creating a weighted, brutal-looking club. It feels solid in your hands.
+        ~ has_reinforced_club = true
+        ~ atk += 2
+        -> crafting_options(return_point)
+
+    // Aris's Crafting Option
+    + { character_name == "Aris" and power_cell_stack > 0 and not has_emp_grenade } [Assemble an EMP Grenade.]
+        You carefully pry open the casing of the Degraded Power Cell. Bypassing the safety regulators, you rig it to overload on impact. It's a volatile, single-use weapon, perfect for disabling electronics... or stunning biological targets.
+        ~ has_emp_grenade = true
+        ~ power_cell_stack -= 1 // The cell is consumed
+        -> crafting_options(return_point)
+    + { character_name == "Aris" and glimmer_moss_stack > 0 } [Refine Glimmer Moss into Poison.]
+        You crush the Glimmer Moss, carefully isolating the coagulant you discovered earlier. By mixing it with a mild solvent from your kit, you refine it into a sticky, paralytic poison. You place it in an empty vial, ready for use.
+        ~ has_moss_poison_vial += 1
+        ~ glimmer_moss_stack -= 1
+        -> crafting_options(return_point)
+    + { character_name == "Aris" and has_skulker_venom_gland and power_cell_stack > 0 and not has_poison_bomb } [Create a Poison Gas Bomb.]
+        This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
+        ~ has_poison_bomb = true
+        ~ has_skulker_venom_gland = false
+        ~ power_cell_stack -= 1
+        -> crafting_options(return_point)
+
+    // Lena's Crafting Option
+    * { character_name == "Lena" and not has_recurve_bow and has_flexible_polymer and has_tensile_cable } [Construct a Recurve Bow.]
+        You take the length of flexible polymer and the high-tensile cable. With your deft hands, you shape the polymer and string the cable, creating a makeshift but deadly silent bow. You'll need to find arrows, but the frame is perfect.
+        ~ has_recurve_bow = true
+        ->crafting_options(return_point)
+    * { character_name == "Lena" and has_recurve_bow and scrap_arrow_count > 0 and power_cell_stack > 0 } [Craft Shock Arrows.]
+        You carefully attach the live wire from a Degraded Power Cell to the head of a scrap arrow. It's a crude but effective way to deliver a powerful electrical jolt on impact. You manage to create a small bundle of them before the power cell is drained.
+        ~ temp arrows_crafted = RANDOM(1, 3)
+        ~ shock_arrow_count += arrows_crafted
+        ~ scrap_arrow_count -= arrows_crafted
+        ~ power_cell_stack -= 1
+        You craft {arrows_crafted} shock arrows.
+        -> crafting_options(return_point)
+    
+    // Equip Options
+    * { has_reinforced_club and not club_equipped } [Equip the Reinforced Club.]
+        ~ club_equipped = true
+        You grip the club tightly. It's a crude but effective weapon. Your Attack has increased.
+        ~ update_combat_stats()
+        -> crafting_options(return_point)
+    * { has_recurve_bow and not bow_equipped } [Equip the Recurve Bow.]
+        ~ bow_equipped = true
+        You sling the bow over your shoulder. You'll be able to strike from the shadows. Your Attack has increased.
+        ~ update_combat_stats()
+        -> crafting_options(return_point)
+
+    * [That's all for now.]
+        -> return_point
