@@ -126,6 +126,12 @@ VAR jed_contribution = 0
 VAR ally_3_contribution = 0
 VAR ally_4_contribution = 0
 
+// Add these to track ally health and status
+VAR ally_3_hp = 20
+VAR ally_4_hp = 20
+VAR ally_3_is_down = false
+VAR ally_4_is_down = false
+
 // Boss Stats & State
 VAR alpha_skulker_hp = 0
 VAR alpha_skulker_max_hp = 0

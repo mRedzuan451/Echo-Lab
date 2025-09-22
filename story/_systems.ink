@@ -141,6 +141,7 @@
     + [Return.]
         -> return_to
 
+// === BATTLE MECHANIC (UNIFIED) ===
 === battle_loop ===
     // --- STATUS DISPLAY ---
     You have {hp}/{max_hp} HP.
@@ -151,13 +152,20 @@
     { enemy2_hp > 0:
         The {enemy2_name} has {enemy2_hp} HP.
     }
+    
     // --- PLAYER'S TURN ---
-    * { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the first {current_enemy_name}]
+    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the first {current_enemy_name}]
         -> player_attack(-> jed_turn, false)
-    * { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the second {enemy2_name}]
+    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the second {enemy2_name}]
         -> player_attack(-> jed_turn, true)
-    * { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}]
+    + { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}]
         -> player_attack(-> jed_turn, false)
+        
+    + [Defend]
+        ~ is_defending = true
+        You brace for an attack, increasing your defense for this turn.
+        -> jed_turn
+
     + { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
         -> player_use_emitter
     + { not used_skill_in_battle } [Use Skill]
@@ -174,11 +182,8 @@
         -> player_fire_silent_arrow
     + { character_name == "Lena" and shock_arrow_count > 0 } [Fire a Shock Arrow ({shock_arrow_count} left)]
         -> player_fire_shock_arrow
-    + [Defend]
-        ~ is_defending = true
-        You brace for an attack, increasing your defense for this turn.
-        -> enemy_turn
-    * [Run Away]
+        
+    + [Run Away]
         -> battle_fled
 
 === player_attack(-> return_point, is_second_enemy) ===
@@ -348,9 +353,9 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     { use_emitter_charge():
         // The function returned true, so the usage was successful.
         You unleash a wave of pure force from the emitter. It slams into the {current_enemy_name}, sending it reeling.
-        ~ temp emitter_damage = 10 // Emitter deals a flat 10 damage
+        ~ temp emitter_damage = 15 // Emitter deals a flat 10 damage
         { is_overcharging:
-            ~ emitter_damage = 25 // Overcharge boosts damage to 25
+            ~ emitter_damage = 30 // Overcharge boosts damage to 25
             ~ is_overcharging = false
             The Emitter shrieks as it discharges the excess energy.
         }
@@ -363,43 +368,123 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         -> enemy_turn
     }
 
-=== enemy_turn ===
+== enemy_turn
     { rival_will_miss_next_turn:
         ~ rival_will_miss_next_turn = false
         You anticipate the enemy's clumsy attack and easily step aside. It misses completely.
         -> battle_loop
     - else:
-    ~ temp current_def = def
-    { is_defending:
-         ~ current_def = def + 3
-    }
+        // --- Calculate player's current defense for this turn ---
+        ~ temp current_player_def = def
+        { is_defending:
+            ~ current_player_def = def + 3 // Apply defense bonus
+        }
     
-    ~ temp enemy_damage = current_enemy_atk - current_def
-    { enemy_damage < 1: 
-        ~ enemy_damage = 1
-    }
-    ~ hp -= enemy_damage
+        // --- Enemy 1's Turn ---
+        { current_enemy_hp > 0:
+            The first {current_enemy_name} attacks!
+            // If Jed is an ally, the enemy might target him
+            { jed_status == "HELPED" and jed_hp > 0:
+                ~ temp target_roll = RANDOM(1, 2)
+                {
+                    - target_roll == 1:
+                        // Target Player
+                        ~ temp damage = current_enemy_atk - current_player_def
+                        { damage < 1: 
+                            ~ damage = 1 
+                        }
+                        ~ hp -= damage
+                        It hits you for {damage} damage!
+                    - else:
+                        // Target Jed
+                        ~ temp damage3 = current_enemy_atk - jed_def
+                        { damage3 < 1: 
+                            ~ damage3 = 1 
+                        }
+                        ~ jed_hp -= damage3
+                        It hits Jed for {damage3} damage!
+                }
+            - else:
+                // If Jed is not an ally, always target player
+                ~ temp damage4 = current_enemy_atk - current_player_def
+                { damage4 < 1: 
+                    ~ damage4 = 1 
+                }
+                ~ hp -= damage4
+                It hits you for {damage4} damage!
+            }
+        }
     
-    The {current_enemy_name} attacks you for {enemy_damage} damage.
-    // --- Counter Attack Logic ---
+        // --- Enemy 2's Turn ---
+        { enemy2_hp > 0:
+            The second {enemy2_name} attacks!
+            // Same targeting logic as Enemy 1
+            { jed_status == "HELPED" and jed_hp > 0:
+                ~ temp target_roll2 = RANDOM(1, 2)
+                {
+                    - target_roll2 == 1:
+                        // Target Player
+                        ~ temp damage5 = enemy2_atk - current_player_def
+                        { damage5 < 1: 
+                            ~ damage5 = 1 
+                        }
+                        ~ hp -= damage5
+                        It hits you for {damage5} damage!
+                    - else:
+                        // Target Jed
+                        ~ temp damage2 = enemy2_atk - jed_def
+                        { damage2 < 1: 
+                            ~ damage2 = 1 
+                        }
+                        ~ jed_hp -= damage2
+                        It hits Jed for {damage2} damage!
+                }
+            - else:
+                // If Jed is not an ally, always target player
+                ~ temp damage6 = enemy2_atk - current_player_def
+                { damage6 < 1: 
+                    ~ damage6 = 1 
+                }
+                ~ hp -= damage6
+                It hits you for {damage6} damage!
+            }
+        }
+        
+        // --- Counter Attack Logic ---
         { is_countering:
             ~ is_countering = false
             As the enemy strikes, you pivot and deliver a vicious counter blow!
             ~ temp counter_damage = INT(atk * 0.75)
             You counter for {counter_damage} damage!
-            ~ current_enemy_hp -= counter_damage
-            { current_enemy_hp <= 0:
+            // Target the healthier enemy
+            { current_enemy_hp > enemy2_hp:
+                ~ current_enemy_hp -= counter_damage
+            - else:
+                ~ enemy2_hp -= counter_damage
+            }
+            { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
                 -> battle_won
             }
         }
-    // Reset defending state for the next turn
-    ~ is_defending = false
     
-    { hp <= 0:
-        -> battle_lost
-    - else:
-        -> battle_loop
-    }
+        // --- Post-Turn Cleanup and Checks ---
+        ~ is_defending = false // Reset defense state for the next turn
+    
+        // Check for defeat states
+        { hp <= 0: 
+            -> game_over_death 
+        }
+        { jed_hp <= 0 and jed_status != "DEAD":
+            The creature lands a fatal blow on Jed. He collapses to the ground, his weapon clattering on the metal floor. He's gone.
+            ~ jed_status = "DEAD" 
+        }
+        
+        // Check for victory
+        { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
+            -> battle_won
+        - else:
+            -> battle_loop
+        }
     }
 
 === battle_won ===
@@ -464,6 +549,13 @@ The {current_enemy_name} collapses. You are victorious.
                 You dispatch the creature and catch your breath. The hab-unit is now clear.
                 -> final_scavenge
             }
+- current_enemy_name == "Skulker Guard":
+            { character_name == "Aris":
+                -> loot_skulker_guard
+            - else:
+                You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
+                -> setup_alpha_skulker_battle
+            }
 - current_enemy_name == "The Brute":
         You step over the unconscious form of the Brute and head for the stairs.
         -> tower_buffer_room(-> tower_floor_3)
@@ -494,6 +586,23 @@ The {current_enemy_name} collapses. You are victorious.
         // Do nothing
 - The hab-unit is now clear.
 -> final_scavenge
+
+= loot_skulker_guard
+    As the Skulker Guard lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.
+    * [Harvest the Venom Gland]
+        ~ temp roll = RANDOM(1, 3)
+        { roll == 1 or roll == 2:
+            // Success (66% chance)
+            You carefully extract the gland from the larger creature. This is a prime sample.
+            ~ skulker_venom_gland_stack += 2
+        - else:
+            // Failure
+            You try to extract the gland, but the creature's thick hide makes it difficult. You accidentally puncture the sac, and the venom spills uselessly onto the floor.
+        }
+    * [Leave it.]
+        // Do nothing
+- You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
+-> setup_alpha_skulker_battle
 
 === skulker_defeated_hub ===
 // This is the new central hub for when the Skulker is defeated.
@@ -614,21 +723,20 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
     * [That's all for now.]
         -> return_point
         
-=== jed_turn ===
-    { jed_status == "HELPED":
-        Jed fights alongside you, a seasoned survivor. He takes a shot at one of the Skulkers.
+== jed_turn
+    { jed_status == "HELPED" and jed_hp > 0:
+        Jed fights alongside you. He takes a shot at an enemy.
         ~ temp target_roll = RANDOM(1, 2)
         {
             - target_roll == 1 and current_enemy_hp > 0:
                 ~ current_enemy_hp -= jed_atk
-                Jed hits the first Skulker for {jed_atk} damage!
+                Jed hits the first {current_enemy_name} for {jed_atk} damage!
             - enemy2_hp > 0:
                 ~ enemy2_hp -= jed_atk
-                Jed hits the second Skulker for {jed_atk} damage!
+                Jed hits the second {enemy2_name} for {jed_atk} damage!
             - else:
-                // If the second is dead, hit the first
                 ~ current_enemy_hp -= jed_atk
-                Jed hits the first Skulker for {jed_atk} damage!
+                Jed hits the first {current_enemy_name} for {jed_atk} damage!
         }
     }
     -> enemy_turn

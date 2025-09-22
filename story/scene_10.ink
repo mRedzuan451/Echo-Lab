@@ -30,6 +30,8 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
 ~ jed_contribution = 0
 ~ ally_3_contribution = 0
 ~ ally_4_contribution = 0
+~ ally_3_is_down = false
+~ ally_4_is_down = false
 -> alpha_skulker_battle_loop
 
 === setup_two_skulker_battle ===
@@ -63,7 +65,7 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         -> rival_in_danger_event
     }
 
-    * [Attack]
+    + [Attack]
         ~ temp damage = atk - alpha_skulker_def
         { damage < 1: 
             ~ damage = 1
@@ -72,7 +74,13 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         ~ player_contribution += damage
         You strike the Matriarch for {damage} damage!
         -> allies_turn
-    * [Use Skill]
+    * { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
+    -> player_use_emitter_on_alpha
+    + [Defend]
+        ~ is_defending = true
+        You brace yourself for the Matriarch's onslaught.
+        -> allies_turn
+    + [Use Skill]
         // Simplified skill use for this fight
         You use your skills to find an opening, dealing extra damage!
         ~ temp damage2 = atk + 5 - alpha_skulker_def
@@ -82,6 +90,26 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         ~ alpha_skulker_hp -= damage2
         ~ player_contribution += damage2
         -> allies_turn
+
+= player_use_emitter_on_alpha
+    { use_emitter_charge():
+        // The function returned true, so the usage was successful.
+        You unleash a wave of pure force from the emitter. It slams into the {current_enemy_name}, sending it reeling.
+        ~ temp emitter_damage = 15 // Emitter deals a flat 10 damage
+        { is_overcharging:
+            ~ emitter_damage = 30 // Overcharge boosts damage to 25
+            ~ is_overcharging = false
+            The Emitter shrieks as it discharges the excess energy.
+        }
+        ~ alpha_skulker_hp -= emitter_damage
+        ~ player_contribution += emitter_damage
+    }
+    
+    { alpha_skulker_hp <= 0:
+        -> alpha_skulker_defeated
+    - else:
+        -> alpha_skulker_turn
+    }
         
 = allies_turn
     // Jed's Turn
@@ -100,10 +128,16 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
     ~ rival_contribution += rival_damage
     ~ alpha_skulker_hp -= rival_damage
     // Other Allies' Turns
-    The other two contestants land their own attacks.
-    ~ ally_3_contribution += 4
-    ~ ally_4_contribution += 4
-    ~ alpha_skulker_hp -= 8
+    { not ally_3_is_down:
+        The third contestant lands their attack.
+        ~ ally_3_contribution += 4
+        ~ alpha_skulker_hp -= 4
+    }
+    { not ally_4_is_down:
+        The fourth contestant lands their attack.
+        ~ ally_4_contribution += 4
+        ~ alpha_skulker_hp -= 4
+    }
     
     { alpha_skulker_hp <= 0:
         -> alpha_skulker_defeated
@@ -112,27 +146,67 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
     }
 
 = alpha_skulker_turn
-    The Matriarch screeches and attacks!
-    ~ temp target_roll = RANDOM(1, 10)
-    { target_roll <= 2:
+    // --- Calculate player's current defense for this turn ---
+    ~ temp current_player_def = def
+    { is_defending:
+        ~ current_player_def = def + 3 // Apply defense bonus
+    }
+    The Matriarch shrieks and attacks!
+    ~ temp aoe_roll = RANDOM(1, 10)
+    { aoe_roll <= 2:
         // AOE Attack
         It unleashes a deafening sonic screech that hits everyone on the platform!
         ~ hp -= 5
         You take 5 damage from the sonic blast!
     - else:
         // Single Target Attack
-        It lunges at you, claws flashing!
-        ~ temp damage3 = alpha_skulker_atk - def
-        { damage3 < 1: 
-            ~ damage3 = 1
+        It lunges, claws flashing!
+        ~ temp target_roll = RANDOM(1, 5)
+        ~ temp damage = alpha_skulker_atk - def
+        { damage < 1: 
+            ~ damage = 1 
         }
-        ~ hp -= damage3
-        You take {damage3} damage!
+        
+        {
+            - target_roll == 1: // Target: Player
+                ~ hp -= damage
+                It attacks you for {damage} damage!
+            - target_roll == 2: // Target: Rival
+                // The rival can be defeated but not killed.
+                The Matriarch slams into your Rival, sending them flying. They're down, but not out of the fight.
+            - target_roll == 3: // Target: Jed
+                { not (jed_status == "DEAD"):
+                    ~ jed_hp -= damage
+                    It attacks Jed for {damage} damage!
+                }
+            - target_roll == 4: // Target: Ally 3
+                { not ally_3_is_down:
+                    ~ ally_3_hp -= damage
+                    It attacks the third contestant for {damage} damage!
+                }
+            - else: // Target: Ally 5
+                { not ally_4_is_down:
+                    ~ ally_4_hp -= damage
+                    It attacks the fourth contestant for {damage} damage!
+                }
+        }
     }
     
-    // Check for player death
+    // --- Check for Defeat States ---
     { hp <= 0:
         -> game_over_death
+    }
+    { jed_hp <= 0 and jed_status != "DEAD":
+        Jed is struck down by the Matriarch's attack and doesn't get back up.
+        ~ jed_status = "DEAD"
+    }
+    { ally_3_hp <= 0 and not ally_3_is_down:
+        The third contestant is overwhelmed and falls, unconscious.
+        ~ ally_3_is_down = true
+    }
+    { ally_4_hp <= 0 and not ally_4_is_down:
+        The fourth contestant is thrown from the platform by a vicious blow.
+        ~ ally_4_is_down = true
     }
     
     // Random chance for the rival event to trigger

@@ -125,8 +125,24 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     -> final_scavenge
 + [Check Status.]
     -> check_status(-> scene_9c_final_preparations)
++ { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter to clear the blocked passage.]
+    -> clear_passage_with_emitter
 * [Proceed to the final location.]
     -> scene_10_the_lair
+
+= clear_passage_with_emitter
+    You notice a side passage that seems to lead towards the lair, but it's completely blocked by a massive pile of collapsed girders.
+    * [Use an Emitter charge to clear it.]
+        { use_emitter_charge():
+            You unleash a focused blast of kinetic energy. The girders groan and shift, pushed aside by the immense force, revealing a hidden path. Beyond the rubble, you find a small supply cache left by a previous contestant.
+            // Reward for using the Emitter
+            ~ glimmer_moss_stack += 2
+            ~ power_cell_stack += 1
+            You've found some extra supplies! The path is now clear.
+        }
+        -> scene_9c_final_preparations
+    * [Save your charges.]
+        -> scene_9c_final_preparations
 
 = manage_equipment
     You lay out your gear, checking everything is in order.
