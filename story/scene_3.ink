@@ -1,4 +1,18 @@
-// scene 3 choices
+=== scene_3_choices ===
+* [Investigate the rusted locker.]
+    -> locker_encounter 
+* [Investigate the glowing moss.]
+    -> moss_encounter     
+* [Query the AI.]
+    -> scene_3_ai_query
+* [Use Skill]
+        -> use_skill
++ [Check Status.]
+    -> check_status(-> scene_3_choices)
++ {power_cell_stack > 0 || glimmer_moss_stack > 0 || found_first_log} [Analyze Items.]
+    -> analyze_items
+* [Leave through the collapsed doorway.]
+    -> scene_4_the_first_obstacle
 
 === use_skill ===
 { not found_first_log:
