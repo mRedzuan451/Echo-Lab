@@ -148,9 +148,9 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
         ~ has_titan_beetle_carapace = false
         // TODO: Add a flag for this armor and update the stat function.
         -> manage_equipment
-    * [View Crafting Options.]
+    + [View Crafting Options.]
         -> crafting_options(-> manage_equipment)
-    * [Return.]
+    + [Return.]
         -> scene_9c_final_preparations
 
 === final_scavenge ===

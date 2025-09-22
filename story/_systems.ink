@@ -679,3 +679,33 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
     - else:
         -> two_v_two_battle_loop
     }
+
+=== use_glimmer_moss_tunnel(is_safe) ===
+    ~ glimmer_moss_stack -= 1
+    ~ temp heal_amount = 0
+    You pull out the pouch of glowing moss.
+    { character_name == "Aris":
+        // Aris is an expert
+        Knowing its properties, you create a crude but effective poultice. The mild coagulant works quickly, and you feel a surge of vitality as the bioluminescent enzymes knit your tissues back together. You recover a significant amount of health.
+        ~ heal_amount = INT(max_hp * 0.5) // Heals for 50% of max HP
+    - else:
+        // Kaelen and Lena are just guessing
+        You crush the moss and apply it to your wounds, hoping for the best. It feels cool and soothing, and you notice your bruises fading slightly. It's not a miracle cure, but it helps. You recover a small amount of health.
+        ~ heal_amount = INT(max_hp * 0.2) // Heals for 20% of max HP
+    }
+    ~ hp += heal_amount
+    { hp > max_hp:
+        ~ hp = max_hp // Don't overheal
+    }
+    The moss dissolves into a faint, glowing dust, its regenerative properties spent.
+    ~ is_injured = false
+
+    // --- RANDOM ATTACK CHECK ---
+    { not is_safe:
+        ~ temp attack_chance = RANDOM(1, 4)
+        { attack_chance == 1:
+            As the glow fades, you hear a frantic chittering sound. A small, rat-like creature with pale skin darts out from a crack in the wall, attracted by the moss's sweet scent. It nips at your boot before you can react, then vanishes back into the darkness. It didn't hurt, but the startling encounter has left you on edge.
+            ~ resolve -= 3
+        }
+    }
+    ->->
