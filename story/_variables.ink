@@ -104,6 +104,7 @@ VAR bow_equipped = false
 // New Skill State Flags
 VAR is_overcharging = false
 VAR is_countering = false
+VAR enemy2_will_miss_next_turn = false
 
 // Jed's Character-Specific Rewards
 VAR has_club_upgrade_kit = false

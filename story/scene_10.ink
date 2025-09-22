@@ -45,7 +45,7 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
     ~ enemy2_def = 3
     // Setup for Jed
     ~ jed_hp = jed_max_hp
-    -> two_v_two_battle_loop
+    -> battle_loop
 
 === alpha_skulker_battle_loop ===
     // --- BERSERK CHECK ---

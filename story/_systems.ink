@@ -142,13 +142,24 @@
         -> return_to
 
 === battle_loop ===
-    // Display current status
-    You have {hp} HP. The {current_enemy_name} has {current_enemy_hp} HP.
-    
+    // --- STATUS DISPLAY ---
+    You have {hp}/{max_hp} HP.
+    { jed_status == "HELPED" and jed_hp > 0:
+        Jed has {jed_hp}/{jed_max_hp} HP.
+    }
+    The {current_enemy_name} has {current_enemy_hp} HP.
+    { enemy2_hp > 0:
+        The {enemy2_name} has {enemy2_hp} HP.
+    }
+    // --- PLAYER'S TURN ---
+    * { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the first {current_enemy_name}]
+        -> player_attack(-> jed_turn, false)
+    * { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the second {enemy2_name}]
+        -> player_attack(-> jed_turn, true)
+    * { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}]
+        -> player_attack(-> jed_turn, false)
     + { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
         -> player_use_emitter
-    + [Attack]
-        -> player_attack
     + { not used_skill_in_battle } [Use Skill]
         -> battle_use_skill
     + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
@@ -170,7 +181,37 @@
     * [Run Away]
         -> battle_fled
 
-= player_fire_shock_arrow
+=== player_attack(-> return_point, is_second_enemy) ===
+    // This stitch now handles targeting for both 1v1 and 2v2
+    ~ temp target_hp = 0
+    ~ temp target_def = 0
+    ~ temp target_name = ""
+    { is_second_enemy:
+        ~ target_hp = enemy2_hp
+        ~ target_def = enemy2_def
+        ~ target_name = enemy2_name
+    - else:
+        ~ target_hp = current_enemy_hp
+        ~ target_def = current_enemy_def
+        ~ target_name = current_enemy_name
+    }
+    
+    ~ temp damage = atk - target_def
+    { damage < 1: 
+    ~ damage = 1 
+    }
+    ~ target_hp -= damage
+    
+    { is_second_enemy:
+        ~ enemy2_hp = target_hp
+    - else:
+        ~ current_enemy_hp = target_hp
+    }
+    You attack the {target_name} for {damage} damage!
+    -> return_point
+
+
+== player_fire_shock_arrow
     ~ shock_arrow_count -= 1
     The arrow crackles with stored energy as you loose it. It hits the {current_enemy_name} with a shower of sparks, delivering a powerful electric shock.
     ~ temp arrow_damage = 12 // High damage
@@ -181,7 +222,7 @@
         -> enemy_turn
     }
 
-= player_fire_scrap_arrow
+== player_fire_scrap_arrow
     ~ scrap_arrow_count -= 1
     You loose a crudely made arrow. It flies true, striking the {current_enemy_name} for moderate damage.
     ~ temp arrow_damage = 5
@@ -192,7 +233,7 @@
         -> enemy_turn
     }
 
-= player_fire_silent_arrow
+== player_fire_silent_arrow
     ~ silent_arrow_count -= 1
     The silent arrow whispers through the air, finding a weak point in the {current_enemy_name}'s defense. A critical hit!
     ~ temp arrow_damage = 9
@@ -203,34 +244,42 @@
         -> enemy_turn
     }
 
-= player_use_moss_poison
+== player_use_moss_poison
     ~ has_moss_poison_vial -= 1
     You coat your weapon with the sticky, paralytic poison. The {current_enemy_name} is now poisoned!
     ~ enemy_is_poisoned = true
     ~ poison_turns_remaining = 3 // Poison lasts for 3 turns
     -> enemy_turn
 
-= player_use_poison_bomb
+== player_use_poison_bomb
     ~ has_poison_bomb = false
-    You hurl the makeshift bomb. It shatters at the {current_enemy_name}'s feet, releasing a cloud of aerosolized neurotoxin. The creature shrieks and convulses from the initial blast!
+    The bomb shatters, releasing a cloud of aerosolized neurotoxin that engulfs all enemies!
     ~ temp bomb_damage = atk * 3
-    ~ current_enemy_hp -= bomb_damage
-    The bomb deals {bomb_damage} initial damage!
     
-    // Apply a stronger, longer-lasting poison
+    The {current_enemy_name} takes {bomb_damage} initial damage!
+    ~ current_enemy_hp -= bomb_damage
+    { enemy2_hp > 0:
+        The {enemy2_name} also takes {bomb_damage} initial damage!
+        ~ enemy2_hp -= bomb_damage
+    }
+    
+    // Apply poison to all enemies
     ~ enemy_is_poisoned = true
     ~ poison_turns_remaining = 5
     
-    { current_enemy_hp <= 0:
+    { current_enemy_hp <= 0 and enemy2_hp <= 0:
         -> battle_won
     - else:
-        -> enemy_turn
+        -> jed_turn
     }
 
-= player_use_emp_grenade
+== player_use_emp_grenade
     ~ has_emp_grenade = false
     You hurl the jury-rigged power cell. It detonates with a sharp crackle and a flash of blue light, releasing a powerful electromagnetic pulse. The {current_enemy_name} seizes up, disoriented by the assault on its nervous system. It will be stunned for its next turn.
     ~ rival_will_miss_next_turn = true
+    { enemy2_hp > 0:
+        ~ enemy2_will_miss_next_turn = true
+    }
     -> enemy_turn
 
 === battle_fled ===
@@ -258,7 +307,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     { player_skills ? Survivalist: // Kaelen's Skill
         You roar, focusing your rage into a single, powerful strike. Your Attack is temporarily increased!
         ~ atk += 2
-        -> player_attack // Go straight to the attack
+        -> player_attack(-> jed_turn, false)
     }
     { player_skills ? BioScan: // Aris's Skill
         You activate your bio-scanner, identifying a weak point in the creature's hide. Its Defense is lowered.
@@ -313,21 +362,6 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     - else:
         -> enemy_turn
     }
-
-=== player_attack ===
-    ~ temp player_damage = atk - current_enemy_def
-    { player_damage < 1: 
-        ~ player_damage = 1 
-    }
-    ~ current_enemy_hp -= player_damage
-    
-    You strike the {current_enemy_name} for {player_damage} damage.
-    
-    { current_enemy_hp <= 0:
-        -> battle_won
-    }
-    
-    -> enemy_turn
 
 === enemy_turn ===
     { rival_will_miss_next_turn:
@@ -580,48 +614,7 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
     * [That's all for now.]
         -> return_point
         
-// === 2v2 BATTLE MECHANIC ===
-=== two_v_two_battle_loop ===
-    // --- STATUS DISPLAY ---
-    You have {hp}/{max_hp} HP.
-    { jed_status == "HELPED":
-        Jed has {jed_hp}/{jed_max_hp} HP.
-    }
-    The {current_enemy_name} has {current_enemy_hp} HP. The {enemy2_name} has {enemy2_hp} HP.
-    
-    // --- PLAYER'S TURN ---
-    * [Attack the first {current_enemy_name}]
-        -> player_attack_2v2(-> jed_turn_2v2, false)
-    * [Attack the second {enemy2_name}]
-        -> player_attack_2v2(-> jed_turn_2v2, true) // Pass a flag for the second enemy
-        
-= player_attack_2v2(-> return_point, is_second_enemy)
-    ~ temp target_hp = 0
-    ~ temp target_def = 0
-    { is_second_enemy:
-        ~ target_hp = enemy2_hp
-        ~ target_def = enemy2_def
-    - else:
-        ~ target_hp = current_enemy_hp
-        ~ target_def = current_enemy_def
-    }
-    
-    ~ temp damage = atk - target_def
-    { damage < 1: 
-        ~ damage = 1 
-    }
-    ~ target_hp -= damage
-    
-    { is_second_enemy:
-        ~ enemy2_hp = target_hp
-        You attack the second Skulker for {damage} damage!
-    - else:
-        ~ current_enemy_hp = target_hp
-        You attack the first Skulker for {damage} damage!
-    }
-    -> return_point
-
-= jed_turn_2v2
+=== jed_turn ===
     { jed_status == "HELPED":
         Jed fights alongside you, a seasoned survivor. He takes a shot at one of the Skulkers.
         ~ temp target_roll = RANDOM(1, 2)
@@ -638,47 +631,7 @@ Your vision fades to black as the final blow lands. The last thing you hear is t
                 Jed hits the first Skulker for {jed_atk} damage!
         }
     }
-    -> enemy_turn_2v2
-
-= enemy_turn_2v2
-    // Check if enemies are still alive before their turn
-    { current_enemy_hp > 0:
-        // First Skulker attacks
-        The first Skulker lunges!
-        ~ hp -= current_enemy_atk
-        It hits you for {current_enemy_atk} damage!
-        { hp <= 0: -> game_over_death }
-    }
-    { enemy2_hp > 0:
-        // Second Skulker attacks
-        The second Skulker attacks!
-        { jed_status == "HELPED":
-            // If Jed is here, it might attack him
-            ~ temp target_roll = RANDOM(1, 2)
-            { target_roll == 1:
-                ~ hp -= enemy2_atk
-                It hits you for {enemy2_atk} damage!
-            - else:
-                ~ jed_hp -= enemy2_atk
-                It hits Jed for {enemy2_atk} damage!
-            }
-        - else:
-            ~ hp -= enemy2_atk
-            It hits you for {enemy2_atk} damage!
-        }
-        { hp <= 0: -> game_over_death }
-        { jed_hp <= 0: 
-            ~ jed_status = "DEAD" 
-        }
-    }
-
-    // Check for victory
-    { current_enemy_hp <= 0 and enemy2_hp <= 0:
-        You've defeated both Skulkers!
-        -> setup_alpha_skulker_battle // Proceed to the next part of the horde battle
-    - else:
-        -> two_v_two_battle_loop
-    }
+    -> enemy_turn
 
 === use_glimmer_moss_tunnel(is_safe) ===
     ~ glimmer_moss_stack -= 1

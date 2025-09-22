@@ -39,7 +39,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
         ~ is_fatigued = false
         -> tower_buffer_room(next_floor)
         
-    * { glimmer_moss_stack > 0 and is_injured } [Use Glimmer Moss ({glimmer_moss_stack} left).]
+    + { glimmer_moss_stack > 0 and is_injured } [Use Glimmer Moss ({glimmer_moss_stack} left).]
         // We will call the existing moss scene, then return here.
         -> use_glimmer_moss_tunnel(true) -> tower_buffer_room(next_floor)
         
@@ -56,6 +56,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
     ~ current_enemy_hp = 30
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 4
+    ~ enemy2_hp = 0 // Signal that there is no second enemy
     -> battle_loop
     
 === setup_tinkerer_battle ===
@@ -63,6 +64,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
     ~ current_enemy_hp = 20
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 2
+    ~ enemy2_hp = 0 // Signal that there is no second enemy
     -> battle_loop
     
 === setup_veteran_battle ===
@@ -70,4 +72,5 @@ You find a small, cramped access corridor between the floors. The sounds of comb
     ~ current_enemy_hp = 25
     ~ current_enemy_atk = 7
     ~ current_enemy_def = 3
+    ~ enemy2_hp = 0 // Signal that there is no second enemy
     -> battle_loop
