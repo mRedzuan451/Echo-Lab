@@ -43,7 +43,7 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
 === decrypt_first_log ===
     ~ temp original_intelligence = intelligence
     { neuro_stim_state == "ACTIVE":
-        ~ intelligence += 3
+        ~ intelligence += 4
     }
     You focus on the complex encryption, trying to find a flaw in the code.
     { intelligence >= 7:
@@ -60,7 +60,8 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
             The intense focus fades as the Neuro-Stim wears off, leaving a dull ache behind your eyes.
             ~ neuro_stim_state = "USED"
         }
-        ~ intelligence = original_intelligence
+        ~ intelligence = original_intelligence + 1
+        ~ perception += 1
         -> scene_3_choices
     - else:
         // Failure
@@ -94,6 +95,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         - It's a standard power cell, the kind used in old maintenance drones. Heavy. You notice a small crack in the casing near the positive terminal. It might be volatile.
     }
+    ~ intelligence += 1
     -> analyze_items
 * {glimmer_moss_stack > 0} [Analyze the Glimmer Moss Sample.]
     ~ analyzed_glimmer_moss = true
@@ -106,6 +108,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         - The moss glows, but the light is faint. You recall seeing similar fungi in deep-cave infiltration missions. The spores are light enough to travel on air currents; anything that hunts by scent would be drawn to this.
     }
+    ~ strength += 1
     -> analyze_items
 * {found_first_log} [Analyze the Archivist Log #77-B]
     -> decrypt_first_log

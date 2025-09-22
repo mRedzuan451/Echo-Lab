@@ -48,7 +48,7 @@ The AI implant in your brain comes online with a soft chime, its voice a calm wh
 <i>"Implant activated. Vital signs are... suboptimal, but stable. Welcome to the Arena. You have been assigned to Test Site Echo-7."</i>
 
 You try to remember who you are.
-The name comes first, then the skills.
+The name comes first, then the title.
 * [I am Kaelen "Rook" Vance, the Soldier.]
     ~ character_name = "Kaelen"
     ~ rival_name = "Xander"
