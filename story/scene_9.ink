@@ -215,7 +215,7 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     
 = scavenge_hab_unit
     You pry open the door of a collapsed hab-unit, hoping to find something valuable inside.
-    ~ temp roll = RANDOM(1, 4)
+    ~ temp roll = RANDOM(1, 5)
     {
         - roll == 1:
             // Outcome 1: Fight an Ambush Skulker
@@ -243,12 +243,40 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
                 You find a looted first-aid station, but it's completely empty.
             }
             -> final_scavenge
+        
+        - roll == 4:
+            // Outcome 4: Find a new Archivist Log
+            { not log_knows_ally_buff:
+                You find the skeletal remains of another contestant. Unlike the one in the bay, this one was clearly a strategist. Their datapad is still active, containing a single, encrypted Archivist Log about combat synergy.
+                -> decrypt_ally_buff_log
+            - else:
+                You find another looted body. Nothing of value remains.
+                -> final_scavenge
+            }
             
         - else:
-            // Outcome 4: Failure
+            // Outcome 5: Failure
             The hab-unit is completely picked clean. There's nothing of value left.
             -> final_scavenge
     }
+
+= decrypt_ally_buff_log
+    You access the log. It appears to be a tactical analysis of multi-subject combat trials.
+    <i>AI: "Log is encrypted. High-level intelligence required."</i>
+    * [Attempt to decrypt the log - Intelligence Check]
+        { intelligence >= 8:
+            // Success
+            You find a weakness in the encryption and the file opens. It's a log detailing how to coordinate with an ally to exploit an enemy's blind spots. You've learned a new skill: **Targeted Analysis**.
+            ~ log_knows_ally_buff = true
+            ~ player_skills += TargetedAnalysis
+            -> final_scavenge
+        - else:
+            // Failure
+            The tactical jargon and complex data is beyond you. The log remains locked.
+            -> final_scavenge
+        }
+    * [Leave it.]
+        -> final_scavenge
 
 = setup_ambush_skulker_battle
     // Set the global variables for this specific enemy

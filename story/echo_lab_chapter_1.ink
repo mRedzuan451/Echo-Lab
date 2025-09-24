@@ -248,7 +248,12 @@ You now possess your first Data Fragment. It's a small, crystalline object that 
 // === SCENE 8: THE TOWER CLIMB ===
 === scene_8_the_tower ===
 Following the AI's directions, you arrive at the base of another massive communications spire. This one is different—a single emergency light pulses at the very top, indicating the location of the next Data Fragment. The main entrance is sealed, but a service ladder leads up to the first floor landing. The climb has begun.
--> tower_floor_1
+* [Begin the ascent.]
+    -> tower_floor_1
++ [Query the AI.]
+    -> scene_8_ai_query
++ [Check Status.]
+    -> check_status(-> scene_8_the_tower)
 
 = tower_floor_1
 You haul yourself onto the first-floor landing, a wide platform of rusted metal grating. A lithe contestant, the "Scrambler," is already there. They see you, grin, and make a dash for the stairs to the next level.

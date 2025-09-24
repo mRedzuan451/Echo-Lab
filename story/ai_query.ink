@@ -25,3 +25,17 @@ The AI is silent for a moment before responding.
     -> scene_5_ai_query
 * [That's all I need.]
     -> scene_5_crossroads
+    
+== scene_8_ai_query
+    <i>AI: "Awaiting query."</i>
+    + (ask_tower) [Ask: "What is this structure?"]
+        <i>AI: "This is a primary communications relay tower, designated Spire-3. It was part of the former inhabitants' global network."</i>
+        -> scene_8_ai_query
+    + (ask_contestants) [Ask: "How many other contestants are in this tower?"]
+        <i>AI: "My sensors indicate four other active subjects within the immediate structure, excluding yourself. Proctor protocols designate this as a competitive trial."</i>
+        -> scene_8_ai_query
+    + (ask_objective) [Ask: "What is the nature of this test?"]
+        <i>AI: "The objective is to retrieve the Data Fragment from the peak. The Proctor is monitoring subject performance based on speed, efficiency, and obstacle neutralization."</i>
+        -> scene_8_ai_query
+    * [That's all for now.]
+        -> scene_8_the_tower

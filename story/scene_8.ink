@@ -26,9 +26,12 @@ The fourth floor is a chaotic workshop, filled with sparking contraptions. A con
 You reach the final floor before the spire's peak. A contestant with cold, professional eyes, the "Veteran," stands waiting for you. They hold a sharpened piece of rebar like a short sword. "Only one of us gets that fragment," they say calmly. "Let's make this quick."
 -> setup_veteran_battle
 
-=== tower_top ===
+== tower_top
 Panting and bruised, you finally reach the open-air platform at the peak of the tower. The emergency light flashes on the console where the **second Data Fragment** is waiting. You take it.
 ~ data_fragments += 1
+
+<i>AI: "Second Data Fragment acquired. Subject has demonstrated superior combat and traversal capabilities. Proceeding to next objective."</i>
+
 -> scene_9_the_bargain // Now points to the correct next scene
 
 // === SCENE 8A: TOWER BUFFER ROOM ===

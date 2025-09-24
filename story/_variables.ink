@@ -28,7 +28,7 @@ VAR analyzed_glimmer_moss = false
 VAR studied_emitter = false
 
 // Skill System
-LIST AllSkills = Survivalist, BioScan, DiscerningEye, HeavyHitter, Overcharge, CounterAttack
+LIST AllSkills = Survivalist, BioScan, DiscerningEye, HeavyHitter, Overcharge, CounterAttack, TargetedAnalysis
 VAR player_skills = ()
 
 // Consequence Flags
@@ -176,3 +176,7 @@ VAR analyzed_scrap_arrows_type = false
 VAR analyzed_shock_arrows_type = false
 VAR analyzed_beetle_carapace_type = false
 VAR analyzed_adrenaline_shot_type = false
+
+// New Log & Skill Flags
+VAR log_knows_ally_buff = false
+VAR jed_is_buffed = false

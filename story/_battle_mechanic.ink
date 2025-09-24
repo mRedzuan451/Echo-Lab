@@ -207,6 +207,11 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         You take a defensive stance, watching your enemy's every move, ready to strike the moment they commit to an attack.
         ~ is_countering = true
         -> jed_turn
+    
+    * { player_skills ? TargetedAnalysis and jed_status == "HELPED" and jed_hp > 0 and not jed_is_buffed } [Use Targeted Analysis on Jed]
+        You analyze the enemy's movements and call out a weak point to Jed. "Jed, the left side! Now!"
+        ~ jed_is_buffed = true
+        -> jed_turn // This skill use takes your turn
 
 === player_use_emitter ===
     { use_emitter_charge():
@@ -527,18 +532,25 @@ Your vision fades to black as the opponent's final blow lands.
 
 == jed_turn
     { jed_status == "HELPED" and jed_hp > 0:
-        Jed fights alongside you. He takes a shot at an enemy.
+        ~ temp current_jed_atk = jed_atk
+        { jed_is_buffed:
+            ~ current_jed_atk = jed_atk + 4 // Boost Jed's attack for this turn
+            ~ jed_is_buffed = false // Buff wears off
+            Jed follows your instructions perfectly, striking the weak point you identified!
+        - else:
+            Jed fights alongside you. He attacks an enemy!
+        }
         ~ temp target_roll = RANDOM(1, 2)
         {
             - target_roll == 1 and current_enemy_hp > 0:
-                ~ current_enemy_hp -= jed_atk
-                Jed hits the first {current_enemy_name} for {jed_atk} damage!
+                ~ current_enemy_hp -= current_jed_atk
+                Jed hits the first {current_enemy_name} for {current_jed_atk} damage!
             - enemy2_hp > 0:
-                ~ enemy2_hp -= jed_atk
-                Jed hits the second {enemy2_name} for {jed_atk} damage!
+                ~ enemy2_hp -= current_jed_atk
+                Jed hits the second {enemy2_name} for {current_jed_atk} damage!
             - else:
-                ~ current_enemy_hp -= jed_atk
-                Jed hits the first {current_enemy_name} for {jed_atk} damage!
+                ~ current_enemy_hp -= current_jed_atk
+                Jed hits the first {current_enemy_name} for {current_jed_atk} damage!
         }
     }
     -> enemy_turn
