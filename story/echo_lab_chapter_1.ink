@@ -10,6 +10,7 @@ INCLUDE scene_9.ink
 INCLUDE scene_10.ink
 INCLUDE ai_query.ink
 INCLUDE analyze.ink
+INCLUDE _battle_mechanic.ink
 // This is the playable script for the first chapter of the game.
 
 // === GAME_START ===
