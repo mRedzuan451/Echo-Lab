@@ -285,7 +285,7 @@ You haul yourself onto the first-floor landing, a wide platform of rusted metal 
 === scene_10_the_lair ===
 With your preparations complete, the AI directs you into a massive, cavernous subway nexus. Several tunnels converge here, and a derelict subway train rests in the center. Atop the main platform, a shimmering, inactive Archive Gate stands, but it is not unguarded.
 
-Nine other contestants are gathered here, a tense and hostile silence hanging in the air. You see your Rival among them, and you also spot Jed, who gives you a nod or a glare depending on your history.
+Nine other contestants are gathered here, a tense and hostile silence hanging in the air. You see your rival {rival_name} among them, and you also spot Jed, who gives you a nod or a glare depending on your history.
 
 The Proctor's voice echoes through the cavern, cold and final.
 <i>PROCTOR: "The final test for this zone has begun. The Archive Gate is guarded by the zone's Apex Predator: the Alpha Skulker Matriarch. The five subjects who contribute most to its defeat will be awarded the final Data Fragment. All others will be deemed... substandard. Good luck."</i>

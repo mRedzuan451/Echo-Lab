@@ -18,7 +18,7 @@ You must fight your way through the horde to reach the Alpha's platform. The sma
     -> battle_loop
 
 === setup_alpha_skulker_battle ===
-You, your Rival, Jed, and two other skilled-looking contestants are the first to reach the platform. The Alpha Skulker Matriarch emerges from the derelict train car. It is immense, covered in glowing green scars, and it lets out a shriek that shakes the very foundations of the cavern. The final battle begins.
+You, {rival_name}, Jed, and two other skilled-looking contestants are the first to reach the platform. The Alpha Skulker Matriarch emerges from the derelict train car. It is immense, covered in glowing green scars, and it lets out a shriek that shakes the very foundations of the cavern. The final battle begins.
 ~ alpha_skulker_max_hp = 150
 ~ alpha_skulker_hp = 150
 ~ alpha_skulker_atk = 10
@@ -74,6 +74,26 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         ~ player_contribution += damage
         You strike the Matriarch for {damage} damage!
         -> allies_turn
+    + { not used_skill_in_battle } [Use Skill]
+        -> alpha_use_skill
+        
+    + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
+        -> alpha_use_moss_poison
+        
+    + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
+        -> alpha_use_poison_bomb
+        
+    + { character_name == "Aris" and has_emp_grenade } [Use EMP Grenade]
+        -> alpha_use_emp_grenade
+        
+    + { character_name == "Lena" and scrap_arrow_count > 0 } [Fire a Scrap Arrow ({scrap_arrow_count} left)]
+        -> alpha_fire_scrap_arrow
+        
+    + { character_name == "Lena" and silent_arrow_count > 0 } [Fire a Silent Arrow ({silent_arrow_count} left)]
+        -> alpha_fire_silent_arrow
+        
+    + { character_name == "Lena" and shock_arrow_count > 0 } [Fire a Shock Arrow ({shock_arrow_count} left)]
+        -> alpha_fire_shock_arrow
     * { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
     -> player_use_emitter_on_alpha
     + [Defend]
@@ -90,6 +110,108 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         ~ alpha_skulker_hp -= damage2
         ~ player_contribution += damage2
         -> allies_turn
+
+// === ALPHA BATTLE - PLAYER ACTIONS ===
+= alpha_use_skill
+    ~ used_skill_in_battle = true
+    { player_skills ? Survivalist: // Kaelen's Skill
+        You roar, focusing your rage into a single, powerful strike. Your Attack is temporarily increased!
+        ~ atk += 2
+        -> allies_turn
+    }
+    { player_skills ? BioScan: // Aris's Skill
+        You activate your bio-scanner, identifying a weak point in the creature's hide. Its Defense is lowered.
+        ~ alpha_skulker_hp -= 2
+        { alpha_skulker_hp < 0:
+            ~ alpha_skulker_hp = 0
+        }
+        -> allies_turn
+    }
+    { player_skills ? DiscerningEye: // Lena's Skill
+        You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attack.
+        ~ rival_will_miss_next_turn = true
+        -> allies_turn
+    }
+    * { player_skills ? HeavyHitter } [Use Heavy Hitter]
+        You channel all your strength into a single, devastating blow. It's slow, but powerful.
+        ~ temp heavy_damage = INT(atk * 1.5)
+        ~ alpha_skulker_hp -= heavy_damage
+        You slam the Alpha Skulker for {heavy_damage} damage!
+        { current_enemy_hp <= 0:
+            -> battle_won
+        - else:
+            -> allies_turn
+        }
+
+    * { player_skills ? Overcharge } [Use Overcharge]
+        You reroute power through the Kinetic Emitter, preparing to unleash an overloaded blast. Your next Emitter use will be massively amplified.
+        ~ is_overcharging = true
+        -> allies_turn
+
+    * { player_skills ? CounterAttack } [Prepare to Counter Attack]
+        You take a defensive stance, watching your enemy's every move, ready to strike the moment they commit to an attack.
+        ~ is_countering = true
+        -> allies_turn
+
+= alpha_use_emitter
+    { use_emitter_charge():
+        ~ temp damage = 10
+        { is_overcharging:
+            ~ damage = 30
+            ~ is_overcharging = false
+        }
+        The emitter blast slams into the Matriarch!
+        ~ alpha_skulker_hp -= damage
+        ~ player_contribution += damage
+    }
+    -> allies_turn
+
+= alpha_use_moss_poison
+    ~ has_moss_poison_vial -= 1
+    You apply the poison to your weapon. The Matriarch is now poisoned!
+    ~ enemy_is_poisoned = true
+    ~ poison_turns_remaining = 3
+    -> allies_turn
+
+= alpha_use_poison_bomb
+    ~ has_poison_bomb = false
+    The poison bomb explodes at the Matriarch's feet, dealing massive initial damage and applying a potent toxin.
+    ~ temp damage = atk * 3
+    ~ alpha_skulker_hp -= damage
+    ~ player_contribution += damage
+    ~ enemy_is_poisoned = true
+    ~ poison_turns_remaining = 5
+    -> allies_turn
+
+= alpha_use_emp_grenade
+    ~ has_emp_grenade = false
+    The EMP grenade detonates, causing the Matriarch to stagger and shriek in confusion. It will miss its next attack.
+    ~ rival_will_miss_next_turn = true // Re-using this flag for the boss
+    -> allies_turn
+
+= alpha_fire_scrap_arrow
+    ~ scrap_arrow_count -= 1
+    Your arrow finds a seam in the Matriarch's tough hide.
+    ~ temp damage = 5
+    ~ alpha_skulker_hp -= damage
+    ~ player_contribution += damage
+    -> allies_turn
+
+= alpha_fire_silent_arrow
+    ~ silent_arrow_count -= 1
+    Your silent arrow strikes a vulnerable, glowing scar. A critical hit!
+    ~ temp damage = 9
+    ~ alpha_skulker_hp -= damage
+    ~ player_contribution += damage
+    -> allies_turn
+
+= alpha_fire_shock_arrow
+    ~ shock_arrow_count -= 1
+    The shock arrow delivers a powerful jolt, causing the massive creature to seize up for a moment.
+    ~ temp damage = 12
+    ~ alpha_skulker_hp -= damage
+    ~ player_contribution += damage
+    -> allies_turn
 
 = player_use_emitter_on_alpha
     { use_emitter_charge():
@@ -123,7 +245,7 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         ~ alpha_skulker_hp -= 5
     }
     // Rival's Turn
-    Your Rival fights with brutal efficiency, scoring a deep hit.
+    {rival_name} fights with brutal efficiency, scoring a deep hit.
     ~ temp rival_damage = RANDOM(6, 10)
     ~ rival_contribution += rival_damage
     ~ alpha_skulker_hp -= rival_damage
@@ -166,14 +288,19 @@ You, your Rival, Jed, and two other skilled-looking contestants are the first to
         { damage < 1: 
             ~ damage = 1 
         }
-        
         {
             - target_roll == 1: // Target: Player
+            { rival_will_miss_next_turn:
+                ~ rival_will_miss_next_turn = false
+                You anticipate the Alpha Skulker clumsy attack and easily step aside. It misses completely.
+                -> allies_turn
+            - else:
                 ~ hp -= damage
                 It attacks you for {damage} damage!
+            }
             - target_roll == 2: // Target: Rival
                 // The rival can be defeated but not killed.
-                The Matriarch slams into your Rival, sending them flying. They're down, but not out of the fight.
+                The Matriarch slams into {rival_name}, sending them flying. They're down, but not out of the fight.
             - target_roll == 3: // Target: Jed
                 { not (jed_status == "DEAD"):
                     ~ jed_hp -= damage

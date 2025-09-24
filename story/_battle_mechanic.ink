@@ -182,7 +182,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         -> jed_turn // The skill use takes your turn
     }
     { player_skills ? DiscerningEye: // Lena's Skill
-        You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attack.
+        You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attac.
         ~ rival_will_miss_next_turn = true
         -> jed_turn // The skill use takes your turn
     }
