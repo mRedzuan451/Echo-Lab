@@ -90,7 +90,7 @@ VAR has_magnetic_coil = false
 // Aris's Organic Resources & Crafted Items
 VAR skulker_venom_gland_stack = 0
 VAR has_moss_poison_vial = 0 // Can craft multiple
-VAR has_poison_bomb = false
+VAR poison_bomb_stack = false
 
 // Poison Status Effect
 VAR enemy_is_poisoned = false

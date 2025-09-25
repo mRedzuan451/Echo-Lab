@@ -16,5 +16,3 @@ the rival will sabotage the player (with jed if jed is enemy) when alpha in bers
 add scene on battle fled.
 
 update the scene when the enemy been poison, moss poison effect on one enemy, bomb poison effect on both enemy
-
-update poison bomb can be stack

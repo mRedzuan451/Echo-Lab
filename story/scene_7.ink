@@ -47,7 +47,7 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
     -> scene_7b_grinding
 * { not has_reinforced_club and not has_recurve_bow and not has_emp_grenade } [Save your resources and move on.]
     -> scene_8_the_tower
-+ { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or has_poison_bomb } [You are prepared. Move on.]
++ { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or poison_bomb_stack > 0 } [You are prepared. Move on.]
     -> scene_8_the_tower
 + [Check Status]
     -> check_status( -> scene_7a_gearing_up)

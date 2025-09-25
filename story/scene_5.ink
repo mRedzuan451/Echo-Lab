@@ -35,7 +35,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         -> rival_player_attack
     + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
         -> rival_use_moss_poison
-    + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
+    + { character_name == "Aris" and poison_bomb_stack > 0 } [Use Poison Bomb]
         -> rival_use_poison_bomb
     * [Defend]
         ~ is_defending = true
@@ -54,7 +54,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     -> rival_enemy_turn
     
 = rival_use_poison_bomb
-    ~ has_poison_bomb = false
+    ~ poison_bomb_stack -= 1
     You hurl the bomb at your rival's feet. It shatters, releasing a cloud of thick, green gas. Your rival coughs and staggers back, weakened and disoriented by the neurotoxin. They're in no condition to continue the fight.
     ~ rival_hp = 1 // Leave them with 1 HP to trigger the win condition
     -> rival_battle_win

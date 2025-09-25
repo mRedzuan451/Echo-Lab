@@ -80,7 +80,7 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
         -> alpha_use_moss_poison
         
-    + { character_name == "Aris" and has_poison_bomb } [Use Poison Bomb]
+    + { character_name == "Aris" and poison_bomb_stack > 0 } [Use Poison Bomb]
         -> alpha_use_poison_bomb
         
     + { character_name == "Aris" and has_emp_grenade } [Use EMP Grenade]
@@ -166,7 +166,7 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     -> allies_turn
 
 = alpha_use_poison_bomb
-    ~ has_poison_bomb = false
+    ~ poison_bomb_stack -= 1
     The poison bomb explodes at the Matriarch's feet, dealing massive initial damage and applying a potent toxin.
     ~ temp damage = atk * 3
     ~ alpha_skulker_hp -= damage
