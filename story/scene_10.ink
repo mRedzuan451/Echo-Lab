@@ -127,12 +127,18 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     
     You've abandoned the fight and sealed your fate in this zone. Your rival will never forget this betrayal.
     ~ rival_relationship = 0 // Instant GRUDGE
-    -> chapter_1_failure_fled
+    -> chapter_1_failure_ending
     
-= chapter_1_failure_fled
-You escape the lair, leaving the others to their fate. The sounds of combat fade behind you as you find a dark tunnel to hide in.
-<i>PROCTOR: "Subject has abandoned the final test. Specimen is deemed substandard. Trial terminated for this subject."</i>
-You have failed.
+// === CHAPTER 1 FAILURE SCENE ===
+= chapter_1_failure_ending
+You are left alone in the silent, cavernous lair. The Archive Gate closes, its energy fading into darkness. The Proctor's voice echoes one last time, not with triumph, but with cold, dismissive finality.
+
+<i>PROCTOR: "Subject has failed to meet the primary objective parameters. Insufficient data acquired. Specimen is deemed substandard."</i>
+
+<i>PROCTOR: "Initiating sanitation protocol."</i>
+
+A low hum fills the air as hidden turrets descend from the ceiling, their targeting lasers painting your chest red. There is no escape. The Arena has found you wanting.
+
 -> END
         
 // === New stitch for the Rival's final attack ===
@@ -455,9 +461,47 @@ You have failed.
         -> alpha_skulker_turn
 
 = alpha_skulker_defeated
-With a final, agonized shriek, the Alpha Skulker Matriarch collapses. The cavern falls silent.
-<i>PROCTOR: "Apex Predator neutralized. Calculating contributions."</i>
-<i>PROCTOR: "The following subjects have earned the final Data Fragment: Subject {character_name}, Subject {rival_name}, Subject Jedediah..."</i>
+With a final, agonized shriek, the Alpha Skulker Matriarch collapses. The cavern falls silent, the only sound your own ragged breathing and the thumping of your heart.
+<i>PROCTOR: "Apex Predator neutralized. Calculating combat contributions... Calculation complete."</i>
 
-You have succeeded.
--> END
+The Proctor's voice fills the cavern, as cold and vast as the space between worlds.
+<i>PROCTOR: "Of the ten subjects who began this trial, five have demonstrated sufficient capability to proceed. The remainder have been culled or have proven substandard. An acceptable attrition rate."</i>
+
+<i>PROCTOR: "Strength is not merely the ability to destroy. It is the ability to adapt, to overcome, and to endure in the face of overwhelming odds. You have demonstrated these qualities to a satisfactory degree."</i>
+
+<i>PROCTOR: "The following subjects have earned the final Data Fragment and the right to ascend: Subject {character_name}, Subject {rival_name}, Subject Jedediah, Subject Jors and Subject Soff"</i>
+~ data_fragments += 1
+
+<i>PROCTOR: "As a reward for your exceptional performance, your biological and cybernetic parameters will now be optimized. Acknowledging... primary combat adaptation."</i>
+
+{ character_name == "Kaelen":
+    You feel a surge of raw power course through your limbs, a deep, primal strength settling into your very bones.
+    ~ strength += 1
+    <i>AI: "Primary attribute Strength has been enhanced."</i>
+}
+{ character_name == "Aris":
+    A wave of pure data washes through your mind, connections and calculations flowing faster than ever before. Your thoughts feel sharper, clearer.
+    ~ intelligence += 1
+    <i>AI: "Primary attribute Intelligence has been enhanced."</i>
+}
+{ character_name == "Lena":
+    Your senses heighten, the dripping of water in the far corners of the cavern and the subtle scent of ozone becoming crystal clear. You feel more aware, more connected to your surroundings.
+    ~ perception += 1
+    <i>AI: "Primary attribute Perception has been enhanced."</i>
+}
+~ update_combat_stats()
+
+<i>PROCTOR: "The Archive Gate is now active. Proceed to the next phase of the experiment. The true test has just begun."</i>
+
+// --- FINAL CHECK ---
+{ data_fragments >= 3:
+    // SUCCESS PATH
+    The massive gate on the platform hums to life, a swirling vortex of green energy. Your Rival gives you a final, unreadable look before stepping through. Jed, if he is still with you, gives a weary nod and follows.
+    * [Step through the Archive Gate and leave this place behind.]
+        You take a deep breath and step into the unknown, ready for whatever comes next.
+        -> END
+- else:
+    // FAILURE PATH
+    The massive gate on the platform hums to life, but a red barrier shimmers in front of you, blocking your path. The other successful contestants step through, leaving you behind.
+    -> chapter_1_failure_ending
+}

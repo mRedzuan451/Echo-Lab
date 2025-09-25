@@ -19,16 +19,20 @@ INCLUDE _battle_mechanic.ink
 
 // === SCENE 1: IMPACT ===
 === scene_1_impact ===
-Darkness.
-Cold metal against your cheek. The low, thrumming hum of a machine you don't recognize.
+Darkness. A deep, dreamless void that is suddenly, violently, interrupted.
 
-A sudden, violent lurch throws you against your restraints. A single red light flashes in the cramped space, illuminating a small, grimy viewport.
-Through it, you see a sight that makes your blood run cold: a shattered planet, pieces of its continents hanging silently in the black void of space, wreathed in a sickly green energy.
+Your first sensation is cold. A sharp, biting cold on your cheek, pressed against a metal panel that hums with a low, unfamiliar thrum. Your body is held fast, strapped into a seat that feels more like a cage. The air is stale, tasting of ozone and recycled oxygen.
 
-An alarm blares. The hum becomes a roar. The tiny pod you're in shudders as it hits the upper atmosphere, the viewport glowing white-hot.
-This isn't a rescue. It's a re-entry.
+A sudden, violent lurch throws you against the restraints, your head snapping forward. A single, angry red light flashes in the cramped space, strobing across the interior of what you now realize is a drop pod. It's a coffin-sized container, all sharp angles and exposed wiring, with no comfort or ceremony to it. This was not built for passengers; it was built for cargo.
+
+The red light illuminates a small, grimy viewport. Through it, you see a sight that makes your blood run cold: a shattered planet, pieces of its continents hanging silently in the black void of space, wreathed in a sickly green energy. It's a graveyard floating in the cosmos.
+
+An alarm blares, a deafening, high-pitched shriek that cuts through the hum. The thrumming intensifies, becoming a bone-jarring roar that vibrates through your teeth. The tiny pod shudders as it hits the upper atmosphere, the viewport glowing a brilliant, terrifying white-hot.
+
+This isn't a rescue. This is a re-entry.
 
 The impact is absolute. Metal screams, your vision whites out, and then... nothing.
+
 Silence.
 
 -> scene_1a_half_awake
