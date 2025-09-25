@@ -56,6 +56,15 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
         ~ alpha_skulker_atk = 15 // High damage
         ~ alpha_skulker_def = 2  // Low defense
         The Matriarch shrieks in agony and rage, its glowing scars flaring violently. It's gone berserk!
+        
+        // --- Rival's Grudge Behavior ---
+        { rival_relationship <= GRUDGE:
+            ~ rival_is_waiting_for_opening = true
+            Seeing the boss falter, your Rival stops fighting. A cruel, opportunistic glint appears in their eyes. They back away from the fight, content to watch you and the creature tear each other apart.
+            { jed_status == "HOSTILE":
+                Jed joins them, a grim look on his face. "Sorry, kid. It's just business."
+            }
+        }
     }
     
     The Alpha Skulker is at {alpha_skulker_hp}/{alpha_skulker_max_hp} HP. You are at {hp}/{max_hp} HP.
@@ -101,7 +110,29 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
         You brace yourself for the Matriarch's onslaught.
         -> allies_turn
     + [Use Skill]
-       -> alpha_use_skill
+        // Simplified skill use for this fight
+        You use your skills to find an opening, dealing extra damage!
+        ~ temp damage2 = atk + 5 - alpha_skulker_def
+        { damage2 < 1: 
+            ~ damage2 = 1
+        }
+        ~ alpha_skulker_hp -= damage2
+        ~ player_contribution += damage2
+        -> allies_turn
+        
+// === New stitch for the Rival's final attack ===
+= rival_final_blow
+    With the battle reaching its desperate climax, your Rival sees their chance.
+    { hp <= 10:
+        // Rival attacks the player
+        As the Matriarch prepares to attack you, your Rival strikes you from behind. "Nothing personal," they whisper. The blow is fatal.
+        -> game_over_death
+    - else:
+        // Rival attacks the boss
+        As you prepare to land the final blow, your Rival darts past you, landing a cheap, opportunistic strike that fells the weakened Matriarch. They've stolen your kill and your glory.
+        ~ rival_contribution += 20 // They get a huge contribution bonus
+        -> alpha_skulker_defeated
+    }
 
 // === ALPHA BATTLE - PLAYER ACTIONS ===
 = alpha_use_skill
@@ -226,6 +257,10 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     }
         
 = allies_turn
+    // --- Check if the rival is waiting for an opening ---
+    { rival_is_waiting_for_opening:
+        -> alpha_skulker_turn // If so, they do nothing and it's the boss's turn
+    }
     // Jed's Turn
     { jed_status == "HOSTILE":
         Jed hangs back, taking pot-shots and contributing little.
@@ -264,6 +299,10 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     ~ temp current_player_def = def
     { is_defending:
         ~ current_player_def = def + 3 // Apply defense bonus
+    }
+    // --- Check for the Rival's final move ---
+    { rival_is_waiting_for_opening and (hp <= 10 or alpha_skulker_hp <= 15):
+        -> rival_final_blow
     }
     The Matriarch shrieks and attacks!
     ~ temp aoe_roll = RANDOM(1, 10)
@@ -341,15 +380,18 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     * [Support your Rival]
         You fire a shot or create a diversion, drawing the Matriarch's attention away from them. Your Rival gives you a surprised, grudging look of acknowledgement.
         ~ rival_is_in_danger = false
+        ~ rival_relationship += 10
         -> alpha_skulker_turn
     * [Sabotage your Rival]
         You "accidentally" kick a piece of debris in their way, causing them to stumble. The Matriarch's claws rake across their side, wounding them badly. They glare at you with pure hatred.
         ~ rival_contribution -= 10 // Penalty to their score
+        ~ rival_relationship = 0 // Sabotage instantly creates a GRUDGE
         ~ rival_is_in_danger = false
         -> alpha_skulker_turn
     * [Do nothing]
         You watch, impassive, as your Rival barely manages to fend off the attack on their own. They are wounded and exhausted from the effort.
         ~ rival_is_in_danger = false
+        ~ rival_relationship -= 5
         -> alpha_skulker_turn
 
 = alpha_skulker_defeated

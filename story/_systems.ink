@@ -160,7 +160,7 @@
         ~ has_moss_poison_vial += 1
         ~ glimmer_moss_stack -= 1
         -> crafting_options(return_point)
-    + { character_name == "Aris" and skulker_venom_gland_stack > 0 and power_cell_stack > 0 } [Create a Poison Gas Bomb.]
+    + { character_name == "Aris" and skulker_venom_gland_stack > 0 and power_cell_stack > 0} [Create a Poison Gas Bomb.]
         This is a dangerous idea... but a brilliant one. You carefully puncture the Skulker's venom gland, siphoning the potent neurotoxin into the casing of the Degraded Power Cell. You rig the cell to overload, not with an EMP, but with a thermal charge that will aerosolize the venom on impact. A devastating biological weapon.
         ~ poison_bomb_stack += 1
         ~ skulker_venom_gland_stack -= 1

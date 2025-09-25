@@ -153,6 +153,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = true
     ~ resolve -= 5 // Smaller resolve hit than a full defeat
+     ~ rival_relationship += 15 // Giving up improves the relationship
     -> post_rival_encounter
 
 = rival_battle_lose_choice
@@ -162,6 +163,7 @@ The blow sends you staggering back. You're injured and losing the fight, but the
     ~ power_cell_stack -= 1
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = false
+    ~ rival_relationship -= 15 // Destroying the prize makes them more hostile
     ~ resolve -= 5
     -> post_rival_encounter
 * [You're beaten. Surrender the drop.]
@@ -179,6 +181,7 @@ The blow sends you staggering back. You're injured and losing the fight, but the
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = true
     ~ resolve -= 10
+    ~ rival_relationship -= 5 // Losing a fight slightly lowers the relationship
     -> scene_6_first_test
 
 = rival_battle_win

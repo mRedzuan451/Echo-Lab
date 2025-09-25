@@ -15,6 +15,16 @@ VAR is_injured = false
 VAR character_name = ""
 VAR rival_name = ""
 
+// === RIVAL RELATIONSHIP SYSTEM ===
+CONST GRUDGE = 20
+CONST HOSTILE = 50
+CONST NORMAL = 80
+CONST FRIENDLY = 100
+VAR rival_relationship = HOSTILE
+
+// Flag for the final battle's endgame state
+VAR rival_is_waiting_for_opening = false
+
 // Inventory Flags (true = has, false = doesn't have)
 VAR power_cell_stack = 0
 VAR glimmer_moss_stack = 0
