@@ -420,7 +420,18 @@ The {current_enemy_name} collapses. You are victorious.
         The Veteran's calm, precise fighting style was a lesson in efficiency. You've adapted their technique into a new skill: **Counter Attack**.
         <i>AI: "Subject Lena has assimilated a more efficient combat doctrine based on observation. Optimal."</i>
     - current_enemy_name == "Skulker Guard":
-            You defeat the guard, and the rest of the horde scatters, but you see two larger Skulkers coordinating their attacks, blocking the path forward.
+            The guard collapses, and you spot a small, sealed vial attached to its makeshift belt. It's a Regen Serum.
+            ~ has_regen_serum = true
+            * [Use the Regen-Serum]
+                -> use_regen_serum
+            * [Do not use the Regen-Serum]
+                { character_name == "Aris":
+                    -> loot_skulker_guard
+                - else:
+                    You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
+                    -> setup_alpha_skulker_battle
+                }
+            
     { jed_status == "HELPED":
         Jed stands back-to-back with you. "You take the one on the left?" he asks, readying his own weapon.
     }
@@ -464,6 +475,19 @@ The {current_enemy_name} collapses. You are victorious.
     // A default win case, in case you add other battles
     -> END
 }
+
+= use_regen_serum
+    You inject the serum. A wave of warmth spreads through your body, knitting tissues back together and washing away all fatigue and pain. You feel completely restored.
+        ~ hp = max_hp
+        ~ is_injured = false
+        ~ is_fatigued = false
+        ~ has_regen_serum = false
+        { character_name == "Aris":
+            -> loot_skulker_guard
+        - else:
+            You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
+            -> setup_alpha_skulker_battle
+        }
 
 = loot_ambush_skulker
     As the Skulker lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.

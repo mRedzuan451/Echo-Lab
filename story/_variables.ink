@@ -137,6 +137,7 @@ VAR club_is_upgraded = false
 // New Scavenging Finds
 VAR has_titan_beetle_carapace = false
 VAR has_adrenaline_shot = false
+VAR has_regen_serum = false
 
 // === SCENE 10: FINAL BATTLE STATE ===
 // Contribution Tracking

@@ -121,6 +121,7 @@
     { shock_arrow_count > 0: - Shock Arrows (x{shock_arrow_count}) }
     { has_titan_beetle_carapace: - Titan-Beetle Carapace }
     { has_adrenaline_shot: - Adrenaline Shot (Single Use) }
+    { has_regen_serum: - Regen Serum (Single Use) }
     { has_magnetic_coil: - Magnetic Coil }
     
     -- Logs & Intel --

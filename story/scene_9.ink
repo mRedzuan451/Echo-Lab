@@ -146,6 +146,11 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
 
 = manage_equipment
     You lay out your gear, checking everything is in order.
+    * { has_kinetic_emitter and emitter_charges <= 0 and power_cell_stack > 0 } [Use a Power Cell to recharge the Emitter.]
+        You connect the unstable Power Cell to the Emitter's charging port. The cell sputters and whines as its energy is drained, but the Emitter's internal lights hum back to life. It's fully charged.
+        ~ power_cell_stack -= 1
+        ~ emitter_charges = 3
+        -> manage_equipment
     * { has_adrenaline_shot } [Use the Adrenaline Shot.]
         You inject the adrenaline directly into your thigh. Your heart hammers in your chest, and your senses sharpen to a razor's edge. You feel faster, more agile.
         ~ has_adrenaline_shot = false
