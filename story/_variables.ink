@@ -113,6 +113,8 @@ VAR poison_bomb_stack = false
 // Poison Status Effect
 VAR enemy_is_poisoned = false
 VAR poison_turns_remaining = 0
+VAR enemy2_is_poisoned = false
+VAR poison2_turns_remaining = 0
 
 // Equip Equipment
 VAR emitter_equipped = false

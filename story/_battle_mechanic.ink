@@ -83,7 +83,7 @@
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
-        -> enemy_turn
+        -> jed_turn
     }
 
 == player_fire_scrap_arrow
@@ -94,7 +94,7 @@
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
-        -> enemy_turn
+        -> jed_turn
     }
 
 == player_fire_silent_arrow
@@ -105,33 +105,52 @@
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
-        -> enemy_turn
+        -> jed_turn
     }
 
 == player_use_moss_poison
     ~ has_moss_poison_vial -= 1
-    You coat your weapon with the sticky, paralytic poison. The {current_enemy_name} is now poisoned!
-    ~ enemy_is_poisoned = true
-    ~ poison_turns_remaining = 3 // Poison lasts for 3 turns
-    -> enemy_turn
+    You coat a small dart with the paralytic poison.
+    { enemy2_hp > 0:
+        // If there are two enemies, you must choose a target
+        * [Target the first {current_enemy_name}.]
+            ~ enemy_is_poisoned = true
+            ~ poison_turns_remaining = 3
+            The dart finds its mark. The first {current_enemy_name} is now poisoned!
+            -> jed_turn
+        * [Target the second {enemy2_name}.]
+            ~ enemy2_is_poisoned = true
+            ~ poison2_turns_remaining = 3
+            The dart finds its mark. The second {enemy2_name} is now poisoned!
+            -> jed_turn
+    - else:
+        // If there is only one enemy
+        The {current_enemy_name} is now poisoned!
+        ~ enemy_is_poisoned = true
+        ~ poison_turns_remaining = 3
+        -> jed_turn
+    }
 
 == player_use_poison_bomb
     ~ poison_bomb_stack -= 1
     The bomb shatters, releasing a cloud of aerosolized neurotoxin that engulfs all enemies!
     ~ temp bomb_damage = atk * 3
     
+    // Damage and poison the first enemy
     The {current_enemy_name} takes {bomb_damage} initial damage!
     ~ current_enemy_hp -= bomb_damage
-    { enemy2_hp > 0:
-        The {enemy2_name} also takes {bomb_damage} initial damage!
-        ~ enemy2_hp -= bomb_damage
-    }
-    
-    // Apply poison to all enemies
     ~ enemy_is_poisoned = true
     ~ poison_turns_remaining = 5
     
-    { current_enemy_hp <= 0 and enemy2_hp <= 0:
+    // Damage and poison the second enemy if it exists
+    { enemy2_hp > 0:
+        The {enemy2_name} also takes {bomb_damage} initial damage!
+        ~ enemy2_hp -= bomb_damage
+        ~ enemy2_is_poisoned = true
+        ~ poison2_turns_remaining = 5
+    }
+    
+    { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
         -> battle_won
     - else:
         -> jed_turn
@@ -144,7 +163,7 @@
     { enemy2_hp > 0:
         ~ enemy2_will_miss_next_turn = true
     }
-    -> enemy_turn
+    -> jed_turn
 
 === battle_fled ===
 ~ used_skill_in_battle = false
@@ -229,7 +248,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
-        -> enemy_turn
+        -> jed_turn
     }
 
 == enemy_turn

@@ -67,6 +67,8 @@ The wind howls around you. It's a long, dangerous climb.
     ~ rival_will_miss_next_turn = false
     ~ enemy_is_poisoned = false
     ~ poison_turns_remaining = 0
+    ~ enemy2_is_poisoned = false
+    ~ poison2_turns_remaining = 0
     ~ is_overcharging = false
     ~ is_countering = false
     The Skulker lets out a piercing shriek and lunges!
