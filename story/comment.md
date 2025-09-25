@@ -12,3 +12,9 @@ on battle with alpha, if the player hp left with quater, give a choice to run aw
 
 add a scene after the rival battle when the player explode the drop, the rival now hold a grudge, the impact is during alpha battle,
 the rival will sabotage the player (with jed if jed is enemy) when alpha in berserk mode, their totally back off from the fight and wait until you almost die or the alpha skulker almost die - he will give the final blow. but if the player support the rival during danger, then clear of the grudge (the sabotage event not happen). and another condition is where there no grudge and the player support the rival during danger, the rival will put more effort on defeating the alpha. and another condition is there no gurdge before, but the player sabotage the rival, it will hold the grudge for the next event.
+
+add scene on battle fled.
+
+update the scene when the enemy been poison, moss poison effect on one enemy, bomb poison effect on both enemy
+
+update poison bomb can be stack

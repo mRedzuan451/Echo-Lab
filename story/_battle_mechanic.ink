@@ -40,7 +40,7 @@
     + { character_name == "Lena" and shock_arrow_count > 0 } [Fire a Shock Arrow ({shock_arrow_count} left)]
         -> player_fire_shock_arrow
         
-    + [Run Away]
+    * {HP <= max_hp/2} [Run Away]
         -> battle_fled
 
 === player_attack(-> return_point, is_second_enemy) ===
@@ -57,7 +57,6 @@
         ~ target_def = current_enemy_def
         ~ target_name = current_enemy_name
     }
-    
     ~ temp p_multiplier = RANDOM(8, 12) / 10.0
     ~ temp damage = atk - target_def
     { damage < 1: 
@@ -152,10 +151,16 @@
 
 == player_use_moss_poison
     ~ has_moss_poison_vial -= 1
-    You coat your weapon with the sticky, paralytic poison. The {current_enemy_name} is now poisoned!
+    ~ temp target_roll = RANDOM(1, 2)
+    {
+        - target_roll == 1:
+            You coat your weapon with the sticky, paralytic poison. The {current_enemy_name} is now poisoned!
+        - else:
+            You coat your weapon with the sticky, paralytic poison. The {enemy2_name} is now poisoned!
+    }
     ~ enemy_is_poisoned = true
     ~ poison_turns_remaining = 3 // Poison lasts for 3 turns
-    -> enemy_turn
+    -> jed_turn
 
 == player_use_poison_bomb
     ~ has_poison_bomb = false
