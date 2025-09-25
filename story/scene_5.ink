@@ -46,10 +46,6 @@ There's no talking your way out of this.
     You have {hp}/{max_hp} HP. Your rival has {rival_hp}/{rival_max_hp} HP.
     + [Attack!]
         -> rival_player_attack
-    + { character_name == "Aris" and has_moss_poison_vial > 0 } [Use Moss Poison ({has_moss_poison_vial} left)]
-        -> rival_use_moss_poison
-    + { character_name == "Aris" and poison_bomb_stack > 0 } [Use Poison Bomb]
-        -> rival_use_poison_bomb
     + [Defend]
         ~ is_defending = true
         You anticipate your rival's next move and prepare to block.
@@ -58,19 +54,6 @@ There's no talking your way out of this.
         -> rival_use_skill
     * [Give Up]
         -> rival_battle_give_up
-
-= rival_use_moss_poison
-    ~ has_moss_poison_vial -= 1
-    You discreetly coat a small dart with the paralytic poison and fling it at your rival. It finds its mark. Your rival is now poisoned!
-    ~ enemy_is_poisoned = true
-    ~ poison_turns_remaining = 3
-    -> rival_enemy_turn
-    
-= rival_use_poison_bomb
-    ~ poison_bomb_stack -= 1
-    You hurl the bomb at your rival's feet. It shatters, releasing a cloud of thick, green gas. Your rival coughs and staggers back, weakened and disoriented by the neurotoxin. They're in no condition to continue the fight.
-    ~ rival_hp = 1 // Leave them with 1 HP to trigger the win condition
-    -> rival_battle_win
 
 = rival_use_skill
     ~ used_skill_in_battle = true

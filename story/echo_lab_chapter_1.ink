@@ -64,13 +64,9 @@ The name comes first, then the title.
     ~ agility = 4
     ~ perception = 5
     // Combat Stats
-    ~ max_hp = 25
-    ~ hp = 25
-    ~ atk = 6
-    ~ def = 3
-    ~ player_skills = (Survivalist)
     ~ update_combat_stats()
-    ~ hp = max_hp           // Set current HP to full for the start of the game
+    ~ hp = max_hp
+    ~ player_skills = (Survivalist)
     -> scene_3_the_first_room
 * [I am Dr. Aris Thorne, the Bio-Hacker.]
     ~ character_name = "Aris"
@@ -80,13 +76,9 @@ The name comes first, then the title.
     ~ agility = 4
     ~ perception = 6
     // Combat Stats
-    ~ max_hp = 18
-    ~ hp = 18
-    ~ atk = 3
-    ~ def = 5
-    ~ player_skills = (BioScan)
     ~ update_combat_stats()
-    ~ hp = max_hp           // Set current HP to full for the start of the game
+    ~ hp = max_hp
+    ~ player_skills = (BioScan)
     -> scene_3_the_first_room
 * [I am Lena "Ghost" Petrova, the Infiltrator.]
     ~ character_name = "Lena"
@@ -96,13 +88,9 @@ The name comes first, then the title.
     ~ agility = 7
     ~ perception = 8
     // Combat Stats
-    ~ max_hp = 20
-    ~ hp = 20
-    ~ atk = 5
-    ~ def = 2
-    ~ player_skills = (DiscerningEye)
     ~ update_combat_stats()
-    ~ hp = max_hp           // Set current HP to full for the start of the game
+    ~ hp = max_hp
+    ~ player_skills = (DiscerningEye)
     -> scene_3_the_first_room
 
 // === SCENE 3: THE FIRST ROOM ===
