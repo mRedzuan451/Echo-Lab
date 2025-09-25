@@ -109,6 +109,25 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     }
 
 = rival_enemy_turn
+    // --- RIVAL'S OPENING SKILL MOVE ---
+    { not rival_used_non_combat_skill:
+        ~ rival_used_non_combat_skill = true
+        {
+            - rival_name == "Xander":
+                // Xander's Skill: Exploit Weakness
+                Xander notices your exhaustion from the tunnel. "Already tired, Rook?" he taunts. He lunges, striking with brutal precision at your weak point.
+                ~ hp -= 4 // Deals extra damage
+            - rival_name == "Jinx":
+                // Jinx's Skill: Jury-Rigged Stunner
+                "Let's make this more interesting!" Jinx cackles, throwing a small, sparking device at your feet. It erupts in a flash of blinding light, leaving you disoriented. Your Defense is lowered for this fight.
+                ~ def -= 2
+            - rival_name == "Isha":
+                // Isha's Skill: Pinning Shot
+                Isha fires a single, precise arrow that thuds into the ground by your foot, pinning your bootlace to the metal grating. "Stay put," she says calmly. The move throws off your balance. Your Agility is temporarily lowered.
+                ~ agility -= 2
+        }
+        -> rival_battle_loop
+    }
     { rival_will_miss_next_turn:
         ~ rival_will_miss_next_turn = false
         Using the opening you spotted, you easily sidestep your rival's clumsy attack. It misses completely.
@@ -171,6 +190,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     ~ rival_owes_favour = true
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = true
+    ~ rival_emitter_charges = 3 // Give rival their charges
     ~ resolve -= 5 // Smaller resolve hit than a full defeat
      ~ rival_relationship += 15 // Giving up improves the relationship
     -> post_rival_encounter
@@ -199,6 +219,7 @@ The blow sends you staggering back. You're injured and losing the fight, but the
     
     ~ has_kinetic_emitter = false
     ~ rival_has_emitter = true
+    ~ rival_emitter_charges = 3 // Give rival their charges
     ~ resolve -= 10
     ~ rival_relationship -= 5 // Losing a fight slightly lowers the relationship
     -> scene_6_first_test

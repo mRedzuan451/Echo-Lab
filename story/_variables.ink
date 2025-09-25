@@ -25,6 +25,13 @@ VAR rival_relationship = HOSTILE
 // Flag for the final battle's endgame state
 VAR rival_is_waiting_for_opening = false
 
+// Rival Emitter Charges
+VAR rival_emitter_charges = 0
+
+// Rival Skill Usage Flags
+VAR rival_used_non_combat_skill = false
+VAR rival_used_combat_skill = false
+
 // Inventory Flags (true = has, false = doesn't have)
 VAR power_cell_stack = 0
 VAR glimmer_moss_stack = 0

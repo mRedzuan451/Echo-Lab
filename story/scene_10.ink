@@ -286,11 +286,50 @@ You have failed.
         ~ jed_contribution += 5
         ~ alpha_skulker_hp -= 5
     }
-    // Rival's Turn
-    {rival_name} fights with brutal efficiency, scoring a deep hit.
-    ~ temp rival_damage = RANDOM(6, 10)
-    ~ rival_contribution += rival_damage
-    ~ alpha_skulker_hp -= rival_damage
+    // --- Rival's Turn ---
+    ~ temp rival_action_chance = RANDOM(1, 4)
+    {
+        - rival_action_chance == 1 and rival_has_emitter and rival_emitter_charges > 0:
+            // Rival uses the Emitter (25% chance if available)
+            ~ rival_emitter_charges -= 1
+            Your Rival unleashes a blast from their Kinetic Field Emitter! The raw force tears a huge chunk of armor from the Matriarch.
+            ~ temp emitter_damage = 20
+            ~ rival_contribution += emitter_damage
+            ~ alpha_skulker_hp -= emitter_damage
+
+        - rival_action_chance <= 2 and not rival_used_combat_skill:
+            // Rival uses their combat skill (one time use, 25% chance)
+            ~ rival_used_combat_skill = true
+            {
+                - rival_name == "Xander":
+                    // Xander's Skill: Finishing Blow
+                    Seeing the Matriarch wounded, Xander roars and leaps, bringing his weapon down in a devastating overhead strike.
+                    ~ temp skill_damage = 15
+                    ~ rival_contribution += skill_damage
+                    ~ alpha_skulker_hp -= skill_damage
+                - rival_name == "Jinx":
+                    // Jinx's Skill: Overload Cascade
+                    "Time for the light show!" Jinx yells, throwing an overloaded power cell into a puddle at the Matriarch's feet. An arc of electricity chains between the creature and a nearby ally!
+                    ~ temp skill_damage2 = 12
+                    ~ rival_contribution += skill_damage2
+                    ~ alpha_skulker_hp -= skill_damage2
+                    ~ hp -= 4 // Player takes some splash damage
+                - rival_name == "Isha":
+                    // Isha's Skill: Vitals Shot
+                    Isha nocks a special arrow and waits for the perfect moment. She looses it, striking a vulnerable, glowing scar on the Matriarch's side. The creature shrieks as green energy bleeds from the wound.
+                    ~ temp skill_damage3 = 8
+                    ~ rival_contribution += skill_damage3
+                    ~ alpha_skulker_hp -= skill_damage3
+                    // TODO: Add a "bleed" status effect
+            }
+        - else:
+            // Rival's regular attack (50% chance)
+            Your Rival fights with brutal efficiency, scoring a deep hit.
+            ~ temp rival_damage = RANDOM(6, 10)
+            ~ rival_contribution += rival_damage
+            ~ alpha_skulker_hp -= rival_damage
+    }
+
     // Other Allies' Turns
     { not ally_3_is_down:
         The third contestant lands their attack.
