@@ -101,15 +101,7 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
         You brace yourself for the Matriarch's onslaught.
         -> allies_turn
     + [Use Skill]
-        // Simplified skill use for this fight
-        You use your skills to find an opening, dealing extra damage!
-        ~ temp damage2 = atk + 5 - alpha_skulker_def
-        { damage2 < 1: 
-            ~ damage2 = 1
-        }
-        ~ alpha_skulker_hp -= damage2
-        ~ player_contribution += damage2
-        -> allies_turn
+       -> alpha_use_skill
 
 // === ALPHA BATTLE - PLAYER ACTIONS ===
 = alpha_use_skill

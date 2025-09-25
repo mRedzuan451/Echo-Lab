@@ -72,6 +72,9 @@
         ~ current_enemy_hp = target_hp
     }
     You attack the {target_name} for {final_dmg} damage!
+    { used_skill_in_battle and player_skills ? Survivalist:
+        ~ atk -= 2
+    }
     -> return_point
 
 
@@ -79,33 +82,72 @@
     ~ shock_arrow_count -= 1
     The arrow crackles with stored energy as you loose it. It hits the {current_enemy_name} with a shower of sparks, delivering a powerful electric shock.
     ~ temp arrow_damage = 12 // High damage
-    ~ current_enemy_hp -= arrow_damage
-    { current_enemy_hp <= 0:
-        -> battle_won
-    - else:
-        -> enemy_turn
+    {enemy2_hp > 0:
+        ~ temp target_roll = RANDOM(1, 2)
+        {
+            -target_roll == 1:
+                ~ current_enemy_hp -= arrow_damage
+                You arrow hit {current_enemy_name} with {arrow_damage} damage!
+            - else:
+                ~ enemy2_hp -= arrow_damage
+                You arrow hit {enemy2_name} with {arrow_damage} damage!
+        }
+        - else:
+            ~ current_enemy_hp -= arrow_damage
+            You arrow hit {current_enemy_name} with {arrow_damage} damage!
+    }
+    { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
+            -> battle_won
+        - else:
+            -> jed_turn
     }
 
 == player_fire_scrap_arrow
     ~ scrap_arrow_count -= 1
     You loose a crudely made arrow. It flies true, striking the {current_enemy_name} for moderate damage.
     ~ temp arrow_damage = 5
-    ~ current_enemy_hp -= arrow_damage
-    { current_enemy_hp <= 0:
-        -> battle_won
-    - else:
-        -> enemy_turn
+    {enemy2_hp > 0:
+        ~ temp target_roll = RANDOM(1, 2)
+        {
+            -target_roll == 1:
+                ~ current_enemy_hp -= arrow_damage
+                You arrow hit {current_enemy_name} with {arrow_damage} damage!
+            - else:
+                ~ enemy2_hp -= arrow_damage
+                You arrow hit {enemy2_name} with {arrow_damage} damage!
+        }
+        - else:
+            ~ current_enemy_hp -= arrow_damage
+            You arrow hit {current_enemy_name} with {arrow_damage} damage!
+    }
+    { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
+            -> battle_won
+        - else:
+            -> jed_turn
     }
 
 == player_fire_silent_arrow
     ~ silent_arrow_count -= 1
     The silent arrow whispers through the air, finding a weak point in the {current_enemy_name}'s defense. A critical hit!
     ~ temp arrow_damage = 9
-    ~ current_enemy_hp -= arrow_damage
-    { current_enemy_hp <= 0:
-        -> battle_won
-    - else:
-        -> enemy_turn
+    {enemy2_hp > 0:
+        ~ temp target_roll = RANDOM(1, 2)
+        {
+            -target_roll == 1:
+                ~ current_enemy_hp -= arrow_damage
+                You arrow hit {current_enemy_name} with {arrow_damage} damage!
+            - else:
+                ~ enemy2_hp -= arrow_damage
+                You arrow hit {enemy2_name} with {arrow_damage} damage!
+        }
+        - else:
+            ~ current_enemy_hp -= arrow_damage
+            You arrow hit {current_enemy_name} with {arrow_damage} damage!
+    }
+    { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
+            -> battle_won
+        - else:
+            -> jed_turn
     }
 
 == player_use_moss_poison
@@ -168,24 +210,24 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
 
 === battle_use_skill ===
     ~ used_skill_in_battle = true
-    { player_skills ? Survivalist: // Kaelen's Skill
+    * { player_skills ? Survivalist: // Kaelen's Skill
         You roar, focusing your rage into a single, powerful strike. Your Attack is temporarily increased!
         ~ atk += 2
         -> player_attack(-> jed_turn, false)
-    }
-    { player_skills ? BioScan: // Aris's Skill
+        }
+    * { player_skills ? BioScan: // Aris's Skill
         You activate your bio-scanner, identifying a weak point in the creature's hide. Its Defense is lowered.
         ~ current_enemy_def -= 2
         { current_enemy_def < 0:
             ~ current_enemy_def = 0
         }
         -> jed_turn // The skill use takes your turn
-    }
-    { player_skills ? DiscerningEye: // Lena's Skill
+        }
+    * { player_skills ? DiscerningEye: // Lena's Skill
         You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attac.
         ~ rival_will_miss_next_turn = true
         -> jed_turn // The skill use takes your turn
-    }
+        }
     // --- NEWLY LEARNED SKILLS ---
     * { player_skills ? HeavyHitter } [Use Heavy Hitter]
         You channel all your strength into a single, devastating blow. It's slow, but powerful.
@@ -359,7 +401,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         { current_enemy_hp <= 0 and (enemy2_hp <= 0 or enemy2_name == ""):
             -> battle_won
         - else:
-            -> battle_loop
+            -> jed_turn
         }
     }
 
