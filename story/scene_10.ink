@@ -119,6 +119,21 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
         ~ alpha_skulker_hp -= damage2
         ~ player_contribution += damage2
         -> allies_turn
+    * { hp <= max_hp / 4 and not alpha_is_berserk } [This is too much. Flee the battle.]
+        -> alpha_battle_flee
+
+= alpha_battle_flee
+    The pain and the terror are too much. You turn your back on your allies and run, scrambling out of the cavern. Your Rival sees your cowardice, their face a mask of pure disgust. "Coward!" they scream after you.
+    
+    You've abandoned the fight and sealed your fate in this zone. Your rival will never forget this betrayal.
+    ~ rival_relationship = 0 // Instant GRUDGE
+    -> chapter_1_failure_fled
+    
+= chapter_1_failure_fled
+You escape the lair, leaving the others to their fate. The sounds of combat fade behind you as you find a dark tunnel to hide in.
+<i>PROCTOR: "Subject has abandoned the final test. Specimen is deemed substandard. Trial terminated for this subject."</i>
+You have failed.
+-> END
         
 // === New stitch for the Rival's final attack ===
 = rival_final_blow

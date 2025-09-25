@@ -145,12 +145,13 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         }
         
         // --- Check Win/Loss/Continue ---
-        { rival_hp <= rival_max_hp / 2:
-            -> rival_battle_win
-        - else: hp <= max_hp / 2:
-            -> rival_battle_lose_choice
-        - else:
-            -> rival_battle_loop
+        {
+            - rival_hp <= rival_max_hp / 2:
+                -> rival_battle_win
+            - hp <= max_hp / 2:
+                -> rival_battle_lose_choice
+            - else:
+                -> rival_battle_loop
         }
     }
 
