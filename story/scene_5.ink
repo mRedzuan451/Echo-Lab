@@ -1,6 +1,18 @@
 // === SCENE 5A: THE CACHE (Rival Battle) ===
 === scene_5a_the_cache ===
-You sprint towards the center of the plaza. A large, metallic crate is half-buried in a smoking crater. Standing over it is your rival. They turn as you approach, a hostile glint in their eyes. There's no talking your way out of this.
+You sprint towards the center of the plaza. A large, metallic crate is half-buried in a smoking crater. Standing over it is your rival. They turn as you approach, a hostile glint in their eyes.
+
+{ character_name == "Kaelen":
+    It's Xander. The last time you saw him was during the siege of Cygnus X-1. He was the one who gave the order to collapse the mining tunnels to halt the enemy's advance, burying hundreds of civilians to save a handful of soldiers. You never forgot the cold, pragmatic look in his eyes. For him, people are just pieces on a board.
+}
+{ character_name == "Aris":
+    Jinx. Of course, it's her. You remember her from the Tycho Symposium. She presented a paper on "unstable xenomorphic adaptation," then demonstrated it by releasing a creature that nearly ate the entire bio-dome. You were the one who synthesized the counter-agent, shutting down her "experiment." She's never forgiven you for spoiling her fun.
+}
+{ character_name == "Lena":
+    Isha. The hunter. You've only seen her once before, a fleeting shadow in the neon-drenched towers of Neo-Kyoto. You were extracting a data core; she was the security they sent when all else failed. You barely escaped, the sound of her high-caliber rifle echoing in your ears. She's the only person who has ever come close to catching you.
+}
+
+There's no talking your way out of this.
 -> setup_rival_battle
 
 = setup_rival_battle
@@ -38,7 +50,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
         -> rival_use_moss_poison
     + { character_name == "Aris" and poison_bomb_stack > 0 } [Use Poison Bomb]
         -> rival_use_poison_bomb
-    * [Defend]
+    + [Defend]
         ~ is_defending = true
         You anticipate your rival's next move and prepare to block.
         -> rival_enemy_turn

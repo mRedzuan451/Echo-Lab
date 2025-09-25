@@ -13,7 +13,7 @@ You take a moment to examine your findings.
 * {has_titan_beetle_carapace and not analyzed_beetle_carapace_type} [Analyze Titan-Beetle Carapace] -> do_analyze(->analyze_beetle_carapace)
 * {has_adrenaline_shot and not analyzed_adrenaline_shot_type} [Analyze Adrenaline Shot] -> do_analyze(->analyze_adrenaline_shot)
     
-* [Done analyzing.]
++ [Done analyzing.]
     -> scene_3_choices
 
 // --- GENERIC ANALYSIS LOGIC ---
@@ -51,7 +51,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         - It's a standard power cell, the kind used in old maintenance drones. Heavy. You notice a small crack in the casing near the positive terminal. It might be volatile.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_moss
     ~ analyzed_moss_type = true
@@ -64,7 +64,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         - The moss glows, but the light is faint. You recall seeing similar fungi in deep-cave infiltration missions. The spores are light enough to travel on air currents; anything that hunts by scent would be drawn to this.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_neuro_stim
     ~ analyzed_neuro_stim_type = true
@@ -77,7 +77,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         You've seen stims like this before, used by extraction targets who needed to be alert. Deconstructing how it works gives you a better understanding of how to counter their effects... or use them to your advantage.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_venom_gland
     ~ analyzed_venom_gland_type = true
@@ -90,7 +90,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         You study the gland, noting its weak points and how quickly the venom degrades when exposed to air. Knowledge of an enemy's biology is a weapon in itself.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_poison_vial
     ~ analyzed_poison_vial_type = true
@@ -103,7 +103,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         You practice handling the vial, figuring out the fastest way to apply it to a blade or an arrow without making a sound. The economy of motion is a skill you're always refining.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_poultice_recipe
     ~ analyzed_poultice_recipe_type = true
@@ -116,7 +116,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         A recipe based on observation, not technology. It's a reminder that the environment itself can be a tool, or an arsenal. A valuable lesson in situational awareness.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_beetle_carapace
     ~ analyzed_beetle_carapace_type = true
@@ -129,7 +129,7 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         You examine the joints in the plating, the places where movement is possible. Understanding its weak points is just as important as understanding its strengths.
     }
-    ->->
+    -> grant_random_stat_boost
 
 = analyze_adrenaline_shot
     ~ analyzed_adrenaline_shot_type = true
@@ -142,6 +142,27 @@ You take a moment to examine your findings.
     { character_name == "Lena":
         You know what this is for: pushing past your limits when escape is the only option. Thinking about the desperate situations that would require it sharpens your survival instincts.
     }
-    ->->
+    -> grant_random_stat_boost
+    
+// --- SHARED LOGIC TO GRANT THE REWARD ---
+= grant_random_stat_boost
+    // Grant random stat boost
+    ~ temp stat_roll = RANDOM(1, 4)
+    {
+        - stat_roll == 1:
+            ~ strength += 1
+            <i>Your Strength has permanently increased by 1!</i>
+        - stat_roll == 2:
+            ~ intelligence += 1
+            <i>Your Intelligence has permanently increased by 1!</i>
+        - stat_roll == 3:
+            ~ agility += 1
+            <i>Your Agility has permanently increased by 1!</i>
+        - else:
+            ~ perception += 1
+            <i>Your Perception has permanently increased by 1!</i>
+    }
+    ~ update_combat_stats()
+    -> analyze_items
 
 // ... (Create a similar `= analyze_...` stitch for every item type) ...

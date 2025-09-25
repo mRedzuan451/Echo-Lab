@@ -107,12 +107,23 @@ The name comes first, then the title.
 
 // === SCENE 3: THE FIRST ROOM ===
 === scene_3_the_first_room ===
-The door of your drop pod hisses open, dumping you onto a floor of cracked concrete slick with rainwater and alien moss.
+The door of your drop pod hisses open, dumping you onto a floor of cracked concrete slick with rainwater and alien moss. You pick yourself up, turning to look back at the source of your rude awakening. The pod is a wreck, its hull scorched and dented from the impact. Wires spark feebly from a shattered console, and the air smells of burnt insulation.
+
+You look down at yourself, taking stock.
+{ character_name == "Kaelen":
+    You're wearing a set of worn, grey military fatigues, torn at the knee and stained with grime. It's not a uniform you recognize, but it feels familiar.
+}
+{ character_name == "Aris":
+    Your clothes are simple—a plain shirt and trousers—but they're covered by a tattered, knee-length lab coat, singed at the cuffs and splattered with something you hope is just mud.
+}
+{ character_name == "Lena":
+    You're clad in a form-fitting, dark grey utility suit. It's designed for stealth and movement, though a fresh tear along the arm reminds you that it's not indestructible.
+}
+
 <i>AI: "Location confirmed. Maintenance Bay. Zone designation: Ruined City-Isle."</i>
 
-You're in a cavernous, ruined maintenance bay. The air is thick with the smell of ozone and decay. A single emergency light casts long, dancing shadows across shattered computer terminals and the skeletal remains of what might have been a maintenance worker.
-Across the room, you see a patch of faintly glowing moss clinging to a damp wall. Next to it is a heavy, rusted metal locker. The only way out is a collapsed doorway to the north, choked with rubble but passable.
--> scene_3_choices
+You're in a cavernous, ruined maintenance bay. The air is thick with the smell of ozone and decay. A single emergency light casts long, dancing shadows across shattered computer terminals and the skeletal remains of what might have been a maintenance worker. Across the room, you see a patch of faintly glowing moss clinging to a damp wall. Next to it is a heavy, rusted metal locker. The only way out is a collapsed doorway to the north, choked with rubble but passable.
+    -> scene_3_choices
 
 // === SCENE 4: THE FIRST OBSTACLE ===
 === scene_4_the_first_obstacle ===
@@ -251,7 +262,20 @@ You now possess your first Data Fragment. It's a small, crystalline object that 
 
 // === SCENE 8: THE TOWER CLIMB ===
 === scene_8_the_tower ===
-Following the AI's directions, you arrive at the base of another massive communications spire. This one is different—a single emergency light pulses at the very top, indicating the location of the next Data Fragment. The main entrance is sealed, but a service ladder leads up to the first floor landing. The climb has begun.
+// --- Resolve Check ---
+    { resolve < 50:
+        As you approach the tower, a wave of doubt washes over you. The climb seems impossible, the other contestants faster and stronger. Your wavering confidence affects your physical readiness.
+        <i>AI: "Warning: Subject's resolve is below optimal parameters. Combat and traversal efficiency may be compromised."</i>
+        Your Strength and Agility are lowered by the psychological strain.
+        ~ strength -= 1
+        ~ agility -= 1
+    }
+Your path forward leads you into a vast, open plaza, a graveyard of rusted vehicles and shattered ferrocrete. At its center, a colossal communications spire claws its way towards the sky, its metallic latticework draped in thick, alien vines. Much of its structure has collapsed, but the main tower still stands, impossibly tall. A single red emergency light pulses at its peak, a lonely star in the decaying cityscape.
+
+<i>AI: "Structure identified: Primary Communications Relay Spire-3. High-value Data Fragment detected at the apex. Be advised: multiple other subjects are converging on this location. A competitive trial is imminent."</i>
+
+You see them now, scattered around the base of the tower. A handful of other contestants, their faces grim, checking their gear and eyeing each other with suspicion. No alliances here. Just a race to the top. The main entrance is a crater of twisted metal, but a service ladder is still intact, leading up the first few stories.
+
 * [Begin the ascent.]
     -> tower_floor_1
 + [Query the AI.]

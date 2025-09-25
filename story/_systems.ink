@@ -146,7 +146,7 @@
     You lay out your scavenged materials.
     
     // Kaelen's Crafting Option
-    + { character_name == "Kaelen" and not has_reinforced_club and has_metal_pipe and has_thick_wiring } [Fashion a Reinforced Club.]
+    * { character_name == "Kaelen" and not has_reinforced_club and has_metal_pipe and has_thick_wiring } [Fashion a Reinforced Club.]
         You take the sturdy metal pipe and thick wiring you found. Using your strength, you wrap the wiring tightly around one end, creating a weighted, brutal-looking club. It feels solid in your hands.
         ~ has_reinforced_club = true
         ~ atk += 2
@@ -202,7 +202,7 @@
         ~ update_combat_stats()
         -> crafting_options(return_point)
 
-    * [That's all for now.]
+    + [That's all for now.]
         -> return_point
         
 === use_glimmer_moss_tunnel(is_safe) ===
