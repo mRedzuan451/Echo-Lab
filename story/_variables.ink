@@ -63,6 +63,9 @@ VAR hp = 0
 VAR atk = 0
 VAR def = 0
 
+// Dodge mechanic
+VAR dodge_chance = 0
+
 // Global Combat State Variables
 VAR current_enemy_name = ""
 VAR current_enemy_hp = 0

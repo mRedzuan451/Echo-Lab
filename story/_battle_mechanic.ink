@@ -44,6 +44,12 @@
         -> battle_fled
 
 === player_attack(-> return_point, is_second_enemy) ===
+    // --- Enemy Dodge Check ---
+    ~ temp enemy_dodge_roll = RANDOM(1, 100)
+    { enemy_dodge_roll <= 15: // Enemies have a base 15% chance to dodge
+        You lunge, but the {target_name} is surprisingly quick, sidestepping your attack. It misses!
+        -> return_point
+    }
     // This stitch now handles targeting for both 1v1 and 2v2
     ~ temp target_hp = 0
     ~ temp target_def = 0
@@ -266,82 +272,94 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         // --- Enemy 1's Turn ---
         { current_enemy_hp > 0:
             The first {current_enemy_name} attacks!
-            // If Jed is an ally, the enemy might target him
-            { jed_status == "HELPED" and jed_hp > 0:
-                ~ temp target_roll = RANDOM(1, 2)
-                {
-                    - target_roll == 1:
-                        // Target Player
-                        ~ temp p_multiplier = RANDOM(8, 12) / 10.0
-                        ~ temp damage = current_enemy_atk - current_player_def
-                        { damage < 1: 
-                            ~ damage = 1 
-                        }
-                        ~ temp final_dmg = INT(damage * p_multiplier)
-                        ~ hp -= final_dmg
-                        It hits you for {final_dmg} damage!
-                    - else:
-                        // Target Jed
-                        ~ temp p_multiplier2 = RANDOM(8, 12) / 10.0
-                        ~ temp damage3 = current_enemy_atk - jed_def
-                        { damage3 < 1: 
-                            ~ damage3 = 1 
-                        }
-                        ~ temp final_dmg2 = INT(damage * p_multiplier2)
-                        ~ jed_hp -= final_dmg2
-                        It hits Jed for {final_dmg2} damage!
-                }
+             // --- Player Dodge Check ---
+            ~ temp player_dodge_roll = RANDOM(1, 100)
+            { player_dodge_roll <= dodge_chance:
+                You anticipate the attack and deftly move aside. It misses!
             - else:
-                // If Jed is not an ally, always target player
-                ~ temp p_multiplier3 = RANDOM(8, 12) / 10.0
-                ~ temp damage4 = current_enemy_atk - current_player_def
-                { damage4 < 1: 
-                    ~ damage4 = 1 
+                // If Jed is an ally, the enemy might target him
+                { jed_status == "HELPED" and jed_hp > 0:
+                    ~ temp target_roll = RANDOM(1, 2)
+                    {
+                        - target_roll == 1:
+                            // Target Player
+                            ~ temp p_multiplier = RANDOM(8, 12) / 10.0
+                            ~ temp damage = current_enemy_atk - current_player_def
+                            { damage < 1: 
+                                ~ damage = 1 
+                            }
+                            ~ temp final_dmg = INT(damage * p_multiplier)
+                            ~ hp -= final_dmg
+                            It hits you for {final_dmg} damage!
+                        - else:
+                            // Target Jed
+                            ~ temp p_multiplier2 = RANDOM(8, 12) / 10.0
+                            ~ temp damage3 = current_enemy_atk - jed_def
+                            { damage3 < 1: 
+                                ~ damage3 = 1 
+                            }
+                            ~ temp final_dmg2 = INT(damage * p_multiplier2)
+                            ~ jed_hp -= final_dmg2
+                            It hits Jed for {final_dmg2} damage!
+                    }
+                - else:
+                    // If Jed is not an ally, always target player
+                    ~ temp p_multiplier3 = RANDOM(8, 12) / 10.0
+                    ~ temp damage4 = current_enemy_atk - current_player_def
+                    { damage4 < 1: 
+                        ~ damage4 = 1 
+                    }
+                    ~ temp final_dmg3 = INT(damage * p_multiplier3)
+                    ~ hp -= final_dmg3
+                    It hits you for {final_dmg3} damage!
                 }
-                ~ temp final_dmg3 = INT(damage * p_multiplier3)
-                ~ hp -= final_dmg3
-                It hits you for {final_dmg3} damage!
             }
         }
     
         // --- Enemy 2's Turn ---
         { enemy2_hp > 0:
             The second {enemy2_name} attacks!
-            // Same targeting logic as Enemy 1
-            { jed_status == "HELPED" and jed_hp > 0:
-                ~ temp target_roll2 = RANDOM(1, 2)
-                {
-                    - target_roll2 == 1:
-                        // Target Player
-                        ~ temp p_multiplier4 = RANDOM(8, 12) / 10.0
-                        ~ temp damage5 = enemy2_atk - current_player_def
-                        { damage5 < 1: 
-                            ~ damage5 = 1 
-                        }
-                        ~ hp -= damage5
-                        ~ temp final_dmg4 = INT(damage * p_multiplier4)
-                        It hits you for {final_dmg4} damage!
-                    - else:
-                        // Target Jed
-                        ~ temp p_multiplier5 = RANDOM(8, 12) / 10.0
-                        ~ temp damage2 = enemy2_atk - jed_def
-                        { damage2 < 1: 
-                            ~ damage2 = 1 
-                        }
-                        ~ jed_hp -= damage2
-                        ~ temp final_dmg5 = INT(damage * p_multiplier5)
-                        It hits Jed for {final_dmg5} damage!
+             // --- Player Dodge Check ---
+            ~ temp player_dodge_roll2 = RANDOM(1, 100)
+            { player_dodge_roll2 <= dodge_chance:
+                You anticipate the attack and deftly move aside. It misses!
+                - else:
+                // Same targeting logic as Enemy 1
+                { jed_status == "HELPED" and jed_hp > 0:
+                    ~ temp target_roll2 = RANDOM(1, 2)
+                    {
+                        - target_roll2 == 1:
+                            // Target Player
+                            ~ temp p_multiplier4 = RANDOM(8, 12) / 10.0
+                            ~ temp damage5 = enemy2_atk - current_player_def
+                            { damage5 < 1: 
+                                ~ damage5 = 1 
+                            }
+                            ~ hp -= damage5
+                            ~ temp final_dmg4 = INT(damage * p_multiplier4)
+                            It hits you for {final_dmg4} damage!
+                        - else:
+                            // Target Jed
+                            ~ temp p_multiplier5 = RANDOM(8, 12) / 10.0
+                            ~ temp damage2 = enemy2_atk - jed_def
+                            { damage2 < 1: 
+                                ~ damage2 = 1 
+                            }
+                            ~ jed_hp -= damage2
+                            ~ temp final_dmg5 = INT(damage * p_multiplier5)
+                            It hits Jed for {final_dmg5} damage!
+                    }
+                - else:
+                    // If Jed is not an ally, always target player
+                    ~ temp p_multiplier6 = RANDOM(8, 12) / 10.0
+                    ~ temp damage6 = enemy2_atk - current_player_def
+                    { damage6 < 1: 
+                        ~ damage6 = 1 
+                    }
+                    ~ temp final_dmg6 = INT(damage * p_multiplier6)
+                    ~ hp -= final_dmg6
+                    It hits you for {final_dmg6} damage!
                 }
-            - else:
-                // If Jed is not an ally, always target player
-                ~ temp p_multiplier6 = RANDOM(8, 12) / 10.0
-                ~ temp damage6 = enemy2_atk - current_player_def
-                { damage6 < 1: 
-                    ~ damage6 = 1 
-                }
-                ~ temp final_dmg6 = INT(damage * p_multiplier6)
-                ~ hp -= final_dmg6
-                It hits you for {final_dmg6} damage!
             }
         }
         

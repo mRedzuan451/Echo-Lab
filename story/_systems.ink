@@ -43,6 +43,8 @@
     }
     // (Future equipment bonuses would go here)
     
+    ~ dodge_chance = agility + (perception / 2)
+    
     ~ return true
 
 // === ITEM FUNCTIONS ===

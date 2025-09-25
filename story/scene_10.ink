@@ -375,13 +375,19 @@ You have failed.
         }
         {
             - target_roll == 1: // Target: Player
-            { rival_will_miss_next_turn:
-                ~ rival_will_miss_next_turn = false
-                You anticipate the Alpha Skulker clumsy attack and easily step aside. It misses completely.
-                -> allies_turn
+             // --- Player Dodge Check ---
+            ~ temp player_dodge_roll = RANDOM(1, 100)
+            { player_dodge_roll <= dodge_chance:
+                You anticipate the attack and deftly move aside. It misses!
             - else:
-                ~ hp -= damage
-                It attacks you for {damage} damage!
+                { rival_will_miss_next_turn:
+                    ~ rival_will_miss_next_turn = false
+                    You anticipate the Alpha Skulker clumsy attack and easily step aside. It misses completely.
+                    -> allies_turn
+                - else:
+                    ~ hp -= damage
+                    It attacks you for {damage} damage!
+                }
             }
             - target_roll == 2: // Target: Rival
                 // The rival can be defeated but not killed.
