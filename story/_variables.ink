@@ -70,6 +70,7 @@ VAR rival_atk = 0
 VAR rival_def = 0
 VAR used_skill_in_battle = false
 VAR rival_will_miss_next_turn = false
+VAR rival_is_defending = false
 
 // Skill Usage Flags (for specific scenes)
 VAR used_survivalist_in_bay = false

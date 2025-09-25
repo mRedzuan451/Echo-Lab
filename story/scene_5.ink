@@ -23,6 +23,7 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     ~ rival_hp = rival_max_hp
     ~ used_skill_in_battle = false
     ~ rival_will_miss_next_turn = false
+    ~ rival_is_defending = false
     ~ enemy_is_poisoned = false
     ~ poison_turns_remaining = 0
     ~ is_overcharging = false
@@ -82,13 +83,23 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
 
 = rival_player_attack
     // --- Player's Turn ---
+    // Calculate rival's current defense
+    ~ temp current_rival_def = rival_def
+    { rival_is_defending:
+        ~ current_rival_def = rival_def + 3
+    }
+    
     ~ temp p_multiplier = RANDOM(8, 12) / 10.0
-    ~ temp p_base_dmg = atk - rival_def
+    ~ temp p_base_dmg = atk - current_rival_def
     { p_base_dmg < 1: 
         ~ p_base_dmg = 1
     }
     ~ temp p_final_dmg = INT(p_base_dmg * p_multiplier)
     ~ rival_hp -= p_final_dmg
+    
+    // Reset rival's defense state after the attack
+    ~ rival_is_defending = false
+    
     You attack your rival, dealing {p_final_dmg} damage!
     
     { rival_hp <= rival_max_hp / 2:
@@ -98,38 +109,45 @@ You sprint towards the center of the plaza. A large, metallic crate is half-buri
     }
 
 = rival_enemy_turn
-    { 
-    - rival_will_miss_next_turn:
+    { rival_will_miss_next_turn:
         ~ rival_will_miss_next_turn = false
         Using the opening you spotted, you easily sidestep your rival's clumsy attack. It misses completely.
         -> rival_battle_loop
     - else:
-        // --- Rival's Turn ---
-        enemy_is_poisoned:
-        ~ poison_turns_remaining -= 1
-        Your rival winces as the poison takes effect, dealing 4 damage.
-        ~ rival_hp -= 4
-        { poison_turns_remaining <= 0:
-            ~ enemy_is_poisoned = false
-            The poison wears off.
+        // --- Rival's Turn Decision ---
+        ~ temp rival_action_roll = RANDOM(1, 4)
+        {
+            - rival_action_roll <= 3:
+                // Rival Attacks (75% chance)
+                ~ temp r_multiplier = RANDOM(8, 12) / 10.0
+                ~ temp r_base_dmg = rival_atk - def
+                { r_base_dmg < 1: 
+                    ~ r_base_dmg = 1
+                }
+                ~ temp r_final_dmg = INT(r_base_dmg * r_multiplier)
+                ~ hp -= r_final_dmg
+                Your rival counters, hitting you for {r_final_dmg} damage!
+            - else:
+                // Rival Defends (25% chance)
+                ~ rival_is_defending = true
+                Your rival anticipates your next move and takes a defensive stance.
         }
-        ~ temp current_def = def
-        { is_defending:
-            ~ current_def = def + 3 // Temporarily boost defense
+
+        // --- Poison Damage ---
+        { enemy_is_poisoned:
+            ~ poison_turns_remaining -= 1
+            Your rival winces as the poison takes effect, dealing 4 damage.
+            ~ rival_hp -= 4
+            { poison_turns_remaining <= 0:
+                ~ enemy_is_poisoned = false
+                The poison wears off.
+            }
         }
         
-        ~ temp r_multiplier = RANDOM(8, 12) / 10.0
-        ~ temp r_base_dmg = rival_atk - current_def
-        { r_base_dmg < 1: 
-            ~ r_base_dmg = 1
-        }
-        ~ temp r_final_dmg = INT(r_base_dmg * r_multiplier)
-        ~ hp -= r_final_dmg
-        Your rival counters, hitting you for {r_final_dmg} damage!
-        
-        ~ is_defending = false // Reset defense state for the next turn
-        
-        { hp <= max_hp / 2:
+        // --- Check Win/Loss/Continue ---
+        { rival_hp <= rival_max_hp / 2:
+            -> rival_battle_win
+        - else: hp <= max_hp / 2:
             -> rival_battle_lose_choice
         - else:
             -> rival_battle_loop

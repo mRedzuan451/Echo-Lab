@@ -385,7 +385,7 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     * [Sabotage your Rival]
         You "accidentally" kick a piece of debris in their way, causing them to stumble. The Matriarch's claws rake across their side, wounding them badly. They glare at you with pure hatred.
         ~ rival_contribution -= 10 // Penalty to their score
-        ~ rival_relationship = 0 // Sabotage instantly creates a GRUDGE
+        ~ rival_relationship -= 15 // Sabotage instantly creates a GRUDGE
         ~ rival_is_in_danger = false
         -> alpha_skulker_turn
     * [Do nothing]
