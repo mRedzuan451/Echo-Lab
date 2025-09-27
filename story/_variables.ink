@@ -136,6 +136,8 @@ VAR silent_arrow_count = 0
 VAR scrap_arrow_count = 0
 VAR shock_arrow_count = 0
 VAR club_is_upgraded = false
+VAR club_power_slots = 0
+VAR club_is_charged = false
 
 // New Scavenging Finds
 VAR has_titan_beetle_carapace = false
@@ -200,6 +202,7 @@ VAR analyzed_scrap_arrows_type = false
 VAR analyzed_shock_arrows_type = false
 VAR analyzed_beetle_carapace_type = false
 VAR analyzed_adrenaline_shot_type = false
+VAR analyzed_first_log = false
 
 // New Log & Skill Flags
 VAR log_knows_ally_buff = false

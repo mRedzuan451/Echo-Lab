@@ -102,7 +102,7 @@
     { has_kinetic_emitter: - Kinetic Field Emitter ({emitter_charges} charges) }
     { neuro_stim_state == "AVAILABLE": - Neuro-Stim - Single Use }
     { has_reinforced_club:
-        - Reinforced Club {club_is_upgraded:(Upgraded)}
+    - Reinforced Club {club_is_upgraded:(Upgraded, {club_power_slots} slots left)}
     }
     { has_recurve_bow: - Recurve Bow }
     { has_emp_grenade: - EMP Grenade (Single Use) }

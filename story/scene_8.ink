@@ -32,7 +32,18 @@ Panting and bruised, you finally reach the open-air platform at the peak of the 
 
 <i>AI: "Second Data Fragment acquired. Subject has demonstrated superior combat and traversal capabilities. Proceeding to next objective."</i>
 
--> scene_9_the_bargain // Now points to the correct next scene
+-> descend_from_tower
+
+// === SCENE 8B: THE DESCENT ===
+=== descend_from_tower ===
+You stand at the apex of the spire, the wind whipping at your clothes. For a moment, you can see the shattered world in its entirety—a graveyard of floating islands hanging in the green-tinged void. The climb was brutal, but the way down looks easier. You spot what looks like a functioning service lift on a lower level.
+
+The descent is quiet and jarringly peaceful after the chaos of the climb. The lift carries you down into the heart of the ruined hab-block district that surrounds the tower's base. These crumbling residential buildings are a maze of collapsed corridors and dark, empty homes.
+
+Your AI pings a location nearby. <i>AI: "Life sign detected. Biorhythms indicate stress and injury, but subject is not hostile."</i>
+
+Following the signal, you navigate the treacherous streets until you come across a small, fortified room in one of the less damaged hab-blocks. The door is slightly ajar, and you can see a dim light from within. It seems recently occupied.
+-> scene_9_the_bargain
 
 // === SCENE 8A: TOWER BUFFER ROOM ===
 === tower_buffer_room(-> next_floor) ===

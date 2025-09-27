@@ -22,7 +22,8 @@
         ~ is_defending = true
         You brace for an attack, increasing your defense for this turn.
         -> jed_turn
-
+    + { character_name == "Kaelen" and club_is_upgraded and not club_is_charged and club_power_slots > 0 and power_cell_stack > 0 } [Slot a Power Cell into the Club ({club_power_slots} slots left)]
+        -> kaelen_charge_club
     + { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
         -> player_use_emitter
     + { not used_skill_in_battle } [Use Skill]
@@ -70,6 +71,11 @@
         ~ damage = 1 
     }
     ~ temp final_dmg = INT(damage * p_multiplier)
+    { club_is_charged:
+        ~ club_is_charged = false
+        You swing the energized club in a wide, brutal arc. It connects with a deafening CRACK of displaced energy!
+        ~ final_dmg += 8
+    }
     ~ target_hp -= final_dmg
     
     { is_second_enemy:
@@ -80,12 +86,20 @@
     You attack the {target_name} for {final_dmg} damage!
     -> return_point
 
+== kaelen_charge_club
+    You jam a Degraded Power Cell into one of the crude slots on your club. It sparks violently, and the weapon hums with a dangerous, unstable energy. Your next attack will be devastating.
+    ~ power_cell_stack -= 1
+    ~ club_power_slots -= 1
+    ~ club_is_charged = true
+    // Charging the club takes your turn
+    -> jed_turn
 
 == player_fire_shock_arrow
     ~ shock_arrow_count -= 1
     The arrow crackles with stored energy as you loose it. It hits the {current_enemy_name} with a shower of sparks, delivering a powerful electric shock.
     ~ temp arrow_damage = 12 // High damage
     ~ current_enemy_hp -= arrow_damage
+    It hits for {arrow_damage} damage!
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
@@ -97,6 +111,7 @@
     You loose a crudely made arrow. It flies true, striking the {current_enemy_name} for moderate damage.
     ~ temp arrow_damage = 5
     ~ current_enemy_hp -= arrow_damage
+    It hits for {arrow_damage} damage!
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
@@ -108,6 +123,7 @@
     The silent arrow whispers through the air, finding a weak point in the {current_enemy_name}'s defense. A critical hit!
     ~ temp arrow_damage = 9
     ~ current_enemy_hp -= arrow_damage
+    It hits for {arrow_damage} damage!
     { current_enemy_hp <= 0:
         -> battle_won
     - else:
@@ -207,7 +223,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         -> jed_turn // The skill use takes your turn
     }
     { player_skills ? DiscerningEye: // Lena's Skill
-        You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attac.
+        You watch the opponent's movements, predicting its lunge. You'll be able to easily dodge its next attac.
         ~ rival_will_miss_next_turn = true
         -> jed_turn // The skill use takes your turn
     }
@@ -249,6 +265,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
             The Emitter shrieks as it discharges the excess energy.
         }
         ~ current_enemy_hp -= emitter_damage
+        It hit for {emitter_damage} damage!
     }
     
     { current_enemy_hp <= 0:
@@ -258,6 +275,26 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     }
 
 == enemy_turn
+    { enemy_is_poisoned:
+    ~ poison_turns_remaining -= 1
+    ~ temp poison_damage = 1 + INT(intelligence / 2) // Damage scales with Intelligence
+    The poison seeps into the {current_enemy_name}, dealing {poison_damage} damage.
+    ~ current_enemy_hp -= poison_damage
+        { poison_turns_remaining <= 0:
+            ~ enemy_is_poisoned = false
+            The poison on the {current_enemy_name} has run its course.
+        }
+    }
+    { enemy2_is_poisoned:
+        ~ poison2_turns_remaining -= 1
+        ~ temp poison_damage2 = 1 + INT(intelligence / 2) // Damage scales with Intelligence
+        The poison seeps into the {enemy2_name}, dealing {poison_damage2} damage.
+        ~ enemy2_hp -= poison_damage2
+        { poison2_turns_remaining <= 0:
+            ~ enemy2_is_poisoned = false
+            The poison on the {enemy2_name} has run its course.
+        }
+    }
     { rival_will_miss_next_turn:
         ~ rival_will_miss_next_turn = false
         You anticipate the enemy's clumsy attack and easily step aside. It misses completely.
@@ -268,10 +305,9 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         { is_defending:
             ~ current_player_def = def + 3 // Apply defense bonus
         }
-    
         // --- Enemy 1's Turn ---
         { current_enemy_hp > 0:
-            The first {current_enemy_name} attacks!
+            The {current_enemy_name} attacks!
              // --- Player Dodge Check ---
             ~ temp player_dodge_roll = RANDOM(1, 100)
             { player_dodge_roll <= dodge_chance:
@@ -298,7 +334,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
                             { damage3 < 1: 
                                 ~ damage3 = 1 
                             }
-                            ~ temp final_dmg2 = INT(damage * p_multiplier2)
+                            ~ temp final_dmg2 = INT(damage3 * p_multiplier2)
                             ~ jed_hp -= final_dmg2
                             It hits Jed for {final_dmg2} damage!
                     }
@@ -309,7 +345,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
                     { damage4 < 1: 
                         ~ damage4 = 1 
                     }
-                    ~ temp final_dmg3 = INT(damage * p_multiplier3)
+                    ~ temp final_dmg3 = INT(damage4 * p_multiplier3)
                     ~ hp -= final_dmg3
                     It hits you for {final_dmg3} damage!
                 }
@@ -336,7 +372,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
                                 ~ damage5 = 1 
                             }
                             ~ hp -= damage5
-                            ~ temp final_dmg4 = INT(damage * p_multiplier4)
+                            ~ temp final_dmg4 = INT(damage5 * p_multiplier4)
                             It hits you for {final_dmg4} damage!
                         - else:
                             // Target Jed
@@ -346,7 +382,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
                                 ~ damage2 = 1 
                             }
                             ~ jed_hp -= damage2
-                            ~ temp final_dmg5 = INT(damage * p_multiplier5)
+                            ~ temp final_dmg5 = INT(damage2 * p_multiplier5)
                             It hits Jed for {final_dmg5} damage!
                     }
                 - else:
@@ -356,7 +392,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
                     { damage6 < 1: 
                         ~ damage6 = 1 
                     }
-                    ~ temp final_dmg6 = INT(damage * p_multiplier6)
+                    ~ temp final_dmg6 = INT(damage6 * p_multiplier6)
                     ~ hp -= final_dmg6
                     It hits you for {final_dmg6} damage!
                 }

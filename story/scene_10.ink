@@ -355,6 +355,16 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     }
 
 = alpha_skulker_turn
+    { enemy_is_poisoned:
+        ~ poison_turns_remaining -= 1
+        ~ temp poison_damage = 1 + INT(intelligence / 2) // Damage scales with Intelligence
+        The Matriach winces as the poison takes effect, dealing {poison_damage} damage.
+        ~ alpha_skulker_hp -= poison_damage
+        { poison_turns_remaining <= 0:
+            ~ enemy_is_poisoned = false
+            The poison wears off.
+        }
+    }
     // --- Calculate player's current defense for this turn ---
     ~ temp current_player_def = def
     { is_defending:

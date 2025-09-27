@@ -161,6 +161,7 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     * { has_reinforced_club and has_club_upgrade_kit and not club_is_upgraded } [Apply the Upgrade Kit to the Club.]
         You take the resin-soaked wrappings Jed gave you and apply them to your club. The grip is more secure, and the added weight feels powerful. Your club has been upgraded!
         ~ club_is_upgraded = true
+        ~ club_power_slots = 3
         ~ has_club_upgrade_kit = false
         ~ update_combat_stats() // Recalculate stats with the new upgrade
         -> manage_equipment
@@ -184,7 +185,7 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
         -> scavenge_hab_unit
     + { character_name == "Lena" and has_recurve_bow } [Scavenge for materials to fletch arrows.]
         -> scavenge_for_arrows
-    * [Stop scavenging.]
+    + [Stop scavenging.]
         -> scene_9c_final_preparations
 
 = scavenge_for_arrows

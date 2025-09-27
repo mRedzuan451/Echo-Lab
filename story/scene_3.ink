@@ -9,7 +9,7 @@
         -> use_skill
 + [Check Status.]
     -> check_status(-> scene_3_choices)
-+ {power_cell_stack > 0 || glimmer_moss_stack > 0 || found_first_log} [Analyze Items.]
++ {power_cell_stack > 0 || glimmer_moss_stack > 0 || found_first_log or not analyzed_first_log} [Analyze Items.]
     -> analyze_items
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
@@ -41,6 +41,7 @@ You retrieve the device. It's an **Archivist Log**, its screen displaying a sing
     -> scene_3_choices
 
 === decrypt_first_log ===
+    ~ analyzed_first_log = true
     ~ temp original_intelligence = intelligence
     { neuro_stim_state == "ACTIVE":
         ~ intelligence += 4
