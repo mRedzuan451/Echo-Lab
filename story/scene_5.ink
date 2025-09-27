@@ -177,9 +177,9 @@ There's no talking your way out of this.
         
         // --- Check Win/Loss/Continue ---
         {
-            - rival_hp <= rival_max_hp / 2:
+            - rival_hp <= rival_max_hp / 3:
                 -> rival_battle_win
-            - hp <= max_hp / 2:
+            - hp <= max_hp / 3:
                 -> rival_battle_lose_choice
             - else:
                 -> rival_battle_loop

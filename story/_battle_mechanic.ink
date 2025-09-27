@@ -5,7 +5,9 @@
     { jed_status == "HELPED" and jed_hp > 0:
         Jed has {jed_hp}/{jed_max_hp} HP.
     }
-    The {current_enemy_name} has {current_enemy_hp} HP.
+     { current_enemy_hp > 0:
+        The {current_enemy_name} has {current_enemy_hp} HP.
+    }
     { enemy2_hp > 0:
         The {enemy2_name} has {enemy2_hp} HP.
     }
@@ -17,6 +19,8 @@
         -> player_attack(-> jed_turn, true)
     + { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}]
         -> player_attack(-> jed_turn, false)
+    + { current_enemy_hp <= 0 and enemy2_hp > 0 } [Attack the {enemy2_name}]
+        -> player_attack(-> jed_turn, true)
         
     + [Defend]
         ~ is_defending = true
@@ -45,12 +49,6 @@
         -> battle_fled
 
 === player_attack(-> return_point, is_second_enemy) ===
-    // --- Enemy Dodge Check ---
-    ~ temp enemy_dodge_roll = RANDOM(1, 100)
-    { enemy_dodge_roll <= 15: // Enemies have a base 15% chance to dodge
-        You lunge, but the {target_name} is surprisingly quick, sidestepping your attack. It misses!
-        -> return_point
-    }
     // This stitch now handles targeting for both 1v1 and 2v2
     ~ temp target_hp = 0
     ~ temp target_def = 0
@@ -64,7 +62,12 @@
         ~ target_def = current_enemy_def
         ~ target_name = current_enemy_name
     }
-    
+    // --- Enemy Dodge Check ---
+    ~ temp enemy_dodge_roll = RANDOM(1, 100)
+    { enemy_dodge_roll <= 15: // Enemies have a base 15% chance to dodge
+        You lunge, but the {target_name} is surprisingly quick, sidestepping your attack. It misses!
+        -> return_point
+    }
     ~ temp p_multiplier = RANDOM(8, 12) / 10.0
     ~ temp damage = atk - target_def
     { damage < 1: 
@@ -84,6 +87,15 @@
         ~ current_enemy_hp = target_hp
     }
     You attack the {target_name} for {final_dmg} damage!
+    // Add an immediate check for enemy defeat
+    { target_hp <= 0:
+        The {target_name} collapses, defeated!
+    }
+    { target_name == current_enemy_name:
+        ~ current_enemy_hp = 0
+    - else:
+        ~ enemy2_hp = 0
+    }
     -> return_point
 
 == kaelen_charge_club
@@ -201,6 +213,9 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     - current_enemy_name == "The Brute" or current_enemy_name == "The Tinkerer" or current_enemy_name == "The Veteran":
         You're forced back down the stairs, floor by floor, until you're back at the base of the communications spire. The contestant you fled from now holds the high ground, and there's no way back up. You've failed this test.
         -> scene_9_the_bargain // You are forced to find the next fragment elsewhere
+    - current_enemy_name == "Skulker Guard" or current_enemy_name == "Skulker Packmate":
+        The pack is too thick. You are forced back from the main platform, swallowed by the horde. You've lost your chance to face the Alpha and prove your worth.
+        -> chapter_1_failure_ending
     - else:
         // A default flee case for any other enemies
         You escape, but the opportunity is lost.
@@ -473,6 +488,9 @@ The {current_enemy_name} collapses. You are victorious.
         ~ player_skills += CounterAttack
         The Veteran's calm, precise fighting style was a lesson in efficiency. You've adapted their technique into a new skill: **Counter Attack**.
         <i>AI: "Subject Lena has assimilated a more efficient combat doctrine based on observation. Optimal."</i>
+    - current_enemy_name == "Skulker Packmate Beta":
+    You've cleared the first wave of Skulkers. The path to the main platform is closer, but a larger guard now blocks your way.
+    -> setup_skulker_guard_battle
     - current_enemy_name == "Skulker Guard":
             The guard collapses, and you spot a small, sealed vial attached to its makeshift belt. It's a Regen Serum.
             ~ has_regen_serum = true
@@ -485,12 +503,13 @@ The {current_enemy_name} collapses. You are victorious.
                     You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
                     -> setup_alpha_skulker_battle
                 }
+    
             
     { jed_status == "HELPED":
         Jed stands back-to-back with you. "You take the one on the left?" he asks, readying his own weapon.
     }
         This is your first major obstacle.
-        -> setup_two_skulker_battle
+        -> setup_two_skulker_battle(true)
 }
 
 // Check if Aris can loot the creature
@@ -545,7 +564,7 @@ The {current_enemy_name} collapses. You are victorious.
 
 = loot_ambush_skulker
     As the Skulker lies defeated, your bio-scanner detects a potent neurotoxin still active in its venom glands.
-    * [Harvest the Venom Gland]
+    + [Harvest the Venom Gland]
         ~ temp roll = RANDOM(1, 3)
         { roll == 1:
             // Success (33% chance)
@@ -555,7 +574,7 @@ The {current_enemy_name} collapses. You are victorious.
             // Failure
             You try to extract the gland, but your hands are unsteady from the fight. You accidentally puncture the sac, and the venom spills uselessly onto the floor, dissolving into a foul-smelling vapor. The opportunity is lost.
         }
-    * [Leave it.]
+    + [Leave it.]
         // Do nothing
 - The hab-unit is now clear.
 -> final_scavenge
@@ -642,9 +661,17 @@ Your vision fades to black as the opponent's final blow lands.
             - target_roll == 1 and current_enemy_hp > 0:
                 ~ current_enemy_hp -= current_jed_atk
                 Jed hits the first {current_enemy_name} for {current_jed_atk} damage!
+                { current_enemy_hp <= 0:
+                    The first {current_enemy_name} is defeated!
+                    ~ current_enemy_hp = 0
+                }
             - enemy2_hp > 0:
                 ~ enemy2_hp -= current_jed_atk
                 Jed hits the second {enemy2_name} for {current_jed_atk} damage!
+                { enemy2_hp <= 0:
+                    The second {enemy2_name} is defeated!
+                    ~ enemy2_hp = 0
+                }
             - else:
                 ~ current_enemy_hp -= current_jed_atk
                 Jed hits the first {current_enemy_name} for {current_jed_atk} damage!

@@ -119,7 +119,7 @@ Jed gives you a final nod. "Good luck out there. Try not to die." He turns and l
 === scene_9c_final_preparations ===
 The AI indicates that the final Data Fragment is located in a heavily defended nest nearby. This is likely the last major confrontation in this zone. You find a defensible spot to make your final preparations before the assault.
     
-* [Manage Equipment and Crafting.]
++ [Manage Equipment and Crafting.]
     -> manage_equipment
 + [Scavenge the area one last time.]
     -> final_scavenge
@@ -127,12 +127,14 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     -> check_status(-> scene_9c_final_preparations)
 + { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter to clear the blocked passage.]
     -> clear_passage_with_emitter
-* [Proceed to the final location.]
++ { glimmer_moss_stack > 0 and is_injured} [Heal Up]
+    -> use_glimmer_moss_tunnel(false) -> scene_9c_final_preparations
++ [Proceed to the final location.]
     -> scene_10_the_lair
 
 = clear_passage_with_emitter
     You notice a side passage that seems to lead towards the lair, but it's completely blocked by a massive pile of collapsed girders.
-    * [Use an Emitter charge to clear it.]
+    + [Use an Emitter charge to clear it.]
         { use_emitter_charge():
             You unleash a focused blast of kinetic energy. The girders groan and shift, pushed aside by the immense force, revealing a hidden path. Beyond the rubble, you find a small supply cache left by a previous contestant.
             // Reward for using the Emitter
@@ -141,12 +143,12 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
             You've found some extra supplies! The path is now clear.
         }
         -> scene_9c_final_preparations
-    * [Save your charges.]
+    + [Save your charges.]
         -> scene_9c_final_preparations
 
 = manage_equipment
     You lay out your gear, checking everything is in order.
-    * { has_kinetic_emitter and emitter_charges <= 0 and power_cell_stack > 0 } [Use a Power Cell to recharge the Emitter.]
+    + { has_kinetic_emitter and emitter_charges <= 0 and power_cell_stack > 0 } [Use a Power Cell to recharge the Emitter.]
         You connect the unstable Power Cell to the Emitter's charging port. The cell sputters and whines as its energy is drained, but the Emitter's internal lights hum back to life. It's fully charged.
         ~ power_cell_stack -= 1
         ~ emitter_charges = 3

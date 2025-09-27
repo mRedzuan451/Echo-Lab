@@ -209,8 +209,8 @@
                 choiceParagraphElement.classList.add(customClasses[i]);
 
             if(isClickable){
-                // use javascript:void(0) to avoid navigation to '#' which can jump the page
-                choiceParagraphElement.innerHTML = `<a href='javascript:void(0)'>${choice.text}</a>`
+                // Use a button instead of an anchor to avoid any navigation or hash behavior
+                choiceParagraphElement.innerHTML = `<button class="choice-btn">${choice.text}</button>`
             }else{
                 choiceParagraphElement.innerHTML = `<span class='unclickable'>${choice.text}</span>`
             }
@@ -222,7 +222,7 @@
 
             // Click on choice
             if(isClickable){
-                var choiceAnchorEl = choiceParagraphElement.querySelectorAll("a")[0];
+                var choiceAnchorEl = choiceParagraphElement.querySelector("button.choice-btn");
                 // If this choice is a timed event (e.g. Grab the Neuro-Stim), start a
                 // short timer on hover/touch that will remove the choice if the
                 // player doesn't click it in time.
@@ -579,7 +579,17 @@
             window.localStorage.setItem('player-character', id);
             // Also set in the ink story variables so .ink can read it directly
             try {
-                if (story && story.variablesState) story.variablesState['playerCharacter'] = id;
+                // If your ink declares a variable named 'character_name' (e.g. VAR character_name = "")
+                // set it here so the ink file can read it directly.
+                if (story && story.variablesState) {
+                    if (typeof story.variablesState['character_name'] !== 'undefined') {
+                        story.variablesState['character_name'] = id;
+                    }
+                    // Also support older key if present
+                    if (typeof story.variablesState['playerCharacter'] !== 'undefined') {
+                        story.variablesState['playerCharacter'] = id;
+                    }
+                }
             } catch (e) {
                 console.debug('Could not set ink variable playerCharacter:', e);
             }
@@ -614,10 +624,14 @@
 
             // If the story presented character choices, resolve the mapped ink choice
             if (pendingChoiceMapping && pendingChoiceMapping[id] !== undefined) {
-                // Remove any rendered textual choices
-                removeAll('.choice');
-                // Tell the story which choice to pick
-                story.ChooseChoiceIndex(pendingChoiceMapping[id]);
+                    // Capture current scroll position so we can restore it after story updates
+                    var prevScroll = outerScrollContainer.scrollTop;
+                    console.debug('[DEBUG] before confirm prevScroll=', prevScroll, 'active=', document.activeElement && document.activeElement.tagName);
+
+                    // Remove any rendered textual choices
+                    removeAll('.choice');
+                    // Tell the story which choice to pick
+                    story.ChooseChoiceIndex(pendingChoiceMapping[id]);
                 // clear mapping and continue the story
                 pendingChoiceMapping = null;
                 hideCharacterSelector();
@@ -630,14 +644,42 @@
                     try { if (document.activeElement) document.activeElement.blur(); } catch (e) {}
 
                     continueStory();
+                    console.debug('[DEBUG] after continueStory prevScroll=', prevScroll, 'outerScroll=', outerScrollContainer.scrollTop, 'active=', document.activeElement && document.activeElement.tagName);
 
-                    // After story updates, make sure the page is scrolled to show new content.
-                    // Set multiple scroll targets to be robust across browsers/iframes.
+                    // After story updates, perform a smooth scroll to the bottom of the content
+                    // so the newly added text/selector is visible. This tends to look more
+                    // stable than restoring a previous scroll position.
                     setTimeout(function() {
-                        try { outerScrollContainer.scrollTo(0, contentBottomEdgeY()); } catch (e) {}
-                        try { document.documentElement.scrollTop = outerScrollContainer.scrollTop; } catch (e) {}
-                        try { document.body.scrollTop = outerScrollContainer.scrollTop; } catch (e) {}
-                    }, 80);
+                        try {
+                            var targetY = contentBottomEdgeY();
+                            console.debug('[DEBUG] smooth scroll: targetY=', targetY, 'before outerScroll=', outerScrollContainer.scrollTop);
+                            // If browser supports smooth behavior, use it; otherwise set directly.
+                            if ('scrollBehavior' in document.documentElement.style) {
+                                outerScrollContainer.scrollTo({ top: targetY, behavior: 'smooth' });
+                            } else {
+                                outerScrollContainer.scrollTop = targetY;
+                            }
+                            // Also try to sync window scrolling
+                            try { window.scrollTo({ top: targetY, behavior: 'smooth' }); } catch (e) { try { window.scrollTo(0, targetY); } catch (ee) {} }
+                            setTimeout(function() {
+                                console.debug('[DEBUG] after smooth scroll: outerScroll=', outerScrollContainer.scrollTop, 'docScroll=', document.documentElement.scrollTop, 'bodyScroll=', document.body.scrollTop, 'active=', document.activeElement && document.activeElement.tagName);
+                            }, 400);
+                            // Second delayed scroll to ensure we reach the bottom after all DOM/layout updates
+                            setTimeout(function() {
+                                var targetY2 = contentBottomEdgeY();
+                                if ('scrollBehavior' in document.documentElement.style) {
+                                    outerScrollContainer.scrollTo({ top: targetY2, behavior: 'smooth' });
+                                } else {
+                                    outerScrollContainer.scrollTop = targetY2;
+                                }
+                                try { window.scrollTo({ top: targetY2, behavior: 'smooth' }); } catch (e) { try { window.scrollTo(0, targetY2); } catch (ee) {} }
+                                console.debug('[DEBUG] second smooth scroll: targetY2=', targetY2, 'outerScroll=', outerScrollContainer.scrollTop);
+                            }, 800);
+                        } catch (e) {
+                            // As a fallback, ensure the outer container is focused so keyboard scroll is there
+                            try { outerScrollContainer.focus(); } catch (e) {}
+                        }
+                    }, 60);
                 return;
             }
 

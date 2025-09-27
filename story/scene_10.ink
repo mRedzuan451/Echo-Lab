@@ -1,8 +1,24 @@
-=== lair_horde_battle ===
-You must fight your way through the horde to reach the Alpha's platform. The smaller creatures are a chaotic mess, but one larger, more heavily scarred Skulker stands between you and the final confrontation. It snarls, ready to defend its master's nest.
--> setup_skulker_guard_battle
+== lair_horde_battle
+    The smaller creatures are a chaotic mess, but you see two larger Skulkers coordinating their attacks, blocking the path forward.
+    { jed_status == "HELPED":
+        Jed stands back-to-back with you. "Looks like we've got trouble," he says, his voice steady. "I can give you some covering fire to soften them up, or I can give you this. Your call, but make it quick." He holds out a scavenged piece of armor plating.
+        -> jed_support_choice
+    - else:
+        This is your first major obstacle.
+        -> setup_two_skulker_battle(false)
+    }
+    
+= jed_support_choice
+    * [Give me covering fire.]
+        "Right," Jed nods. "Stay low." He raises his weapon and lays down a burst of suppressing fire, forcing one of the Skulkers to duck behind cover. It will be easier to hit.
+        // The first enemy will have lowered defense for this fight.
+        -> setup_two_skulker_battle(true)
+    * [I'll take the armor.]
+        "Good choice," Jed says, handing you the heavy plating. "It's not pretty, but it'll stop a claw or two." You quickly strap it on. Your Defense has been temporarily boosted.
+        ~ def += 2
+        -> setup_two_skulker_battle(false)
 
-= setup_skulker_guard_battle
+== setup_skulker_guard_battle
     // Set up stats for the Skulker Guard mini-boss
     ~ current_enemy_name = "Skulker Guard"
     ~ current_enemy_hp = 40
@@ -34,14 +50,18 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
 ~ ally_4_is_down = false
 -> alpha_skulker_battle_loop
 
-=== setup_two_skulker_battle ===
+== setup_two_skulker_battle(jed_is_providing_cover)
     // Setup for Skulker 1
-    ~ current_enemy_name = "Skulker Packmate"
+    ~ current_enemy_name = "Skulker Packmate Beta"
     ~ current_enemy_hp = 20
     ~ current_enemy_atk = 6
     ~ current_enemy_def = 3
+    { jed_is_providing_cover:
+        // Apply Jed's debuff if he provided covering fire
+        ~ current_enemy_def = 1
+    }
     // Setup for Skulker 2
-    ~ enemy2_name = "Skulker Packmate"
+    ~ enemy2_name = "Skulker Packmate Gama"
     ~ enemy2_hp = 20
     ~ enemy2_atk = 6
     ~ enemy2_def = 3
@@ -109,16 +129,6 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
         ~ is_defending = true
         You brace yourself for the Matriarch's onslaught.
         -> allies_turn
-    + [Use Skill]
-        // Simplified skill use for this fight
-        You use your skills to find an opening, dealing extra damage!
-        ~ temp damage2 = atk + 5 - alpha_skulker_def
-        { damage2 < 1: 
-            ~ damage2 = 1
-        }
-        ~ alpha_skulker_hp -= damage2
-        ~ player_contribution += damage2
-        -> allies_turn
     * { hp <= max_hp / 4 and not alpha_is_berserk } [This is too much. Flee the battle.]
         -> alpha_battle_flee
 
@@ -130,7 +140,7 @@ You, {rival_name}, Jed, and two other skilled-looking contestants are the first 
     -> chapter_1_failure_ending
     
 // === CHAPTER 1 FAILURE SCENE ===
-= chapter_1_failure_ending
+== chapter_1_failure_ending
 You are left alone in the silent, cavernous lair. The Archive Gate closes, its energy fading into darkness. The Proctor's voice echoes one last time, not with triumph, but with cold, dismissive finality.
 
 <i>PROCTOR: "Subject has failed to meet the primary objective parameters. Insufficient data acquired. Specimen is deemed substandard."</i>
@@ -142,7 +152,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
 -> END
         
 // === New stitch for the Rival's final attack ===
-= rival_final_blow
+== rival_final_blow
     With the battle reaching its desperate climax, your Rival sees their chance.
     { hp <= 10:
         // Rival attacks the player
@@ -156,27 +166,24 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     }
 
 // === ALPHA BATTLE - PLAYER ACTIONS ===
-= alpha_use_skill
+== alpha_use_skill
     ~ used_skill_in_battle = true
-    { player_skills ? Survivalist: // Kaelen's Skill
+    + { player_skills ? Survivalist} [Survivalist] // Kaelen's Skill
         You roar, focusing your rage into a single, powerful strike. Your Attack is temporarily increased!
         ~ atk += 2
         -> allies_turn
-    }
-    { player_skills ? BioScan: // Aris's Skill
+    + { player_skills ? BioScan} [Bio can] // Aris's Skill
         You activate your bio-scanner, identifying a weak point in the creature's hide. Its Defense is lowered.
         ~ alpha_skulker_hp -= 2
         { alpha_skulker_hp < 0:
             ~ alpha_skulker_hp = 0
         }
         -> allies_turn
-    }
-    { player_skills ? DiscerningEye: // Lena's Skill
+    + { player_skills ? DiscerningEye} [Discerning Eye] // Lena's Skill
         You watch the creature's feral movements, predicting its lunge. You'll be able to easily dodge its next attack.
         ~ rival_will_miss_next_turn = true
         -> allies_turn
-    }
-    * { player_skills ? HeavyHitter } [Use Heavy Hitter]
+    + { player_skills ? HeavyHitter } [Use Heavy Hitter]
         You channel all your strength into a single, devastating blow. It's slow, but powerful.
         ~ temp heavy_damage = INT(atk * 1.5)
         ~ alpha_skulker_hp -= heavy_damage
@@ -187,17 +194,17 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
             -> allies_turn
         }
 
-    * { player_skills ? Overcharge } [Use Overcharge]
+    + { player_skills ? Overcharge } [Use Overcharge]
         You reroute power through the Kinetic Emitter, preparing to unleash an overloaded blast. Your next Emitter use will be massively amplified.
         ~ is_overcharging = true
         -> allies_turn
 
-    * { player_skills ? CounterAttack } [Prepare to Counter Attack]
+    + { player_skills ? CounterAttack } [Prepare to Counter Attack]
         You take a defensive stance, watching your enemy's every move, ready to strike the moment they commit to an attack.
         ~ is_countering = true
         -> allies_turn
 
-= alpha_use_emitter
+== alpha_use_emitter
     { use_emitter_charge():
         ~ temp damage = 10
         { is_overcharging:
@@ -210,14 +217,14 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     }
     -> allies_turn
 
-= alpha_use_moss_poison
+== alpha_use_moss_poison
     ~ has_moss_poison_vial -= 1
     You apply the poison to your weapon. The Matriarch is now poisoned!
     ~ enemy_is_poisoned = true
     ~ poison_turns_remaining = 3
     -> allies_turn
 
-= alpha_use_poison_bomb
+== alpha_use_poison_bomb
     ~ poison_bomb_stack -= 1
     The poison bomb explodes at the Matriarch's feet, dealing massive initial damage and applying a potent toxin.
     ~ temp damage = atk * 3
@@ -227,13 +234,13 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     ~ poison_turns_remaining = 5
     -> allies_turn
 
-= alpha_use_emp_grenade
+== alpha_use_emp_grenade
     ~ has_emp_grenade = false
     The EMP grenade detonates, causing the Matriarch to stagger and shriek in confusion. It will miss its next attack.
     ~ rival_will_miss_next_turn = true // Re-using this flag for the boss
     -> allies_turn
 
-= alpha_fire_scrap_arrow
+== alpha_fire_scrap_arrow
     ~ scrap_arrow_count -= 1
     Your arrow finds a seam in the Matriarch's tough hide.
     ~ temp damage = 5
@@ -241,7 +248,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     ~ player_contribution += damage
     -> allies_turn
 
-= alpha_fire_silent_arrow
+== alpha_fire_silent_arrow
     ~ silent_arrow_count -= 1
     Your silent arrow strikes a vulnerable, glowing scar. A critical hit!
     ~ temp damage = 9
@@ -249,7 +256,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     ~ player_contribution += damage
     -> allies_turn
 
-= alpha_fire_shock_arrow
+== alpha_fire_shock_arrow
     ~ shock_arrow_count -= 1
     The shock arrow delivers a powerful jolt, causing the massive creature to seize up for a moment.
     ~ temp damage = 12
@@ -257,7 +264,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     ~ player_contribution += damage
     -> allies_turn
 
-= player_use_emitter_on_alpha
+== player_use_emitter_on_alpha
     { use_emitter_charge():
         // The function returned true, so the usage was successful.
         You unleash a wave of pure force from the emitter. It slams into the {current_enemy_name}, sending it reeling.
@@ -277,7 +284,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
         -> alpha_skulker_turn
     }
         
-= allies_turn
+== allies_turn
     // --- Check if the rival is waiting for an opening ---
     { rival_is_waiting_for_opening:
         -> alpha_skulker_turn // If so, they do nothing and it's the boss's turn
@@ -354,7 +361,7 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
         -> alpha_skulker_turn
     }
 
-= alpha_skulker_turn
+== alpha_skulker_turn
     { enemy_is_poisoned:
         ~ poison_turns_remaining -= 1
         ~ temp poison_damage = 1 + INT(intelligence / 2) // Damage scales with Intelligence
@@ -451,26 +458,26 @@ A low hum fills the air as hidden turrets descend from the ceiling, their target
     
     -> alpha_skulker_battle_loop
 
-= rival_in_danger_event
+== rival_in_danger_event
     The Matriarch turns its attention, pinning your Rival against the derelict train car. They're trapped and vulnerable! This is your chance.
-    * [Support your Rival]
+    + [Support your Rival]
         You fire a shot or create a diversion, drawing the Matriarch's attention away from them. Your Rival gives you a surprised, grudging look of acknowledgement.
         ~ rival_is_in_danger = false
         ~ rival_relationship += 10
         -> alpha_skulker_turn
-    * [Sabotage your Rival]
+    + [Sabotage your Rival]
         You "accidentally" kick a piece of debris in their way, causing them to stumble. The Matriarch's claws rake across their side, wounding them badly. They glare at you with pure hatred.
         ~ rival_contribution -= 10 // Penalty to their score
         ~ rival_relationship -= 15 // Sabotage instantly creates a GRUDGE
         ~ rival_is_in_danger = false
         -> alpha_skulker_turn
-    * [Do nothing]
+    + [Do nothing]
         You watch, impassive, as your Rival barely manages to fend off the attack on their own. They are wounded and exhausted from the effort.
         ~ rival_is_in_danger = false
         ~ rival_relationship -= 5
         -> alpha_skulker_turn
 
-= alpha_skulker_defeated
+== alpha_skulker_defeated
 With a final, agonized shriek, the Alpha Skulker Matriarch collapses. The cavern falls silent, the only sound your own ragged breathing and the thumping of your heart.
 <i>PROCTOR: "Apex Predator neutralized. Calculating combat contributions... Calculation complete."</i>
 

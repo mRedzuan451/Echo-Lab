@@ -201,6 +201,18 @@ img {
     font-size: 15pt;
 }
 
+.choice .choice-btn {
+    background: none;
+    border: none;
+    color: #b97c2c;
+    font-weight: 700;
+    font-size: 15pt;
+    font-family: sans-serif;
+    cursor: pointer;
+    padding: 0;
+}
+.choice .choice-btn:hover { color: black; }
+
 /* 
   Built-in class:
     The End # CLASS: end
