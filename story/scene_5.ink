@@ -114,7 +114,7 @@ There's no talking your way out of this.
     
     You attack your rival, dealing {p_final_dmg} damage!
     
-    { rival_hp <= rival_max_hp / 2:
+    { rival_hp <= INT(rival_max_hp / 3):
         -> rival_battle_win
     - else:
         -> rival_enemy_turn

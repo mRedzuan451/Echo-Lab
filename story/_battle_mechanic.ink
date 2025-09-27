@@ -387,7 +387,7 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
         { hp <= 0: 
             -> game_over_death 
         }
-        { jed_hp <= 0 and jed_status != "DEAD":
+        { jed_hp <= 0 and jed_status != "DEAD" and current_enemy_name == "Skulker Guard":
             The creature lands a fatal blow on Jed. He collapses to the ground, his weapon clattering on the metal floor. He's gone.
             ~ jed_status = "DEAD" 
         }

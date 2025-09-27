@@ -17,7 +17,7 @@ The wind howls around you. It's a long, dangerous climb.
         <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
         ~ resolve -= 10
         ~ is_injured = true
-        -> scene_8_the_tower
+        -> scene_7_scavenge
     }
 
 // --- PATH B: THE SUBWAY TEST ---

@@ -49,6 +49,8 @@ Before you proceed, you find a relatively sheltered alcove in the ruins to catch
     -> scene_8_the_tower
 + { has_reinforced_club or has_recurve_bow or has_emp_grenade or has_moss_poison_vial or poison_bomb_stack > 0 } [You are prepared. Move on.]
     -> scene_8_the_tower
++ { glimmer_moss_stack > 0} [Heal Up]
+    -> use_glimmer_moss_tunnel(false) -> scene_7a_gearing_up
 + [Check Status]
     -> check_status( -> scene_7a_gearing_up)
 

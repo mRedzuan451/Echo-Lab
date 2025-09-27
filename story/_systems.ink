@@ -205,7 +205,7 @@
     + [That's all for now.]
         -> return_point
         
-=== use_glimmer_moss_tunnel(is_safe) ===
+== use_glimmer_moss_tunnel(is_safe)
     ~ glimmer_moss_stack -= 1
     ~ temp heal_amount = 0
     You pull out the pouch of glowing moss.
