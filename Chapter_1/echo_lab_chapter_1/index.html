@@ -20,13 +20,39 @@
           <a id="rewind" title="Restart story from beginning">restart</a>
           <a id="save" title="Save progress">save</a>
           <a id="reload" title="Reload from save point">load</a>
-          <a id="theme-switch" title="Switch theme">theme</a>
+                    <a id="theme-switch" title="Switch theme">theme</a>
+                    <a id="choose-character" title="Choose character">character</a>
         </div>
 
         <div id="story" class="container">
             <div class="header">
-                <h1>echo_lab_chapter_1</h1>
+                <h1>Echo-Lab Chapter 1</h1>
                 <h2 class="byline"></h2>
+            </div>
+
+            <!-- Character selector: uses images from src/image/ -->
+            <div id="character-selector" class="character-selector hidden">
+                <h3>Choose your character</h3>
+                <div class="character-grid">
+                    <button class="char-option" data-char="aris" title="Dr. Aris Thorne, the Bio-Hacker">
+                        <img src="src/image/aris_char.jpg" alt="Dr. Aris Thorne">
+                        <div class="char-label">Dr. Aris Thorne, the Bio-Hacker</div>
+                    </button>
+
+                    <button class="char-option" data-char="kaelen" title="Kaelen 'Rook' Vance, the Soldier">
+                        <img src="src/image/kaelen_char.jpg" alt="Kaelen Vance">
+                        <div class="char-label">Kaelen "Rook" Vance, the Soldier</div>
+                    </button>
+
+                    <button class="char-option" data-char="lena" title="Lena 'Ghost' Petrova, the Infiltrator">
+                        <img src="src/image/lena_char.jpg" alt="Lena Petrova">
+                        <div class="char-label">Lena "Ghost" Petrova, the Infiltrator</div>
+                    </button>
+                </div>
+
+                <div class="character-actions">
+                    <button id="confirm-character" disabled>Confirm</button>
+                </div>
             </div>
         </div>
     </div>

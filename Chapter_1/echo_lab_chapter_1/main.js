@@ -5,6 +5,10 @@
 
     var savePoint = "";
 
+    // If the story asks for a character identity, this stores a mapping from
+    // character id (e.g. 'aris') to the choice index in the current choices.
+    var pendingChoiceMapping = null;
+
     let savedTheme;
     let globalTagTheme;
 
@@ -166,7 +170,17 @@
         }
 
         // Create HTML choices from ink choices
-        story.currentChoices.forEach(function(choice) {
+
+        // Detect whether the current set of choices is asking the player to
+        // choose their character identity. If so, open the image selector
+        // and map selections to the appropriate ink choice index.
+        var charChoiceInfo = detectCharacterChoices(story.currentChoices);
+        if (charChoiceInfo.isCharacterSelection) {
+            // Store mapping so the confirm handler can pick the right ink choice
+            pendingChoiceMapping = charChoiceInfo.mapping; // { charId: choiceIndex }
+            showCharacterSelector();
+        } else {
+            story.currentChoices.forEach(function(choice) {
 
             // Create paragraph with anchor element
             var choiceTags = choice.tags;
@@ -195,7 +209,8 @@
                 choiceParagraphElement.classList.add(customClasses[i]);
 
             if(isClickable){
-                choiceParagraphElement.innerHTML = `<a href='#'>${choice.text}</a>`
+                // use javascript:void(0) to avoid navigation to '#' which can jump the page
+                choiceParagraphElement.innerHTML = `<a href='javascript:void(0)'>${choice.text}</a>`
             }else{
                 choiceParagraphElement.innerHTML = `<span class='unclickable'>${choice.text}</span>`
             }
@@ -208,10 +223,70 @@
             // Click on choice
             if(isClickable){
                 var choiceAnchorEl = choiceParagraphElement.querySelectorAll("a")[0];
+                // If this choice is a timed event (e.g. Grab the Neuro-Stim), start a
+                // short timer on hover/touch that will remove the choice if the
+                // player doesn't click it in time.
+                var hoverTimer = null;
+                var isTimedChoice = /neuro-stim/i.test(choice.text);
+
+                if (isTimedChoice) {
+                    // helper to create the countdown ring element
+                    function addCountdown() {
+                        removeCountdown();
+                        var ring = document.createElement('span');
+                        ring.className = 'countdown-ring';
+                        // start animation by adding class in next tick
+                        setTimeout(function(){ ring.classList.add('countdown-animate'); }, 16);
+                        choiceParagraphElement.appendChild(ring);
+                        return ring;
+                    }
+
+                    function removeCountdown() {
+                        var existing = choiceParagraphElement.querySelector('.countdown-ring');
+                        if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+                    }
+
+                    // mouse hover starts timer
+                    choiceAnchorEl.addEventListener('mouseenter', function() {
+                        removeCountdown();
+                        addCountdown();
+                        hoverTimer = setTimeout(function() {
+                            removeCountdown();
+                            if (choiceParagraphElement.parentNode) {
+                                choiceParagraphElement.parentNode.removeChild(choiceParagraphElement);
+                            }
+                        }, 1000);
+                    });
+
+                    choiceAnchorEl.addEventListener('mouseleave', function() {
+                        if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+                        removeCountdown();
+                    });
+
+                    // touch devices: touchstart to begin timer, touchend to cancel
+                    choiceAnchorEl.addEventListener('touchstart', function() {
+                        removeCountdown();
+                        addCountdown();
+                        hoverTimer = setTimeout(function() {
+                            removeCountdown();
+                            if (choiceParagraphElement.parentNode) {
+                                choiceParagraphElement.parentNode.removeChild(choiceParagraphElement);
+                            }
+                        }, 1000);
+                    });
+                    choiceAnchorEl.addEventListener('touchend', function() {
+                        if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+                        removeCountdown();
+                    });
+                }
+
                 choiceAnchorEl.addEventListener("click", function(event) {
 
                     // Don't follow <a> link
                     event.preventDefault();
+
+                    // Cancel any pending timed removal for this choice so click proceeds
+                    if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
 
                     // Extend height to fit
                     // We do this manually so that removing elements and creating new ones doesn't
@@ -231,7 +306,8 @@
                     continueStory();
                 });
             }
-        });
+            });
+        }
 
 		// Unset storyContainer's height, allowing it to resize itself
 		storyContainer.style.height = "";
@@ -434,6 +510,174 @@
             document.body.classList.add("switched");
             document.body.classList.toggle("dark");
         });
+
+        // Character chooser button - opens the selector UI
+        let chooseCharEl = document.getElementById("choose-character");
+        if (chooseCharEl) chooseCharEl.addEventListener("click", function(event) {
+            event.preventDefault();
+            showCharacterSelector();
+        });
+    }
+
+    // --------------------------
+    // Character selection helpers
+    // --------------------------
+
+    // Show the character selector UI
+    function showCharacterSelector() {
+        var selector = document.getElementById('character-selector');
+        if (!selector) return;
+
+        // Move selector to the end of the story container so it appears
+        // after all the text/images created by the story.
+        storyContainer.appendChild(selector);
+
+        selector.classList.remove('hidden');
+        // Pre-select previously chosen character if present
+        var current = getPlayerCharacter();
+        if (current) {
+            var btn = selector.querySelector('[data-char="'+current+'"]');
+            if (btn) setSelectedOption(btn);
+        }
+
+        // Scroll so the selector (at the bottom) is visible
+        setTimeout(function() {
+            outerScrollContainer.scrollTo(0, contentBottomEdgeY());
+        }, 40);
+    }
+
+    function hideCharacterSelector() {
+        var selector = document.getElementById('character-selector');
+        if (!selector) return;
+        selector.classList.add('hidden');
+        // keep the element in the DOM but hidden so it can be re-used later
+    }
+
+    // Mark an option button as selected visually and enable confirm
+    function setSelectedOption(btn) {
+        var parent = btn.closest('.character-selector');
+        if (!parent) return;
+        var prev = parent.querySelectorAll('.char-option.selected');
+        prev.forEach(function(p){ p.classList.remove('selected'); });
+        btn.classList.add('selected');
+        var confirm = parent.querySelector('#confirm-character');
+        if (confirm) confirm.removeAttribute('disabled');
+    }
+
+    // Retrieve saved player character id from localStorage
+    function getPlayerCharacter() {
+        try {
+            return window.localStorage.getItem('player-character');
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Save player character id to localStorage
+    function setPlayerCharacter(id) {
+        try {
+            window.localStorage.setItem('player-character', id);
+            // Also set in the ink story variables so .ink can read it directly
+            try {
+                if (story && story.variablesState) story.variablesState['playerCharacter'] = id;
+            } catch (e) {
+                console.debug('Could not set ink variable playerCharacter:', e);
+            }
+        } catch (e) {
+            console.warn('Could not save player character');
+        }
+    }
+
+    // Wire up selector event listeners after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        var selector = document.getElementById('character-selector');
+        if (!selector) return;
+
+        // Option click
+        var options = selector.querySelectorAll('.char-option');
+        options.forEach(function(opt){
+            opt.addEventListener('click', function(e){
+                e.preventDefault();
+                setSelectedOption(opt);
+            });
+        });
+
+        // Confirm click
+        var confirm = selector.querySelector('#confirm-character');
+        if (confirm) confirm.addEventListener('click', function(e){
+            // prevent any default button behavior that could change focus/scroll
+            e.preventDefault();
+            var sel = selector.querySelector('.char-option.selected');
+            if (!sel) return;
+            var id = sel.getAttribute('data-char');
+            setPlayerCharacter(id);
+
+            // If the story presented character choices, resolve the mapped ink choice
+            if (pendingChoiceMapping && pendingChoiceMapping[id] !== undefined) {
+                // Remove any rendered textual choices
+                removeAll('.choice');
+                // Tell the story which choice to pick
+                story.ChooseChoiceIndex(pendingChoiceMapping[id]);
+                // clear mapping and continue the story
+                pendingChoiceMapping = null;
+                hideCharacterSelector();
+                // Update save point
+                savePoint = story.state.toJson();
+                    // Ensure the container can resize normally and remove any fixed height
+                    try { storyContainer.style.height = ''; } catch (e) {}
+
+                    // Remove focus from buttons/links which can cause scroll jumps
+                    try { if (document.activeElement) document.activeElement.blur(); } catch (e) {}
+
+                    continueStory();
+
+                    // After story updates, make sure the page is scrolled to show new content.
+                    // Set multiple scroll targets to be robust across browsers/iframes.
+                    setTimeout(function() {
+                        try { outerScrollContainer.scrollTo(0, contentBottomEdgeY()); } catch (e) {}
+                        try { document.documentElement.scrollTop = outerScrollContainer.scrollTop; } catch (e) {}
+                        try { document.body.scrollTop = outerScrollContainer.scrollTop; } catch (e) {}
+                    }, 80);
+                return;
+            }
+
+            hideCharacterSelector();
+        });
+    });
+
+    // Expose getter to other scripts (e.g. story code) via window
+    window.getPlayerCharacter = getPlayerCharacter;
+
+    // Detect if a set of choices corresponds to a character identity choice.
+    // We look for choice texts that match known character labels and return
+    // a mapping from character id to choice index.
+    function detectCharacterChoices(choices) {
+        // Known character ids and the short name to search for in the choice text.
+        // This will match the name anywhere in the choice (e.g. "I am Kaelen 'Rook' Vance, the Soldier.")
+        var known = {
+            'aris': 'aris',
+            'kaelen': 'kaelen',
+            'lena': 'lena'
+        };
+
+        var mapping = {};
+        var foundAny = false;
+        for (var i = 0; i < choices.length; i++) {
+            var text = choices[i].text.trim().toLowerCase();
+
+            // For each known name, check if it appears anywhere in the choice text
+            for (var nameKey in known) {
+                if (!known.hasOwnProperty(nameKey)) continue;
+                if (text.indexOf(nameKey) !== -1) {
+                    mapping[known[nameKey]] = choices[i].index;
+                    foundAny = true;
+                    // once matched, move to next choice
+                    break;
+                }
+            }
+        }
+
+        return { isCharacterSelection: foundAny && Object.keys(mapping).length >= 2, mapping: mapping };
     }
 
 })(storyContent);
