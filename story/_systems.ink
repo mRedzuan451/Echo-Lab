@@ -224,6 +224,7 @@
     }
     The moss dissolves into a faint, glowing dust, its regenerative properties spent.
     ~ is_injured = false
+    ~ is_fatigued = false
 
     // --- RANDOM ATTACK CHECK ---
     { not is_safe:

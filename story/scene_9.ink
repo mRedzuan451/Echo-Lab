@@ -127,7 +127,7 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     -> check_status(-> scene_9c_final_preparations)
 + { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter to clear the blocked passage.]
     -> clear_passage_with_emitter
-+ { glimmer_moss_stack > 0 and is_injured} [Heal Up]
++ { glimmer_moss_stack > 0 and is_injured or is_fatigued} [Heal Up]
     -> use_glimmer_moss_tunnel(false) -> scene_9c_final_preparations
 + [Proceed to the final location.]
     -> scene_10_the_lair

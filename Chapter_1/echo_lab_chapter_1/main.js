@@ -579,19 +579,12 @@
             window.localStorage.setItem('player-character', id);
             // Also set in the ink story variables so .ink can read it directly
             try {
-                // If your ink declares a variable named 'character_name' (e.g. VAR character_name = "")
-                // set it here so the ink file can read it directly.
-                if (story && story.variablesState) {
-                    if (typeof story.variablesState['character_name'] !== 'undefined') {
-                        story.variablesState['character_name'] = id;
-                    }
-                    // Also support older key if present
-                    if (typeof story.variablesState['playerCharacter'] !== 'undefined') {
-                        story.variablesState['playerCharacter'] = id;
-                    }
+                // Only set character_name, not playerCharacter
+                if (story && story.variablesState && typeof story.variablesState['character_name'] !== 'undefined') {
+                    story.variablesState['character_name'] = id;
                 }
             } catch (e) {
-                console.debug('Could not set ink variable playerCharacter:', e);
+                console.debug('Could not set ink variable character_name:', e);
             }
         } catch (e) {
             console.warn('Could not save player character');
@@ -650,35 +643,39 @@
                     // so the newly added text/selector is visible. This tends to look more
                     // stable than restoring a previous scroll position.
                     setTimeout(function() {
-                        try {
+                        var maxTries = 15;
+                        var tries = 0;
+                        // Save original overflow
+                        var origOuterOverflow = outerScrollContainer.style.overflow;
+                        var origBodyOverflow = document.body.style.overflow;
+                        outerScrollContainer.style.overflow = 'hidden';
+                        document.body.style.overflow = 'hidden';
+                        function tryScrollLoop() {
                             var targetY = contentBottomEdgeY();
-                            console.debug('[DEBUG] smooth scroll: targetY=', targetY, 'before outerScroll=', outerScrollContainer.scrollTop);
-                            // If browser supports smooth behavior, use it; otherwise set directly.
+                            var currentY = outerScrollContainer.scrollTop;
+                            var diff = Math.abs(currentY - targetY);
+                            console.debug('[DEBUG] scroll loop attempt', tries, 'targetY=', targetY, 'currentY=', currentY, 'diff=', diff);
+                            if (diff < 32 || tries >= maxTries) {
+                                // Restore overflow
+                                outerScrollContainer.style.overflow = origOuterOverflow;
+                                document.body.style.overflow = origBodyOverflow;
+                                // Final forced scroll to bottom
+                                var finalY = contentBottomEdgeY();
+                                outerScrollContainer.scrollTop = finalY;
+                                console.debug('[DEBUG] final forced scroll: finalY=', finalY, 'outerScroll=', outerScrollContainer.scrollTop);
+                                return;
+                            }
+                            // Try to scroll
                             if ('scrollBehavior' in document.documentElement.style) {
                                 outerScrollContainer.scrollTo({ top: targetY, behavior: 'smooth' });
                             } else {
                                 outerScrollContainer.scrollTop = targetY;
                             }
-                            // Also try to sync window scrolling
                             try { window.scrollTo({ top: targetY, behavior: 'smooth' }); } catch (e) { try { window.scrollTo(0, targetY); } catch (ee) {} }
-                            setTimeout(function() {
-                                console.debug('[DEBUG] after smooth scroll: outerScroll=', outerScrollContainer.scrollTop, 'docScroll=', document.documentElement.scrollTop, 'bodyScroll=', document.body.scrollTop, 'active=', document.activeElement && document.activeElement.tagName);
-                            }, 400);
-                            // Second delayed scroll to ensure we reach the bottom after all DOM/layout updates
-                            setTimeout(function() {
-                                var targetY2 = contentBottomEdgeY();
-                                if ('scrollBehavior' in document.documentElement.style) {
-                                    outerScrollContainer.scrollTo({ top: targetY2, behavior: 'smooth' });
-                                } else {
-                                    outerScrollContainer.scrollTop = targetY2;
-                                }
-                                try { window.scrollTo({ top: targetY2, behavior: 'smooth' }); } catch (e) { try { window.scrollTo(0, targetY2); } catch (ee) {} }
-                                console.debug('[DEBUG] second smooth scroll: targetY2=', targetY2, 'outerScroll=', outerScrollContainer.scrollTop);
-                            }, 800);
-                        } catch (e) {
-                            // As a fallback, ensure the outer container is focused so keyboard scroll is there
-                            try { outerScrollContainer.focus(); } catch (e) {}
+                            tries++;
+                            setTimeout(tryScrollLoop, 100);
                         }
+                        tryScrollLoop();
                     }, 60);
                 return;
             }

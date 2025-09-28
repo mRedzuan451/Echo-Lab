@@ -1,5 +1,7 @@
 // === VARIABLE DEFINITIONS ===
 
+VAR playerCharacter = ""
+
 // Character stats
 VAR strength = 0
 VAR intelligence = 0
