@@ -19,6 +19,7 @@
         ~ atk = 2 + agility
         ~ def = INT(perception / 2)
     }
+    ~ dodge_chance = agility + (perception / 2)
 
     // 2. Apply BONUSES from equipped items
     { emitter_equipped:
@@ -43,7 +44,7 @@
     }
     // (Future equipment bonuses would go here)
     
-    ~ dodge_chance = agility + (perception / 2)
+    
     
     ~ return true
 
