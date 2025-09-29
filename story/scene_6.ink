@@ -29,9 +29,6 @@ The wind howls around you. It's a long, dangerous climb.
     * { know_skulker_weakness } [Use your knowledge of its weakness.]
         -> exploit_skulker_weakness
         
-    * { has_kinetic_emitter and emitter_charges > 0 and emitter_equipped} [Use the Emitter's concussive blast ({emitter_charges} left).]
-        -> use_emitter_on_skulker
-        
     * { has_kinetic_emitter and emitter_charges <= 0 } [Attempt to use the broken Emitter.]
         You raise the Emitter and try to activate it, but it remains silent and cold. The power is completely spent. It's useless.
         -> scene_6b_subway
@@ -50,13 +47,6 @@ The wind howls around you. It's a long, dangerous climb.
     The path to the terminal is clear. Your intel paid off.
     -> skulker_defeated_hub
         
-= use_emitter_on_skulker
-    { use_emitter_charge():
-        // The function returned true, so the usage was successful.
-        The blast hits the Skulker, sending it flying backwards into the tunnel wall with a wet smack. It's stunned and incapacitated. The path to the terminal is clear, and you easily download the **first Data Fragment**.
-        -> skulker_defeated_hub
-    }
-
 === engage_skulker_setup ===
     // Set the global variables for this specific enemy
     ~ current_enemy_name = "Slick-Skinned Skulker"
@@ -73,71 +63,6 @@ The wind howls around you. It's a long, dangerous climb.
     ~ is_countering = false
     The Skulker lets out a piercing shriek and lunges!
     -> battle_loop
-
-= skulker_battle_loop
-    You have {hp}/{max_hp} HP. The {current_enemy_name} has {current_enemy_hp} HP.
-    + [Attack!]
-        -> skulker_player_attack
-    * [Defend]
-        ~ is_defending = true
-        You brace for the Skulker's attack, readying your defenses.
-        -> skulker_enemy_turn
-
-= skulker_player_attack
-    // --- Player's Turn ---
-    ~ temp p_multiplier = RANDOM(8, 12) / 10.0
-    ~ temp p_base_dmg = atk - current_enemy_def
-    { p_base_dmg < 1: 
-        ~ p_base_dmg = 1
-    }
-    ~ temp p_final_dmg = INT(p_base_dmg * p_multiplier)
-    ~ current_enemy_hp -= p_final_dmg
-    You attack the Skulker, dealing {p_final_dmg} damage!
-    
-    { current_enemy_hp <= 0:
-        -> skulker_win
-    - else:
-        -> skulker_enemy_turn
-    }
-
-= skulker_enemy_turn
-    // --- Skulker's Turn ---
-    ~ temp current_def = def
-    { is_defending:
-        ~ current_def = def + 3 // Temporarily boost defense
-    }
-    
-    ~ temp r_multiplier = RANDOM(8, 12) / 10.0
-    ~ temp r_base_dmg = current_enemy_atk - current_def
-    { r_base_dmg < 1: 
-        ~ r_base_dmg = 1
-    }
-    ~ temp r_final_dmg = INT(r_base_dmg * r_multiplier)
-    ~ hp -= r_final_dmg
-    The Skulker counters, hitting you for {r_final_dmg} damage!
-    
-    ~ is_defending = false // Reset defense state for the next turn
-    
-    {
-        - hp <= 0:
-            -> battle_lost
-        - hp <= max_hp / 2:
-            -> skulker_battle_run_or_fight
-        - else:
-            -> skulker_battle_loop
-    }
-
-= skulker_battle_run_or_fight
-    The creature's blow wounds you badly. You're hurt, but you see a chance to disengage and escape.
-    * [Continue Fighting]
-        You grit your teeth and press the attack, ignoring the pain.
-        -> skulker_battle_loop
-    * [Run Away]
-        You take the opening and scramble back into the flooded tunnels. The Skulker shrieks in frustration but doesn't follow. You've escaped, but failed the test.
-        <i>AI: "Subject has failed the test. Data Fragment unretrievable."</i>
-        ~ resolve -= 10
-        ~ is_injured = true
-        -> scene_8_the_tower
 
 === sneak_past_skulker ===
     // Agility Check
@@ -183,8 +108,6 @@ The wind howls around you. It's a long, dangerous climb.
     ~ current_enemy_def = 2
     -> battle_loop // Now, start the battle loop
 
-
-    
 // === SPECIAL DEFEAT SCENE ===
 === scene_6c_skulker_lair ===
 Darkness... and the stench of decay and damp earth. You wake with a gasp, every muscle screaming in protest. Your head throbs where the Skulker struck you.

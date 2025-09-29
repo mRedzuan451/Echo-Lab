@@ -48,13 +48,12 @@ Following the signal, you navigate the treacherous streets until you come across
 // === SCENE 8A: TOWER BUFFER ROOM ===
 === tower_buffer_room(-> next_floor) ===
 You find a small, cramped access corridor between the floors. The sounds of combat have faded, giving you a brief moment to recover before ascending further.
-    * { is_fatigued } [Shake off the fatigue.]
+    + { is_fatigued } [Shake off the fatigue.]
         You stretch your aching muscles and take a long drink of water. The weariness recedes, and you feel ready to continue.
         ~ is_fatigued = false
         -> tower_buffer_room(next_floor)
         
-    + { glimmer_moss_stack > 0 and is_injured } [Use Glimmer Moss ({glimmer_moss_stack} left).]
-        // We will call the existing moss scene, then return here.
+    + { glimmer_moss_stack > 0 and is_injured or is_fatigued } [Use Glimmer Moss ({glimmer_moss_stack} left).]
         -> use_glimmer_moss_tunnel(true) -> tower_buffer_room(next_floor)
         
     + [Proceed to the next floor.]
@@ -66,7 +65,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
 
 // --- Tower Battle Setups ---
 === setup_brute_battle ===
-    ~ current_enemy_name = "The Brute"
+    ~ current_enemy_name = "Brute"
     ~ current_enemy_hp = 30
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 4
@@ -74,7 +73,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
     -> battle_loop
     
 === setup_tinkerer_battle ===
-    ~ current_enemy_name = "The Tinkerer"
+    ~ current_enemy_name = "Tinkerer"
     ~ current_enemy_hp = 20
     ~ current_enemy_atk = 8
     ~ current_enemy_def = 2
@@ -82,7 +81,7 @@ You find a small, cramped access corridor between the floors. The sounds of comb
     -> battle_loop
     
 === setup_veteran_battle ===
-    ~ current_enemy_name = "The Veteran"
+    ~ current_enemy_name = "Veteran"
     ~ current_enemy_hp = 25
     ~ current_enemy_atk = 7
     ~ current_enemy_def = 3

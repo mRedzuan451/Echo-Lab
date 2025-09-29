@@ -123,14 +123,15 @@ The AI indicates that the final Data Fragment is located in a heavily defended n
     -> manage_equipment
 + [Scavenge the area one last time.]
     -> final_scavenge
-+ [Check Status.]
-    -> check_status(-> scene_9c_final_preparations)
 + { has_kinetic_emitter and emitter_charges > 0 } [Use the Emitter to clear the blocked passage.]
     -> clear_passage_with_emitter
 + { glimmer_moss_stack > 0 and is_injured or is_fatigued} [Heal Up]
     -> use_glimmer_moss_tunnel(false) -> scene_9c_final_preparations
 + [Proceed to the final location.]
     -> scene_10_the_lair
++ [Analyze Items] -> analyze_items(-> scene_9c_final_preparations)
++ [Check Status.]
+    -> check_status(-> scene_9c_final_preparations)
 
 = clear_passage_with_emitter
     You notice a side passage that seems to lead towards the lair, but it's completely blocked by a massive pile of collapsed girders.

@@ -2,30 +2,16 @@
 === battle_loop ===
     // --- STATUS DISPLAY ---
     You have {hp}/{max_hp} HP.
-    { jed_status == "HELPED" and jed_hp > 0:
-        Jed has {jed_hp}/{jed_max_hp} HP.
-    }
-     { current_enemy_hp > 0:
-        The {current_enemy_name} has {current_enemy_hp} HP.
-    }
-    { enemy2_hp > 0:
-        The {enemy2_name} has {enemy2_hp} HP.
-    }
+    { jed_status == "HELPED" and jed_hp > 0: Jed has {jed_hp}/{jed_max_hp} HP. }
+    { current_enemy_hp > 0: The {current_enemy_name} has {current_enemy_hp} HP. }
+    { enemy2_hp > 0: The {enemy2_name} has {enemy2_hp} HP. }
     
-    // --- PLAYER'S TURN ---
-    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the first {current_enemy_name}]
-        -> player_attack(-> jed_turn, false)
-    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the second {enemy2_name}]
-        -> player_attack(-> jed_turn, true)
-    + { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}]
-        -> player_attack(-> jed_turn, false)
-    + { current_enemy_hp <= 0 and enemy2_hp > 0 } [Attack the {enemy2_name}]
-        -> player_attack(-> jed_turn, true)
-        
-    + [Defend]
-        ~ is_defending = true
-        You brace for an attack, increasing your defense for this turn.
-        -> jed_turn
+    // --- PLAYER'S TURN CHOICES ---
+    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the first {current_enemy_name}] -> player_attack(-> jed_turn, false)
+    + { current_enemy_hp > 0 and enemy2_hp > 0 } [Attack the second {enemy2_name}] -> player_attack(-> jed_turn, true)
+    + { current_enemy_hp > 0 and enemy2_hp <= 0 } [Attack the {current_enemy_name}] -> player_attack(-> jed_turn, false)
+    + { current_enemy_hp <= 0 and enemy2_hp > 0 } [Attack the {enemy2_name}] -> player_attack(-> jed_turn, true)
+    + [Defend] -> player_defend
     + { character_name == "Kaelen" and club_is_upgraded and not club_is_charged and club_power_slots > 0 and power_cell_stack > 0 } [Slot a Power Cell into the Club ({club_power_slots} slots left)]
         -> kaelen_charge_club
     + { emitter_equipped and emitter_charges > 0 } [Use Kinetic Emitter ({emitter_charges} left)]
@@ -45,8 +31,14 @@
     + { character_name == "Lena" and shock_arrow_count > 0 } [Fire a Shock Arrow ({shock_arrow_count} left)]
         -> player_fire_shock_arrow
         
-    + [Run Away]
+    + {hp < max_hp/3}[Run Away]
         -> battle_fled
+        
+= player_defend
+    ~ is_defending = true
+    You brace for an attack, increasing your defense for this turn.
+    -> jed_turn
+
 
 === player_attack(-> return_point, is_second_enemy) ===
     // This stitch now handles targeting for both 1v1 and 2v2
@@ -92,9 +84,9 @@
         The {target_name} collapses, defeated!
     }
     { target_name == current_enemy_name:
-        ~ current_enemy_hp = 0
+        ~ current_enemy_hp = target_hp
     - else:
-        ~ enemy2_hp = 0
+        ~ enemy2_hp = target_hp
     }
     -> return_point
 
@@ -209,12 +201,16 @@ You take a chance and disengage, turning to flee. The {current_enemy_name} lets 
     - current_enemy_name == "Slick-Skinned Skulker":
         You've escaped, but you've lost your chance to achieve your objective here.
         <i>AI: "Subject has disengaged. Data Fragment unretrievable."</i>
+        ~ resolve -= 10
+        ~ is_injured = true
         -> scene_8_the_tower // Changed to point to the new Scene 8
     - current_enemy_name == "The Brute" or current_enemy_name == "The Tinkerer" or current_enemy_name == "The Veteran":
         You're forced back down the stairs, floor by floor, until you're back at the base of the communications spire. The contestant you fled from now holds the high ground, and there's no way back up. You've failed this test.
+        ~ resolve -= 10
         -> scene_9_the_bargain // You are forced to find the next fragment elsewhere
     - current_enemy_name == "Skulker Guard" or current_enemy_name == "Skulker Packmate":
         The pack is too thick. You are forced back from the main platform, swallowed by the horde. You've lost your chance to face the Alpha and prove your worth.
+        ~ resolve -= 10
         -> chapter_1_failure_ending
     - else:
         // A default flee case for any other enemies
@@ -474,20 +470,21 @@ The {current_enemy_name} collapses. You are victorious.
 // --- LEARN NEW SKILL ---
 // Check for specific character vs. enemy matchups to learn a new skill.
 {
-    - character_name == "Kaelen" and current_enemy_name == "The Brute" and not (player_skills ? HeavyHitter):
+    - character_name == "Kaelen" and current_enemy_name == "Brute" and not (player_skills ? HeavyHitter):
         ~ player_skills += HeavyHitter
         Watching the Brute fight, you learned something about raw, unrestrained power. You've learned the **Heavy Hitter** skill!
         <i>AI: "Subject Kaelen has adapted to superior physical force by mimicking it. A predictable, yet effective, development."</i>
-        
-    - character_name == "Aris" and current_enemy_name == "The Tinkerer" and not (player_skills ? Overcharge):
+        -> tower_buffer_room (-> tower_floor_3)
+    - character_name == "Aris" and current_enemy_name == "Tinkerer" and not (player_skills ? Overcharge):
         ~ player_skills += Overcharge
         By observing the Tinkerer's unstable technology, you've figured out how to apply their reckless principles to your own gear. You've learned the **Overcharge** skill!
         <i>AI: "Subject Aris has reverse-engineered a crude but effective energy modulation technique. Logical progression."</i>
-        
-    - character_name == "Lena" and current_enemy_name == "The Veteran" and not (player_skills ? CounterAttack):
+        -> tower_buffer_room (-> tower_floor_5)
+    - character_name == "Lena" and current_enemy_name == "Veteran" and not (player_skills ? CounterAttack):
         ~ player_skills += CounterAttack
         The Veteran's calm, precise fighting style was a lesson in efficiency. You've adapted their technique into a new skill: **Counter Attack**.
         <i>AI: "Subject Lena has assimilated a more efficient combat doctrine based on observation. Optimal."</i>
+        -> tower_top
     - current_enemy_name == "Skulker Packmate Beta":
     You've cleared the first wave of Skulkers. The path to the main platform is closer, but a larger guard now blocks your way.
     -> setup_skulker_guard_battle
@@ -507,9 +504,9 @@ The {current_enemy_name} collapses. You are victorious.
             
     { jed_status == "HELPED":
         Jed stands back-to-back with you. "You take the one on the left?" he asks, readying his own weapon.
-    }
         This is your first major obstacle.
         -> setup_two_skulker_battle(true)
+    }
 }
 
 // Check if Aris can loot the creature
@@ -535,13 +532,13 @@ The {current_enemy_name} collapses. You are victorious.
                 You defeat the guard, and the rest of the horde scatters, clearing the path to the main platform.
                 -> setup_alpha_skulker_battle
             }
-- current_enemy_name == "The Brute":
+- current_enemy_name == "Brute":
         You step over the unconscious form of the Brute and head for the stairs.
         -> tower_buffer_room(-> tower_floor_3)
-    - current_enemy_name == "The Tinkerer":
+    - current_enemy_name == "Tinkerer":
         The Tinkerer's device sputters and dies, and they surrender immediately. You move to the next floor.
         -> tower_buffer_room(-> tower_floor_5)
-    - current_enemy_name == "The Veteran":
+    - current_enemy_name == "Veteran":
         The Veteran gives a single, respectful nod as they fall back, defeated. The path to the top is clear.
         -> tower_top
 - else:

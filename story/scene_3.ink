@@ -10,7 +10,7 @@
 + [Check Status.]
     -> check_status(-> scene_3_choices)
 + {power_cell_stack > 0 || glimmer_moss_stack > 0 || found_first_log or not analyzed_first_log} [Analyze Items.]
-    -> analyze_items
+    -> analyze_items(-> scene_3_choices)
 * [Leave through the collapsed doorway.]
     -> scene_4_the_first_obstacle
 

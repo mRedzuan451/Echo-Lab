@@ -222,9 +222,20 @@
     { hp > max_hp:
         ~ hp = max_hp // Don't overheal
     }
-    The moss dissolves into a faint, glowing dust, its regenerative properties spent.
-    ~ is_injured = false
-    ~ is_fatigued = false
+    The moss dissolves into a faint, glowing dust, its regenerative properties spent
+    {
+        - hp <= max_hp / 4: // If HP is at 25% or less
+            ~ is_injured = true
+            ~ is_fatigued = false
+            You're badly wounded, and every movement is a struggle.
+        - hp <= max_hp / 2: // If HP is at 50% or less
+            ~ is_injured = false
+            ~ is_fatigued = true
+            You're still bruised and exhausted.
+        - else:
+            ~ is_injured = false
+            ~ is_fatigued = false
+    }
 
     // --- RANDOM ATTACK CHECK ---
     { not is_safe:
